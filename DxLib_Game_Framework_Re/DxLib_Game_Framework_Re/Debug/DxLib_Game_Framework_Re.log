@@ -1,0 +1,8 @@
+﻿  ActorGroupManager.cpp
+  ActorManager.cpp
+  MyGame.cpp
+  World.cpp
+  main.cpp
+  コードを生成中...
+c:\users\walker\desktop\mylibrary\c++\dxlib_game_framework_re\dxlib_game_framework_re\actormanager.cpp(77): warning C4715: 'ActorManager::find': 値を返さないコントロール パスがあります。
+  DxLib_Game_Framework_Re.vcxproj -> C:\Users\walker\Desktop\MyLibrary\C++\DxLib_Game_Framework_Re\Debug\DxLib_Game_Framework_Re.exe
