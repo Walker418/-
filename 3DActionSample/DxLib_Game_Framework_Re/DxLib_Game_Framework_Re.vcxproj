@@ -216,6 +216,7 @@
     <ClInclude Include="SkeletalMesh.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="Sound.h" />
+    <ClInclude Include="SourceID.h" />
     <ClInclude Include="StaticMesh.h" />
     <ClInclude Include="TextureAsset.h" />
     <ClInclude Include="TPCamera.h" />

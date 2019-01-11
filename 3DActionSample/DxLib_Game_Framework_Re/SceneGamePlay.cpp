@@ -1,5 +1,6 @@
 #include "SceneGamePlay.h"
 #include "Scene.h"
+#include "SourceID.h"
 
 #include "Field.h"
 #include "ActorGroup.h"
@@ -28,7 +29,7 @@ void SceneGamePlay::start()
 	world_.add_event_message_listener([=](EventMessage message, void* param) {handle_message(message, param); });
 
 	// フィールドを追加
-	world_.add_field(new_field<Field>(0, 0));
+	world_.add_field(new_field<Field>(MESH_STAGE_CASTLE, MESH_SKYBOX));
 	// カメラを追加
 	world_.add_camera(new_actor<FreeCamera>(&world_, Vector3{ -70.0f, 20.0f,-70.0f }, Matrix::Identity));
 	// ライトを追加
@@ -71,8 +72,8 @@ void SceneGamePlay::end()
 
 	// 素材を破棄
 	SkeletalMesh::erase(0);
-	CollisionMesh::erase(0);
-	Skybox::erase(0);
+	CollisionMesh::erase(MESH_STAGE_CASTLE);
+	Skybox::erase(MESH_SKYBOX);
 	Billboard::erase(0);
 }
 
