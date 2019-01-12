@@ -148,6 +148,7 @@
     <ClCompile Include="ModelAsset.cpp" />
     <ClCompile Include="Mouse.cpp" />
     <ClCompile Include="MyGame.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="SceneGamePlay.cpp" />

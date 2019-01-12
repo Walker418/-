@@ -7,6 +7,7 @@
 #include "EventMessage.h"
 #include "FreeCamera.h"
 #include "Light.h"
+#include "Player.h"
 
 #include "SkeletalMesh.h"
 #include "CollisionMesh.h"
@@ -36,7 +37,7 @@ void SceneGamePlay::start()
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 
 	// アクターはここに追加
-
+	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3::Zero, Matrix::Identity));
 }
 
 // 更新
@@ -71,7 +72,8 @@ void SceneGamePlay::end()
 	world_.clear();
 
 	// 素材を破棄
-	SkeletalMesh::erase(0);
+	SkeletalMesh::erase(MESH_PALADIN);
+
 	CollisionMesh::erase(MESH_STAGE_CASTLE);
 	Skybox::erase(MESH_SKYBOX);
 	Billboard::erase(0);
@@ -80,12 +82,5 @@ void SceneGamePlay::end()
 // メッセージ処理
 void SceneGamePlay::handle_message(EventMessage message, void* param)
 {
-	/*
-	// イベントメッセージの種類によって、処理を行う
-	switch (message)
-	{
-	default:
-		break;
-	}
-	*/
+	
 }

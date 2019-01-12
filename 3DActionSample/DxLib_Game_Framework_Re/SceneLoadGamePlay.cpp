@@ -24,10 +24,11 @@ void SceneLoadGamePlay::update(float delta_time)
 	if (!is_loaded_)
 	{
 		// データを読み込む
-		SkeletalMesh::load(0, "test_assets/player.mv1");										// 3Dモデル
 		CollisionMesh::load(MESH_STAGE_CASTLE, "test_assets/castle/SampleStage_Castle.mv1");	// ステージモデル
 		Skybox::load(MESH_SKYBOX, "test_assets/skybox/skydome.mv1");							// スカイボックスモデル
 		Billboard::load(0, "test_assets/Particle02.png");										// ビルボード
+
+		SkeletalMesh::load(MESH_PALADIN, "assets/Paladin/Paladin.mv1");							// プレイヤーモデル
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;
@@ -35,6 +36,7 @@ void SceneLoadGamePlay::update(float delta_time)
 	// データを読み込んだ場合、終了タイマーを作動し、2秒後にプレイシーンへ移行
 	else
 	{
+		// 60フレーム = 1秒
 		if (end_timer_ >= 120.0f)
 		{
 			is_end_ = true;

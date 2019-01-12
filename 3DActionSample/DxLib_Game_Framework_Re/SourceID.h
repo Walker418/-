@@ -9,7 +9,8 @@ enum
 	MESH_STAGE_CASTLE,	// 城フィールド
 	MESH_SKYBOX,		// スカイボックス
 
-
+	// モデル
+	MESH_PALADIN,		// プレイヤー
 };
 
 #endif // !SOURCE_ID_H_
