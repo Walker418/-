@@ -7,6 +7,9 @@
 #include "Skybox.h"
 #include "Billboard.h"
 
+#include "Sound.h"
+#include "GamePad.h"
+
 // クラス：ゲームアプリケーション
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
@@ -38,12 +41,17 @@ int Game::run()
 	Skybox::initialize();
 	Billboard::initialize();
 
+	Sound::initialize();
+	GamePad::initialize();
+
 	// 開始
 	start();
 
 	// メインループ
 	while (ProcessMessage() == 0 && is_running())
 	{
+		// ゲームパッドを更新
+		GamePad::update();
 		// 更新
 		update(1.0f);
 		// 画面をクリア
@@ -63,6 +71,8 @@ int Game::run()
 	CollisionMesh::finalize();
 	Skybox::finalize();
 	Graphics3D::finalize();
+	Sound::finalize();
+	GamePad::finalize();
 
 	// DxLibを終了
 	DxLib_End();

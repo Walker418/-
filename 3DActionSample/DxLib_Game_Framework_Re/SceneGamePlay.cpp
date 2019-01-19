@@ -37,7 +37,7 @@ void SceneGamePlay::start()
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 
 	// アクターはここに追加
-	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3::Zero, Matrix::Identity));
+	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, Matrix::Identity));
 }
 
 // 更新
@@ -50,6 +50,17 @@ void SceneGamePlay::update(float delta_time)
 void SceneGamePlay::draw() const
 {
 	world_.draw();
+
+	// プレイヤーの座標を表示（デバッグ用）
+	auto player = world_.find_actor(ActorGroup::Player, "Player");
+
+	if (player)
+	{
+		unsigned int Cr;
+		Cr = GetColor(255, 255, 255);
+		DrawFormatString(0, 0, Cr, "プレイヤーの座標：（ %f 、%f、 %f）", player->position().x, player->position().y, player->position().z);
+		DrawFormatString(0, 15, Cr, "プレイヤーコライダーの座標：（%f 、%f、 %f）", player->body()->position().x, player->body()->position().y, player->body()->position().z);
+	}
 }
 
 // 終了しているか
@@ -82,5 +93,5 @@ void SceneGamePlay::end()
 // メッセージ処理
 void SceneGamePlay::handle_message(EventMessage message, void* param)
 {
-	
+
 }
