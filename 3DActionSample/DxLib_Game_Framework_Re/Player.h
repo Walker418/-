@@ -14,7 +14,16 @@ private:
 	// 列挙型：プレイヤーの状態
 	enum class PlayerState
 	{
-		Normal,		// 通常
+		Normal,			// 通常
+		Slash1,			// 攻撃（1段目）
+		Slash2,			// 攻撃（2段目）
+		Slash3,			// 攻撃（3段目）
+		Damage,			// 被弾
+		GuardBegin,		// ガード開始
+		Blocking,		// ガード
+		GuardAttack,	// ガード攻撃
+		GuardEnd,		// ガード終了
+		Death,			// 死亡
 	};
 
 	// 列挙型：プレイヤーのモーション
@@ -64,8 +73,27 @@ private:
 	void update_state(float delta_time);
 	// 状態の変更
 	void change_state(PlayerState state, int motion);
+
 	// 通常状態での更新
-	void normal_update(float delta_time);
+	void normal(float delta_time);
+	// 攻撃（1段目）での更新
+	void slash1(float delta_time);
+	// 攻撃（2段目）での更新
+	void slash2(float delta_time);
+	// 攻撃（3段目）での更新
+	void slash3(float delta_time);
+	// 被弾状態での更新
+	void damage(float delta_time);
+	// ガード開始時の更新
+	void guard(float delta_time);
+	// ガード時の更新
+	void blocking(float delta_time);
+	// ガード攻撃での更新
+	void guard_attack(float delta_time);
+	// ガード終了時の更新
+	void guard_end(float delta_time);
+	// 死亡状態での更新
+	void death(float delta_time);
 
 private:
 	// アニメーションメッシュ
@@ -78,7 +106,7 @@ private:
 	float			state_timer_{ 0.0f };
 
 	// 現在の体力
-	int				current_hp_{ HP };
+	int				current_hp_;
 
 	// 最大体力
 	const int		HP{ 100 };
