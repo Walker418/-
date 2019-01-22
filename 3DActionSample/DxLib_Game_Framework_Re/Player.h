@@ -19,8 +19,8 @@ private:
 		Slash2,			// 攻撃（2段目）
 		Slash3,			// 攻撃（3段目）
 		Damage,			// 被弾
-		GuardBegin,		// ガード開始
-		Blocking,		// ガード
+		Guard,			// ガード
+		Blocking,		// ガードによるノックバック
 		GuardAttack,	// ガード攻撃
 		GuardEnd,		// ガード終了
 		Death,			// 死亡
@@ -39,26 +39,26 @@ private:
 		MOTION_JUMP_ATTACK = 19,		// ジャンプ攻撃
 		MOTION_IMPACT = 17,				// 被弾
 		MOTION_GUARD_BEGIN = 11,		// ガード開始
-		MOTION_GUARD_IDLE = 13,			// ガード中
-		MOTION_GUARD_BLOCK = 14,		// ガード成功
+		MOTION_GUARD_IDLE = 14,			// ガード中
+		MOTION_GUARD_BLOCK = 12,		// ガードによるノックバック
 		MOTION_GUARD_SLASH = 15,		// ガード攻撃
-		MOTION_GUARD_END = 12,			// ガード終了
+		MOTION_GUARD_END = 13,			// ガード終了
 		MOTION_CROUCH_BEGIN = 0,		// しゃがみ開始
 		MOTION_CROUCH_IDLE = 6,			// しゃがみ中待機
 		MOITON_CROUCH_IMPACT = 7,		// しゃがみ中被弾
 		MOTION_CROUCH_ATTACK = 8,		// しゃがみ中攻撃
 		MOTION_CROUCH_GUARD_BEGIN = 2,	// しゃがみガード開始
-		MOTION_CROUCH_GUARD_IDLE = 4,	// しゃがみガード中
-		MOTION_CROUCH_GUARD_BLOCK = 5,	// しゃがみガード成功
+		MOTION_CROUCH_GUARD_IDLE = 5,	// しゃがみガード中
+		MOTION_CROUCH_GUARD_BLOCK = 3,	// しゃがみガードによるノックバック
 		MOTION_CROUCH_GUARD_ATTACK = 8,	// しゃがみガード攻撃（しゃがみ中攻撃と同じ）
-		MOTION_CROUCH_GUARD_END = 3,	// しゃがみガード終了
+		MOTION_CROUCH_GUARD_END = 4,	// しゃがみガード終了
 		MOTION_CROUCH_END = 1,			// しゃがみ終了
 		MOTION_DEATH = 10,				// 死亡
 	};
 
 public:
 	// コンストラクタ
-	Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3::Zero, Matrix::Identity, 2.2f, 1.5f));
+	Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 8.5f, 0.0f), Matrix::Identity, 12.0f, 2.5f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -84,9 +84,9 @@ private:
 	void slash3(float delta_time);
 	// 被弾状態での更新
 	void damage(float delta_time);
-	// ガード開始時の更新
-	void guard(float delta_time);
 	// ガード時の更新
+	void guard(float delta_time);
+	// ガードによるノックバック中の更新
 	void blocking(float delta_time);
 	// ガード攻撃での更新
 	void guard_attack(float delta_time);
@@ -113,7 +113,7 @@ private:
 	// 移動速度
 	const float		WalkSpeed{ 0.28f };
 	// 重力
-	const float		Gravity{ -0.5f };
+	const float		Gravity{ 9.8f };
 };
 
 #endif // !PLAYER_H_

@@ -7,16 +7,18 @@ class GamePad
 {
 public:
 	// ゲームパッドのボタンの定義
-	static const int Left;
-	static const int Right;
-	static const int Up;
-	static const int Down;
-	static const int A;
-	static const int B;
-	static const int X;
-	static const int Y;
-	static const int Back;
-	static const int Start;
+	static const int Left;		// 左
+	static const int Right;		// 右
+	static const int Up;		// 上
+	static const int Down;		// 下
+	static const int A;			// A
+	static const int B;			// B
+	static const int X;			// X
+	static const int Y;			// Y
+	static const int L;			// L
+	static const int R;			// R
+	static const int Back;		// Back
+	static const int Start;		// Start
 
 	// 初期化
 	static void initialize();

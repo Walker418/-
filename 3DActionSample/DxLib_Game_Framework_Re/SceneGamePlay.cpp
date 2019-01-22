@@ -44,6 +44,15 @@ void SceneGamePlay::start()
 void SceneGamePlay::update(float delta_time)
 {
 	world_.update(delta_time);
+
+	// プレイヤーが死亡した場合、ゲーム終了
+	/*
+	auto player = world_.find_actor(ActorGroup::Player, "Player");	// プレイヤーを検索
+	if (!player)
+	{
+		is_end_ = true;
+	}
+	*/
 }
 
 // 描画
@@ -73,7 +82,7 @@ bool SceneGamePlay::is_end() const
 // 次のシーンの取得
 Scene SceneGamePlay::next() const
 {
-	return Scene::None;
+	return Scene::LoadGamePlay;
 }
 
 // 終了
@@ -93,5 +102,11 @@ void SceneGamePlay::end()
 // メッセージ処理
 void SceneGamePlay::handle_message(EventMessage message, void* param)
 {
-
+	// 受け取ったメッセージの種類によって、処理を行う
+	switch (message)
+	{
+	case EventMessage::PlayerDead:	// プレイヤーが死亡した場合
+		is_end_ = true;				// シーン終了
+		break;
+	}
 }

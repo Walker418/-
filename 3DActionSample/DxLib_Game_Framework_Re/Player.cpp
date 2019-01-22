@@ -1,5 +1,9 @@
 #include "Player.h"
 #include "GamePad.h"
+#include "MathHelper.h"
+#include "IWorld.h"
+#include "EventMessage.h"
+#include <DxLib.h>
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -45,7 +49,7 @@ void Player::update(float delta_time)
 	mesh_.transform(pose());
 
 	// HPが0以下になると、死亡状態に移行
-	if (current_hp_ <= 0)
+	if (current_hp_ <= 0 && state_ != PlayerState::Death)
 	{
 		change_state(PlayerState::Death, MOTION_DEATH);
 	}
@@ -61,7 +65,7 @@ void Player::draw() const
 // 衝突リアクション
 void Player::react(Actor& other)
 {
-	
+
 }
 
 // メッセージ処理
@@ -91,7 +95,7 @@ void Player::update_state(float delta_time)
 	case PlayerState::Damage:
 		damage(delta_time);
 		break;
-	case PlayerState::GuardBegin:
+	case PlayerState::Guard:
 		guard(delta_time);
 		break;
 	case PlayerState::Blocking:
@@ -132,6 +136,24 @@ void Player::normal(float delta_time)
 
 		return;
 	}
+
+	// Rキーが押されると、ガード状態に移行
+	if (GamePad::state(GamePad::R))
+	{
+		change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
+
+		return;
+	}
+
+	/*
+	// 死亡テスト
+	if (GamePad::trigger(GamePad::R))
+	{
+		change_state(PlayerState::Death, MOTION_DEATH);
+
+		return;
+	}
+	*/
 
 	// ============================================================
 	// 以下は移動処理
@@ -176,11 +198,18 @@ void Player::normal(float delta_time)
 // 攻撃（1段目）での更新
 void Player::slash1(float delta_time)
 {
-	// 
-
+	// モーション終了の前に、Xキーが押されると、攻撃の2段階目に移行
+	if (GamePad::trigger(GamePad::X))
+	{
+		if (state_timer_ >= mesh_.motion_end_time() + 5.5f && state_timer_ < mesh_.motion_end_time() + 18.0f)
+		{
+			change_state(PlayerState::Slash2, MOTION_SLASH_2);
+			return;
+		}
+	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		normal(delta_time);
 	}
@@ -189,10 +218,18 @@ void Player::slash1(float delta_time)
 // 攻撃（2段目）での更新
 void Player::slash2(float delta_time)
 {
-
+	// モーション終了の前に、Xキーが押されると、攻撃の3段階目に移行
+	if (GamePad::trigger(GamePad::X))
+	{
+		if (state_timer_ >= mesh_.motion_end_time() + 5.0f && state_timer_ < mesh_.motion_end_time() + 18.0f)
+		{
+			change_state(PlayerState::Slash3, MOTION_SLASH_3);
+			return;
+		}
+	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
 	{
 		normal(delta_time);
 	}
@@ -201,8 +238,15 @@ void Player::slash2(float delta_time)
 // 攻撃（3段目）での更新
 void Player::slash3(float delta_time)
 {
+	// モーション再生の間、キャラクターを前進させる
+	if (state_timer_ <= mesh_.motion_end_time() + 28.0f)
+	{
+		velocity_ = rotation_.Forward() * 0.15f;
+		position_ += velocity_ * delta_time;
+	}
+
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() + 45.0f)
 	{
 		normal(delta_time);
 	}
@@ -218,13 +262,25 @@ void Player::damage(float delta_time)
 	}
 }
 
-// ガード開始時の更新
+// ガード時の更新
 void Player::guard(float delta_time)
 {
+	// ガード開始のモーション終了後、ガード待機モーションを再生し、
+	// 以降Rキーが離れたら、ガード終了状態に移行
+	float guard_ready_time = mesh_.motion_end_time() * 2.0f;	// ガード開始までの時間
+	if (state_timer_ >= guard_ready_time)
+	{
+		mesh_.change_motion(MOTION_GUARD_IDLE);
 
+		// Rキーが離れたら、ガード終了状態に移行
+		if (!GamePad::state(GamePad::R))
+		{
+			change_state(PlayerState::GuardEnd, MOTION_GUARD_END);
+		}
+	}
 }
 
-// ガード時の更新
+// ガードによるノックバック中の更新
 void Player::blocking(float delta_time)
 {
 
@@ -244,7 +300,7 @@ void Player::guard_attack(float delta_time)
 void Player::guard_end(float delta_time)
 {
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() + 10.0f)
 	{
 		normal(delta_time);
 	}
@@ -254,8 +310,9 @@ void Player::guard_end(float delta_time)
 void Player::death(float delta_time)
 {
 	// モーションが終了すると、死亡判定を有効に
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
+		world_->send_message(EventMessage::PlayerDead);
 		die();
 	}
 }

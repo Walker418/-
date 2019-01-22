@@ -6,6 +6,7 @@
 enum class EventMessage
 {
 	None,		// ダミー
+	PlayerDead,	// プレイヤー死亡
 };
 
 #endif // !EVENT_MESSAGE_H_
