@@ -4,6 +4,9 @@
 #include "IWorld.h"
 #include "EventMessage.h"
 #include <DxLib.h>
+#include "Field.h"
+#include "Line.h"
+#include "FreeCamera.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -39,6 +42,12 @@ void Player::update(float delta_time)
 	mesh_.transform(pose());
 	*/
 
+	// 落下処理
+	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
+	position_.y += velocity_.y * delta_time;	// y軸座標を計算
+	// 地面との接触処理
+	intersect_ground();
+
 	// プレーヤーの状態を更新
 	update_state(delta_time);
 	// モーションを変更
@@ -60,6 +69,47 @@ void Player::draw() const
 {
 	mesh_.draw();							// メッシュを描画
 	body_->translate(position_)->draw();	// コライダーを描画（デバッグモードのみ、調整用）
+
+	unsigned int Cr;
+	Cr = GetColor(255, 255, 255);
+	// DrawFormatString(0, 30, Cr, "状態タイマー：（ %f ）", state_timer_);
+	/*
+	switch (state_)
+	{
+	case PlayerState::Normal:
+		DrawFormatString(0, 30, Cr, "State = Normal");
+		break;
+	case PlayerState::Slash1:
+		DrawFormatString(0, 30, Cr, "State = Slash1");
+		break;
+	case PlayerState::Slash2:
+		DrawFormatString(0, 30, Cr, "State = Slash2");
+		break;
+	case PlayerState::Slash3:
+		DrawFormatString(0, 30, Cr, "State = Slash3");
+		break;
+	case PlayerState::Guard:
+		DrawFormatString(0, 30, Cr, "State = Guard");
+		break;
+	case PlayerState::GuardEnd:
+		DrawFormatString(0, 30, Cr, "State = GuardEnd");
+		break;
+	case PlayerState::Blocking:
+		DrawFormatString(0, 30, Cr, "State = Blocking");
+		break;
+	case PlayerState::GuardAttack:
+		DrawFormatString(0, 30, Cr, "State = GuardAttack");
+		break;
+	case PlayerState::Damage:
+		DrawFormatString(0, 30, Cr, "State = Damage");
+		break;
+	case PlayerState::Death:
+		DrawFormatString(0, 30, Cr, "State = Death");
+		break;
+	default:
+		break;
+	}
+	*/
 }
 
 // 衝突リアクション
@@ -158,7 +208,9 @@ void Player::normal(float delta_time)
 	// ============================================================
 	// 以下は移動処理
 	int motion{ MOTION_IDLE };		// 何もしなければ、待機モーションに変更
-	velocity_ = Vector3::Zero;		// 移動量をリセット
+	// x,z軸移動量をリセット
+	velocity_.x = 0;
+	velocity_.z = 0;
 	float forward_speed{ 0.0f };	// 前向き速度
 	float left_speed{ 0.0f };		// 左向き速度
 
@@ -186,9 +238,19 @@ void Player::normal(float delta_time)
 
 	// 状態を更新
 	change_state(PlayerState::Normal, motion);
+
+	// カメラを取得
+	auto camera = world_->camera()->pose();
+	// カメラの正面ベクトルを取得
+	auto camera_forward = camera.Forward();
+	// カメラのy軸成分を無視する
+	camera_forward.y = 0;
+	// 正規化
+	camera_forward.Normalize();
+
 	// 移動量を計算し、プレイヤーを移動させる
-	velocity_ += rotation_.Forward() * forward_speed;
-	velocity_ += rotation_.Left() * left_speed;
+	velocity_ += camera_forward * forward_speed;
+	velocity_ += camera.Left() * left_speed;
 	position_ += velocity_ * delta_time;
 
 	// 移動処理終了
@@ -267,10 +329,16 @@ void Player::guard(float delta_time)
 {
 	// ガード開始のモーション終了後、ガード待機モーションを再生し、
 	// 以降Rキーが離れたら、ガード終了状態に移行
-	float guard_ready_time = mesh_.motion_end_time() * 2.0f;	// ガード開始までの時間
+	float guard_ready_time = mesh_.motion_end_time() + 15.0f;	// ガード開始までの時間;
 	if (state_timer_ >= guard_ready_time)
 	{
-		mesh_.change_motion(MOTION_GUARD_IDLE);
+		motion_ = MOTION_GUARD_IDLE;	// ガード中のモーションに移行
+
+		// Xキーが押されると、ガード攻撃を使用
+		if (GamePad::trigger(GamePad::X))
+		{
+			change_state(PlayerState::GuardAttack, MOTION_GUARD_SLASH);
+		}
 
 		// Rキーが離れたら、ガード終了状態に移行
 		if (!GamePad::state(GamePad::R))
@@ -283,15 +351,21 @@ void Player::guard(float delta_time)
 // ガードによるノックバック中の更新
 void Player::blocking(float delta_time)
 {
-
+	// モーション終了後、ガード状態に戻る
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	{
+		state_ = PlayerState::Guard;
+		guard(delta_time);
+	}
 }
 
 // ガード攻撃での更新
 void Player::guard_attack(float delta_time)
 {
 	// モーション終了後、ガード状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() * 1.8f)
 	{
+		state_ = PlayerState::Guard;
 		guard(delta_time);
 	}
 }
@@ -314,5 +388,25 @@ void Player::death(float delta_time)
 	{
 		world_->send_message(EventMessage::PlayerDead);
 		die();
+	}
+}
+
+// 地面との接触処理
+void Player::intersect_ground()
+{
+	// フィールドを取得
+	auto& field = world_->field();
+	// 地面との接触点
+	Vector3 intersect;
+
+	// 地面に接触した場合、接触点を返す
+	if (field.collide_line(position_ + Vector3(0.0f, 10.0f, 0.0f), position_ - Vector3(0.0f, 1.0f, 0.0f), &intersect))
+	{
+		// 接地した場合、y軸座標を補正する（地面のめり込まない）
+		if (intersect.y >= position_.y)
+		{
+			velocity_.y = 0;			// y軸移動量を0にする
+			position_.y = intersect.y;
+		}
 	}
 }

@@ -24,3 +24,28 @@ void Field::draw() const
 	CollisionMesh::bind(stage_);
 	CollisionMesh::draw();
 }
+
+// ü•ª‚Æ‚ÌÕ“Ë”»’è
+bool Field::collide_line(const Vector3& start, const Vector3& end, Vector3* point, Vector3* normal)
+{
+	CollisionMesh::bind(stage_);
+
+	return CollisionMesh::collide_line(start, end, point, normal);
+}
+
+// ‹…‘Ì‚Æ‚ÌÕ“Ë”»’è
+bool Field::collide_sphere(const Vector3& center, float radius, Vector3* result)
+{
+	CollisionMesh::bind(stage_);
+
+	return CollisionMesh::collide_sphere(center, radius, result);
+}
+
+// ƒJƒvƒZƒ‹‚Æ‚ÌÕ“Ë”»’è
+bool Field::collide_capsule(const Vector3& start, const Vector3& end, float radius, Vector3* result)
+{
+	CollisionMesh::bind(stage_);
+
+	return CollisionMesh::collide_capsule(start, end, radius, result);
+}
+

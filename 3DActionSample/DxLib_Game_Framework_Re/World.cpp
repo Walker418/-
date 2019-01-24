@@ -135,3 +135,9 @@ Field& World::field()
 {
 	return *field_;
 }
+
+// ƒJƒƒ‰‚Ìæ“¾
+ActorPtr World::camera()
+{
+	return camera_;
+}

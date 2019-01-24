@@ -32,7 +32,7 @@ void SceneGamePlay::start()
 	// フィールドを追加
 	world_.add_field(new_field<Field>(MESH_STAGE_CASTLE, MESH_SKYBOX));
 	// カメラを追加
-	world_.add_camera(new_actor<FreeCamera>(&world_, Vector3{ -70.0f, 20.0f,-70.0f }, Matrix::Identity));
+	world_.add_camera(new_actor<FreeCamera>(&world_, Vector3{ 0.0f, 75.0f, -100.0f }, Matrix::CreateRotationX(-45.0f) * Matrix::CreateRotationY(180.0f)));
 	// ライトを追加
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 

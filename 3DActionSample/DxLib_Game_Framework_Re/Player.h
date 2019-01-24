@@ -58,7 +58,7 @@ private:
 
 public:
 	// コンストラクタ
-	Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 8.5f, 0.0f), Matrix::Identity, 12.0f, 2.5f));
+	Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 8.5f, 0.0f), Matrix::Identity, 11.0f, 2.5f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -95,6 +95,9 @@ private:
 	// 死亡状態での更新
 	void death(float delta_time);
 
+	// 地面との接触処理
+	void intersect_ground();
+
 private:
 	// アニメーションメッシュ
 	AnimatedMesh	mesh_{ MESH_PALADIN };
@@ -113,7 +116,7 @@ private:
 	// 移動速度
 	const float		WalkSpeed{ 0.28f };
 	// 重力
-	const float		Gravity{ 9.8f };
+	const float		Gravity{ 0.03f };
 };
 
 #endif // !PLAYER_H_

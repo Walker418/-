@@ -52,6 +52,8 @@ public:
 	virtual void send_message(EventMessage message, void* param = nullptr) override;
 	// フィールドの取得
 	virtual Field& field() override;
+	// カメラの取得
+	virtual ActorPtr camera() override;
 
 	// コピー禁止
 	World(const World& other) = delete;

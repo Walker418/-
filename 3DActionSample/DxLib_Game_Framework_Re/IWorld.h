@@ -29,6 +29,8 @@ public:
 	virtual void send_message(EventMessage message, void* param = nullptr) = 0;
 	// フィールドの取得
 	virtual Field& field() = 0;
+	// カメラの取得
+	virtual ActorPtr camera() = 0;
 };
 
 #endif // !IWORLD_H_

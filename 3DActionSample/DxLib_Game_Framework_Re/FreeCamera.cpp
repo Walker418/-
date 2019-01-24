@@ -22,6 +22,6 @@ void FreeCamera::draw() const
 	Graphics3D::clear();
 
 	// ƒJƒƒ‰‚ğİ’è
-	Graphics3D::set_view_matrix(Matrix::CreateLookAt(position_, position_.Forward, { 0.0f, 1.0f, 0.0f }));
+	Graphics3D::set_view_matrix(Matrix::CreateLookAt(pose().Translation(), pose().Translation() + pose().Forward(), { 0.0f, 1.0f, 0.0f }));
 	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, 640.0f / 480.0f, 0.3f, 1000.0f));
 }
