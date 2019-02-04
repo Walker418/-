@@ -1,12 +1,11 @@
 #include "Player.h"
-#include "GamePad.h"
 #include "MathHelper.h"
+#include "Quaternion.h"
 #include "IWorld.h"
 #include "EventMessage.h"
-#include <DxLib.h>
 #include "Field.h"
 #include "Line.h"
-#include "FreeCamera.h"
+#include "BoundingSphere.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -17,7 +16,8 @@ Player::Player(IWorld* world, const Vector3& position, const Matrix& rotation, c
 	mesh_{ MESH_PALADIN, MOTION_IDLE },
 	motion_{ MOTION_IDLE },
 	state_{ PlayerState::Normal },
-	state_timer_{ 0.0f }
+	state_timer_{ 0.0f },
+	is_ground_{ false }
 {
 	rotation_ = rotation;
 	velocity_ = Vector3::Zero;
@@ -27,26 +27,13 @@ Player::Player(IWorld* world, const Vector3& position, const Matrix& rotation, c
 // 更新
 void Player::update(float delta_time)
 {
-	/*
-	// モーションの切り替えテスト
-	if (GamePad::trigger(GamePad::Up))
-		motion_ = (motion_ + 1) % 25;
-	if (GamePad::trigger(GamePad::Down))
-		motion_ = ((motion_ - 1) + 25) % 25;
-
-	// モーションを変更
-	mesh_.change_motion(motion_);
-	// アニメーションを更新
-	mesh_.update(delta_time);
-	// 行列を設定
-	mesh_.transform(pose());
-	*/
-
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
 	// 地面との接触処理
 	intersect_ground();
+	// 壁との接触処理
+	intersect_wall();
 
 	// プレーヤーの状態を更新
 	update_state(delta_time);
@@ -67,8 +54,8 @@ void Player::update(float delta_time)
 // 描画
 void Player::draw() const
 {
-	mesh_.draw();							// メッシュを描画
-	body_->translate(position_)->draw();	// コライダーを描画（デバッグモードのみ、調整用）
+	mesh_.draw();									// メッシュを描画
+	// body_->translate(position_)->draw();			// コライダーを描画（デバッグモードのみ、調整用）
 
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
@@ -178,26 +165,30 @@ void Player::change_state(PlayerState state, int motion)
 // 通常状態での更新
 void Player::normal(float delta_time)
 {
-	// Xキーが押されると、攻撃する
-	if (GamePad::trigger(GamePad::X))
+	// 攻撃、ガードの行動は接地状態でしか移行できない
+	if (is_ground_)
 	{
-		// 攻撃状態に移行
-		change_state(PlayerState::Slash1, MOTION_SLASH_1);
+		// Xキーかスペースバーが押されると、攻撃する
+		if (CheckHitKey(KEY_INPUT_SPACE))
+		{
+			// 攻撃状態に移行
+			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 
-		return;
-	}
+			return;
+		}
 
-	// Rキーが押されると、ガード状態に移行
-	if (GamePad::state(GamePad::R))
-	{
-		change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
+		// Rキーか左Ctrlキーが押されると、ガード状態に移行
+		if (CheckHitKey(KEY_INPUT_LCONTROL))
+		{
+			change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
 
-		return;
+			return;
+		}
 	}
 
 	/*
 	// 死亡テスト
-	if (GamePad::trigger(GamePad::R))
+	if (GamePad::trigger(GamePad::L))
 	{
 		change_state(PlayerState::Death, MOTION_DEATH);
 
@@ -215,20 +206,20 @@ void Player::normal(float delta_time)
 	float left_speed{ 0.0f };		// 左向き速度
 
 	// 前後移動
-	if (GamePad::state(GamePad::Up))
+	if (CheckHitKey(KEY_INPUT_W))		// 前
 	{
 		forward_speed = WalkSpeed;
 	}
-	else if (GamePad::state(GamePad::Down))
+	else if (CheckHitKey(KEY_INPUT_S))	// 後
 	{
 		forward_speed = -WalkSpeed;
 	}
 	// 左右移動
-	if (GamePad::state(GamePad::Left))
+	if (CheckHitKey(KEY_INPUT_A))		// 左
 	{
 		left_speed = WalkSpeed;
 	}
-	else if (GamePad::state(GamePad::Right))
+	else if (CheckHitKey(KEY_INPUT_D))	// 右
 	{
 		left_speed = -WalkSpeed;
 	}
@@ -253,6 +244,9 @@ void Player::normal(float delta_time)
 	velocity_ += camera.Left() * left_speed;
 	position_ += velocity_ * delta_time;
 
+	// プレイヤーを回転させる
+	
+
 	// 移動処理終了
 	// ============================================================
 }
@@ -261,7 +255,7 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// モーション終了の前に、Xキーが押されると、攻撃の2段階目に移行
-	if (GamePad::trigger(GamePad::X))
+	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
 		if (state_timer_ >= mesh_.motion_end_time() + 5.5f && state_timer_ < mesh_.motion_end_time() + 18.0f)
 		{
@@ -281,7 +275,7 @@ void Player::slash1(float delta_time)
 void Player::slash2(float delta_time)
 {
 	// モーション終了の前に、Xキーが押されると、攻撃の3段階目に移行
-	if (GamePad::trigger(GamePad::X))
+	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
 		if (state_timer_ >= mesh_.motion_end_time() + 5.0f && state_timer_ < mesh_.motion_end_time() + 18.0f)
 		{
@@ -335,13 +329,13 @@ void Player::guard(float delta_time)
 		motion_ = MOTION_GUARD_IDLE;	// ガード中のモーションに移行
 
 		// Xキーが押されると、ガード攻撃を使用
-		if (GamePad::trigger(GamePad::X))
+		if (CheckHitKey(KEY_INPUT_SPACE))
 		{
 			change_state(PlayerState::GuardAttack, MOTION_GUARD_SLASH);
 		}
 
 		// Rキーが離れたら、ガード終了状態に移行
-		if (!GamePad::state(GamePad::R))
+		if (!CheckHitKey(KEY_INPUT_LCONTROL))
 		{
 			change_state(PlayerState::GuardEnd, MOTION_GUARD_END);
 		}
@@ -398,15 +392,41 @@ void Player::intersect_ground()
 	auto& field = world_->field();
 	// 地面との接触点
 	Vector3 intersect;
+	// 接触判定用線分
+	Line line = Line(position_ + Vector3(0.0f, 10.0f, 0.0f), position_ - Vector3(0.0f, 1.0f, 0.0f));
 
-	// 地面に接触した場合、接触点を返す
-	if (field.collide_line(position_ + Vector3(0.0f, 10.0f, 0.0f), position_ - Vector3(0.0f, 1.0f, 0.0f), &intersect))
+	// 地面との接触点を取得
+	if (field.collide_line(line.start, line.end, &intersect))
 	{
-		// 接地した場合、y軸座標を補正する（地面のめり込まない）
+		// 接地した場合、y軸座標を補正する（地面にめり込まない）
 		if (intersect.y >= position_.y)
 		{
 			velocity_.y = 0;			// y軸移動量を0にする
-			position_.y = intersect.y;
+			position_.y = intersect.y;	// y軸位置を補正
+			is_ground_ = true;			// 接地判定をtrueにする
 		}
+	}
+	else
+	{
+		is_ground_ = false;				// 接地判定をfalseにする（接地していない）
+	}
+}
+
+// 壁との接触処理
+void Player::intersect_wall()
+{
+	// フィールドを取得
+	auto& field = world_->field();
+	// 壁との接触点
+	Vector3 intersect;
+	// 接触判定用球体
+	BoundingSphere sphere = BoundingSphere(position_ + Vector3(0.0f, 8.5f, 0.0f), 4.5f);
+
+	// 壁との接触点を取得
+	if (field.collide_sphere(sphere.position(), sphere.radius(), &intersect))
+	{
+		// プレイヤーの座標を補正
+		position_.x = intersect.x;
+		position_.z = intersect.z;
 	}
 }

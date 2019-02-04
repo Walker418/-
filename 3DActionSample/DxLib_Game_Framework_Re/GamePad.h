@@ -30,14 +30,32 @@ public:
 	static bool trigger(int button);
 	// ボタンが離されたか
 	static bool release(int button);
+	// 左アナログのx軸入力状態の取得
+	static int get_analogL_X();
+	// 左アナログのy軸入力状態の取得
+	static int get_analogL_Y();
+	// 右アナログのx軸入力状態の取得
+	static int get_analogR_X();
+	// 右アナログのy軸入力状態の取得
+	static int get_analogR_Y();
 	// 終了処理
 	static void finalize();
 
 private:
-	// 今回の入力状態
+	// 今回のボタン入力状態
 	static int current_state_;
-	// 前回の入力状態
+	// 前回のボタン入力状態
 	static int previous_state_;
+
+	// 左アナログのx軸入力状態
+	static int analogL_X_;
+	// 左アナログのy軸入力状態
+	static int analogL_Y_;
+
+	// 右アナログのx軸入力状態
+	static int analogR_X_;
+	// 右アナログのy軸入力状態
+	static int analogR_Y_;
 };
 
 #endif // !GAME_PAD_H_

@@ -5,9 +5,10 @@
 #include "Field.h"
 #include "ActorGroup.h"
 #include "EventMessage.h"
-#include "FreeCamera.h"
+#include "TPCamera.h"
 #include "Light.h"
 #include "Player.h"
+#include "DragonBoar.h"
 
 #include "SkeletalMesh.h"
 #include "CollisionMesh.h"
@@ -32,12 +33,13 @@ void SceneGamePlay::start()
 	// フィールドを追加
 	world_.add_field(new_field<Field>(MESH_STAGE_CASTLE, MESH_SKYBOX));
 	// カメラを追加
-	world_.add_camera(new_actor<FreeCamera>(&world_, Vector3{ 0.0f, 75.0f, -100.0f }, Matrix::CreateRotationX(-45.0f) * Matrix::CreateRotationY(180.0f)));
+	world_.add_camera(new_actor<TPCamera>(&world_));
 	// ライトを追加
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 
 	// アクターはここに追加
-	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, Matrix::Identity));
+	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }, Matrix::Identity));		// プレイヤー
+	world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, Matrix::Identity));		// 敵
 }
 
 // 更新
@@ -68,7 +70,7 @@ void SceneGamePlay::draw() const
 		unsigned int Cr;
 		Cr = GetColor(255, 255, 255);
 		DrawFormatString(0, 0, Cr, "プレイヤーの座標：（ %f 、%f、 %f）", player->position().x, player->position().y, player->position().z);
-		DrawFormatString(0, 15, Cr, "プレイヤーコライダーの座標：（%f 、%f、 %f）", player->body()->position().x, player->body()->position().y, player->body()->position().z);
+		// DrawFormatString(0, 15, Cr, "プレイヤーコライダーの座標：（%f 、%f、 %f）", player->body()->position().x, player->body()->position().y, player->body()->position().z);
 	}
 }
 
@@ -93,6 +95,7 @@ void SceneGamePlay::end()
 
 	// 素材を破棄
 	SkeletalMesh::erase(MESH_PALADIN);
+	SkeletalMesh::erase(MESH_DRAGONBOAR);
 
 	CollisionMesh::erase(MESH_STAGE_CASTLE);
 	Skybox::erase(MESH_SKYBOX);

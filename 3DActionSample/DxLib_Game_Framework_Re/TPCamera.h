@@ -16,13 +16,21 @@ private:
 	void update(float delta_time) override;
 	// 描画
 	void draw() const override;
-	// 移動
-	void move(
-		const Vector3& rest_position,		// バネの静止位置
-		float stiffness,					// バネの強さ
-		float friction,						// 摩擦力
-		float mass							// 質量
-	);
+
+private:
+	// カメラの回転
+	void rotate();
+
+private:
+	Vector3 target_;						// 注視点（プレイヤー）
+	float yaw_angle_{ 0.0f };				// y軸角度
+	float pitch_angle_{ 0.0f };				// x軸角度
+
+	const float RotateSpeed{ 3.0f };		// カメラの回転速度
+	const float CameraHeight{ 22.0f };		// 注視点の高さ
+	const float CameraDistance{ 60.0f };	// 注視点との距離
+	const float PitchMax{ 30.0f };			// 仰角最大値
+	const float PitchMin{ -20.0f };			// 仰角最小値
 };
 
 #endif // !T_P_CAMERA_H_

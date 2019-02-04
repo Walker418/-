@@ -135,12 +135,14 @@
     <ClCompile Include="CollisionMesh.cpp" />
     <ClCompile Include="CollisionTriangle.cpp" />
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="DragonBoar.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePad.cpp" />
     <ClCompile Include="Graphics2D.cpp" />
     <ClCompile Include="Graphics3D.cpp" />
+    <ClCompile Include="Keyboard.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathHelper.cpp" />
@@ -183,6 +185,7 @@
     <ClInclude Include="CollisionMesh.h" />
     <ClInclude Include="CollisionTriangle.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="DragonBoar.h" />
     <ClInclude Include="DummyBody.h" />
     <ClInclude Include="EventMessage.h" />
     <ClInclude Include="Field.h" />
@@ -197,6 +200,7 @@
     <ClInclude Include="IScene.h" />
     <ClInclude Include="IScenePtr.h" />
     <ClInclude Include="IWorld.h" />
+    <ClInclude Include="Keyboard.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Line.h" />
     <ClInclude Include="MathHelper.h" />
@@ -205,6 +209,8 @@
     <ClInclude Include="Mouse.h" />
     <ClInclude Include="MyGame.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="PlayerAttack.h" />
+    <ClInclude Include="PlayerInput.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="Random.h" />
     <ClInclude Include="Ray.h" />

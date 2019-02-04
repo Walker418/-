@@ -3,6 +3,7 @@
 
 #include "Actor.h"
 #include "AnimatedMesh.h"
+#include "IBodyPtr.h"
 #include "BoundingCapsule.h"
 #include "SourceID.h"
 
@@ -97,6 +98,8 @@ private:
 
 	// 地面との接触処理
 	void intersect_ground();
+	// 壁との接触処理
+	void intersect_wall();
 
 private:
 	// アニメーションメッシュ
@@ -107,6 +110,8 @@ private:
 	PlayerState		state_{ PlayerState::Normal };
 	// 状態タイマー
 	float			state_timer_{ 0.0f };
+	// 接地しているか
+	bool			is_ground_{ false };
 
 	// 現在の体力
 	int				current_hp_;

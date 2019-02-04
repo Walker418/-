@@ -23,18 +23,41 @@ int GamePad::current_state_{ 0 };
 // 前回の入力状態
 int GamePad::previous_state_{ 0 };
 
+// 左アナログのx軸入力状態
+int GamePad::analogL_X_{ 0 };
+// 左アナログのy軸入力状態
+int GamePad::analogL_Y_{ 0 };
+
+// 右アナログのx軸入力状態
+int GamePad::analogR_X_{ 0 };
+// 右アナログのy軸入力状態
+int GamePad::analogR_Y_{ 0 };
+
 // 初期化
 void GamePad::initialize()
 {
 	current_state_ = 0;
 	previous_state_ = 0;
+
+	analogL_X_ = 0;
+	analogL_Y_ = 0;
+
+	analogR_X_ = 0;
+	analogR_Y_ = 0;
 }
 
 // 更新
 void GamePad::update()
 {
+	// ボタン入力状況を更新
 	previous_state_ = current_state_;
 	current_state_ = GetJoypadInputState(DX_INPUT_KEY_PAD1);
+
+	// 左アナログスティック入力状況を更新
+	GetJoypadAnalogInput(&analogL_X_, &analogL_Y_, DX_INPUT_KEY_PAD1);
+
+	// 右アナログスティック入力状況を更新
+	GetJoypadAnalogInput(&analogR_X_, &analogR_Y_, DX_INPUT_KEY_PAD1);
 }
 
 // ボタンが押されているか
@@ -53,6 +76,30 @@ bool GamePad::trigger(int button)
 bool GamePad::release(int button)
 {
 	return (~current_state_ & previous_state_ &button) != 0;
+}
+
+// 左アナログのx軸入力状態の取得
+int GamePad::get_analogL_X()
+{
+	return analogL_X_;
+}
+
+// 左アナログのy軸入力状態の取得
+int GamePad::get_analogL_Y()
+{
+	return analogL_Y_;
+}
+
+// 右アナログのx軸入力状態の取得
+int GamePad::get_analogR_X()
+{
+	return analogR_X_;
+}
+
+// 右アナログのy軸入力状態の取得
+int GamePad::get_analogR_Y()
+{
+	return analogR_Y_;
 }
 
 // 終了処理

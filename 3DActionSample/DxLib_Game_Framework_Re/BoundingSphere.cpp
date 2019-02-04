@@ -48,7 +48,7 @@ void BoundingSphere::draw() const
 {
 	// デバッグ中でしか描画しない
 #ifdef _DEBUG
-	DrawSphere3D(position_, radius_, 32, GetColor(255, 0, 0), GetColor(125, 125, 125), FALSE);
+	DrawSphere3D(position_, radius_, 32, GetColor(255, 255, 255), GetColor(255, 255, 255), FALSE);
 #endif
 }
 
