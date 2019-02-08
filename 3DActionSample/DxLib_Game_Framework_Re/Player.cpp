@@ -54,49 +54,10 @@ void Player::update(float delta_time)
 // 描画
 void Player::draw() const
 {
-	mesh_.draw();									// メッシュを描画
-	// body_->translate(position_)->draw();			// コライダーを描画（デバッグモードのみ、調整用）
+	mesh_.draw();	// メッシュを描画
 
-	unsigned int Cr;
-	Cr = GetColor(255, 255, 255);
-	// DrawFormatString(0, 30, Cr, "状態タイマー：（ %f ）", state_timer_);
-	/*
-	switch (state_)
-	{
-	case PlayerState::Normal:
-		DrawFormatString(0, 30, Cr, "State = Normal");
-		break;
-	case PlayerState::Slash1:
-		DrawFormatString(0, 30, Cr, "State = Slash1");
-		break;
-	case PlayerState::Slash2:
-		DrawFormatString(0, 30, Cr, "State = Slash2");
-		break;
-	case PlayerState::Slash3:
-		DrawFormatString(0, 30, Cr, "State = Slash3");
-		break;
-	case PlayerState::Guard:
-		DrawFormatString(0, 30, Cr, "State = Guard");
-		break;
-	case PlayerState::GuardEnd:
-		DrawFormatString(0, 30, Cr, "State = GuardEnd");
-		break;
-	case PlayerState::Blocking:
-		DrawFormatString(0, 30, Cr, "State = Blocking");
-		break;
-	case PlayerState::GuardAttack:
-		DrawFormatString(0, 30, Cr, "State = GuardAttack");
-		break;
-	case PlayerState::Damage:
-		DrawFormatString(0, 30, Cr, "State = Damage");
-		break;
-	case PlayerState::Death:
-		DrawFormatString(0, 30, Cr, "State = Death");
-		break;
-	default:
-		break;
-	}
-	*/
+	// コライダーを描画（デバッグモードのみ、調整用）
+	body_->transform(pose())->draw();
 }
 
 // 衝突リアクション
@@ -245,7 +206,13 @@ void Player::normal(float delta_time)
 	position_ += velocity_ * delta_time;
 
 	// プレイヤーを回転させる
-	
+	if (velocity_.x != 0.0f || velocity_.z != 0.0f)		// 移動していれば
+	{
+		// rotation_ = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);
+		
+		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
+		rotation_ = Matrix::Lerp(rotation_, new_rotation, 0.1f);							// 補間で方向を転換する
+	}
 
 	// 移動処理終了
 	// ============================================================

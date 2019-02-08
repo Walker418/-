@@ -69,5 +69,5 @@ BoundingCapsule BoundingCapsule::translate_e(const Vector3& position) const
 // ç¿ïWïœä∑
 BoundingCapsule BoundingCapsule::transform_e(const Matrix& matrix) const
 {
-	return BoundingCapsule(position_ + matrix_.Translation(), matrix_ * matrix_.RotationMatrix(), length_ * matrix_.Scale().y, radius_ * matrix_.Scale().x);
+	return BoundingCapsule(position_ + matrix.Translation(), matrix_ * matrix.RotationMatrix(), length_ * matrix.Scale().y, radius_ * matrix.Scale().x);
 }

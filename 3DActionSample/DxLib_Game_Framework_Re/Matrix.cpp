@@ -153,17 +153,17 @@ Matrix Matrix::CreateWorld(const Vector3& scale, const Matrix& rotation, const V
 	return CreateScale(scale) * rotation * CreateTranslation(translation);
 }
 
+#ifdef __DXLIB
 // ワールド変換行列を作成
 Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up)
 {
-	Vector3 l = Vector3::Normalize(Vector3::Cross(up, forward));
-	Vector3 u = Vector3::Normalize(Vector3::Cross(forward, l));
-	Vector3 f = Vector3::Cross(l, u);
+	Vector3 l = Vector3::Normalize(Vector3::Cross(forward, up));
+	Vector3 u = Vector3::Normalize(Vector3::Cross(l, forward));
+	Vector3 f = Vector3::Cross(u, l);
 
 	return Matrix(Matrix::Identity).Forward(f).Up(u).Left(l).Translation(position);
 }
 
-#ifdef __DXLIB
 // 遠景行列を作成
 Matrix Matrix::CreatePerspectiveFieldOfView(float fov, float aspect, float zn, float zf)
 {
@@ -196,6 +196,16 @@ Matrix Matrix::CreateLookAt(const Vector3& position, const Vector3& target, cons
 }
 
 #else
+// ワールド変換行列を作成
+Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up)
+{
+	Vector3 l = Vector3::Normalize(Vector3::Cross(up, forward));
+	Vector3 u = Vector3::Normalize(Vector3::Cross(forward, l));
+	Vector3 f = Vector3::Cross(l, u);
+
+	return Matrix(Matrix::Identity).Forward(f).Up(u).Left(l).Translation(position);
+}
+
 // 遠景行列を作成
 Matrix Matrix::CreatePerspectiveFieldOfView(float fov, float aspect, float zn, float zf)
 {
@@ -314,7 +324,7 @@ Matrix Matrix::Transpose(const Matrix& matrix)
 // 線形補間処理
 Matrix Matrix::Lerp(const Matrix& v1, const Matrix& v2, float t)
 {
-	Vector3 scale = Vector3::Lerp(v1.Scale(), v2.Scale(), t);
+	Vector3 scale = Vector3::One;// Vector3::Lerp(v1.Scale(), v2.Scale(), t);
 	Quaternion rotate = Quaternion::Slerp(v1.Rotation(), v2.Rotation(), t);
 	Vector3 translation = Vector3::Lerp(v1.Translation(), v2.Translation(), t);
 

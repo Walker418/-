@@ -113,7 +113,12 @@ Vector3 Vector3::Min(const Vector3& v1, const Vector3& v2)
 // 一致する各成分ペアの最も高い値を含むベクトルを求める
 Vector3 Vector3::Max(const Vector3& v1, const Vector3& v2)
 {
-	return Vector3();
+	return Vector3
+	(
+		std::fmax(v1.x, v2.x),
+		std::fmax(v1.y, v2.y),
+		std::fmax(v1.z, v2.z)
+	);
 }
 
 // 数値を制限

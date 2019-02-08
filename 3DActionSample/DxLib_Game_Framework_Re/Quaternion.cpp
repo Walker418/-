@@ -75,7 +75,7 @@ Quaternion Quaternion::Slerp(const Quaternion& q1, const Quaternion& q2, float t
 		k1 = std::sin(theta * k1) / std::sin(theta);
 	}
 
-	return (q1 * k0) + (q2 * k1);
+	return (q1 * k0) + (t2 * k1);
 }
 
 // 回転行列からクオータニオンを作成

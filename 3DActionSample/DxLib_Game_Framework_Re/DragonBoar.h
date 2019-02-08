@@ -37,7 +37,7 @@ private:
 
 public:
 	// コンストラクタ
-	DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 10.5f, -5.0f), Matrix(Matrix::Identity * Matrix::CreateRotationX(90.0f)), 17.5f, 8.5f));
+	DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 10.5f, 0.0f), Matrix(Matrix::Identity * Matrix::CreateRotationX(90.0f)), 17.5f, 8.5f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画

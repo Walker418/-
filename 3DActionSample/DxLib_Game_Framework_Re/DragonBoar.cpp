@@ -52,8 +52,10 @@ void DragonBoar::update(float delta_time)
 // 描画
 void DragonBoar::draw() const
 {
-	mesh_.draw();							// メッシュを描画
-	body_->translate(position_)->draw();	// コライダーを描画（デバッグモードのみ、調整用）
+	mesh_.draw();	// メッシュを描画
+	
+	// コライダーを描画（デバッグモードのみ、調整用）
+	body_->transform(pose())->draw();
 }
 
 // 衝突リアクション

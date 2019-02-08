@@ -88,5 +88,5 @@ Matrix Actor::pose() const
 // Õ“Ë”»’èƒf[ƒ^‚ÌŽæ“¾
 IBodyPtr Actor::body() const
 {
-	return body_->translate(position_);
+	return body_->transform(pose());
 }

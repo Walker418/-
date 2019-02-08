@@ -18,8 +18,8 @@ private:
 	void draw() const override;
 
 private:
-	// カメラの回転
-	void rotate();
+	// カメラの移動、回転処理
+	void move(float delta_time);
 
 private:
 	Vector3 target_;						// 注視点（プレイヤー）
@@ -29,7 +29,7 @@ private:
 	const float RotateSpeed{ 3.0f };		// カメラの回転速度
 	const float CameraHeight{ 22.0f };		// 注視点の高さ
 	const float CameraDistance{ 60.0f };	// 注視点との距離
-	const float PitchMax{ 30.0f };			// 仰角最大値
+	const float PitchMax{ 15.0f };			// 仰角最大値
 	const float PitchMin{ -20.0f };			// 仰角最小値
 };
 

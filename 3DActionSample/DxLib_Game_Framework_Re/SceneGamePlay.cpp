@@ -62,16 +62,17 @@ void SceneGamePlay::draw() const
 {
 	world_.draw();
 
-	// プレイヤーの座標を表示（デバッグ用）
-	auto player = world_.find_actor(ActorGroup::Player, "Player");
+	// デバッグメッセージ
+	unsigned int Cr;
+	Cr = GetColor(255, 255, 255);
 
-	if (player)
-	{
-		unsigned int Cr;
-		Cr = GetColor(255, 255, 255);
-		DrawFormatString(0, 0, Cr, "プレイヤーの座標：（ %f 、%f、 %f）", player->position().x, player->position().y, player->position().z);
-		// DrawFormatString(0, 15, Cr, "プレイヤーコライダーの座標：（%f 、%f、 %f）", player->body()->position().x, player->body()->position().y, player->body()->position().z);
-	}
+	auto player = world_.find_actor(ActorGroup::Player, "Player");
+	if (!player) return;
+	auto player_pos = player->position();
+	DrawFormatString(0, 0, Cr, "プレイヤーの座標： %f、%f、%f", player_pos.x, player_pos.y, player_pos.z);
+	auto player_forward = player->pose().Forward();
+	float player_angle = Vector3::Angle(player_forward, Vector3::Forward);
+	DrawFormatString(0, 15, Cr, "プレイヤーの角度： %f", player_angle);
 }
 
 // 終了しているか
