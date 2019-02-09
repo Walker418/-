@@ -1,11 +1,9 @@
 #include "DragonBoar.h"
-
-
 #include "IWorld.h"
 #include "EventMessage.h"
 #include "Field.h"
 #include "Line.h"
-#include "BoundingSphere.h"
+
 
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -15,7 +13,8 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, const Matrix& rot
 	mesh_{ MESH_DRAGONBOAR, DragonBoarMotion::MOTION_IDLE },
 	motion_{ DragonBoarMotion::MOTION_IDLE },
 	state_{ DragonBoarState::Idle },
-	state_timer_{ 0.0f }
+	state_timer_{ 0.0f },
+	is_collided{ false }
 {
 	rotation_ = rotation;
 	velocity_ = Vector3::Zero;
@@ -25,6 +24,8 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, const Matrix& rot
 // 更新
 void DragonBoar::update(float delta_time)
 {
+	is_collided = false;
+
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
@@ -53,15 +54,30 @@ void DragonBoar::update(float delta_time)
 void DragonBoar::draw() const
 {
 	mesh_.draw();	// メッシュを描画
-	
+
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
+
+	unsigned int Cr;
+	Cr = GetColor(255, 255, 255);
+
+	if (is_collided)
+	{
+		DrawString(0, 0, "プレイヤーと接触している", Cr);
+	}
+	else
+	{
+		DrawString(0, 0, "プレイヤーと接触していない", Cr);
+	}
 }
 
 // 衝突リアクション
 void DragonBoar::react(Actor& other)
 {
-
+	if (other.name() == "Player")
+	{
+		is_collided = true;
+	}
 }
 
 // メッセージ処理
@@ -97,6 +113,8 @@ void DragonBoar::update_state(float delta_time)
 	default:
 		break;
 	}
+
+	state_timer_ += delta_time;			// 状態タイマーの加算
 }
 
 // 状態の変更
@@ -110,7 +128,11 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 // 待機状態での更新
 void DragonBoar::idle(float delta_time)
 {
-
+	// 3秒後、次の状態の移行
+	if (state_timer_ >= 180.0f)
+	{
+		change_state(DragonBoarState::Roar, MOTION_ROAR);
+	}
 }
 
 // 移動状態での更新
@@ -128,7 +150,11 @@ void DragonBoar::attack(float delta_time)
 // 咆哮状態での更新
 void DragonBoar::roar(float delta_time)
 {
-
+	// モーション終了後、通常状態に戻る
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	{
+		change_state(DragonBoarState::Idle, MOTION_IDLE);
+	}
 }
 
 // 怯み状態での更新
@@ -141,7 +167,7 @@ void DragonBoar::damage(float delta_time)
 void DragonBoar::death(float delta_time)
 {
 	// モーションが終了すると、死亡判定を有効に
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		world_->send_message(EventMessage::EnemyDead);
 		die();
@@ -152,6 +178,12 @@ void DragonBoar::death(float delta_time)
 bool DragonBoar::near_player()
 {
 	return false;
+}
+
+// 次の行動を決定
+void DragonBoar::next_move()
+{
+
 }
 
 // 地面との接触処理

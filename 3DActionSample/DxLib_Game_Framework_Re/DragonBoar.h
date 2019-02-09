@@ -4,7 +4,7 @@
 #include "Actor.h"
 #include "AnimatedMesh.h"
 #include "IBodyPtr.h"
-#include "BoundingCapsule.h"
+#include "BoundingSphere.h"
 #include "SourceID.h"
 
 // クラス：敵（イノシシ）
@@ -37,7 +37,7 @@ private:
 
 public:
 	// コンストラクタ
-	DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 10.5f, 0.0f), Matrix(Matrix::Identity * Matrix::CreateRotationX(90.0f)), 17.5f, 8.5f));
+	DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3(0.0f, 12.5f, 0.0f), 11.0f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -68,6 +68,8 @@ private:
 
 	// プレイヤーは近くにいるか
 	bool near_player();
+	// 次の行動を決定
+	void next_move();
 
 	// 地面との接触処理
 	void intersect_ground();
@@ -86,6 +88,7 @@ private:
 
 	// 現在の体力
 	int				current_hp_;
+	bool			is_collided{ false };
 
 	// 最大体力
 	const int		HP{ 100 };

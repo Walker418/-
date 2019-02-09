@@ -30,13 +30,13 @@ void Actor::react(Actor& other)
 { }
 
 // メッセージ処理
-void Actor::handle_message(EventMessage message, void * param)
+void Actor::handle_message(EventMessage message, void* param)
 { }
 
 // 衝突判定
 void Actor::collide(Actor& other)
 {
-	if (is_collide(other))
+	if (is_collided(other))
 	{
 		react(other);
 		other.react(*this);
@@ -50,9 +50,9 @@ void Actor::die()
 }
 
 // 衝突しているか
-bool Actor::is_collide(const Actor& other) const
+bool Actor::is_collided(const Actor& other) const
 {
-	return body_->is_collide(*other.body());
+	return body()->is_collided(*other.body());
 }
 
 // 死亡しているか

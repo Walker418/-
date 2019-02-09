@@ -16,7 +16,7 @@ public:
 	// 座標変換
 	virtual IBodyPtr transform(const Matrix& matrix) const override;
 	// 衝突判定
-	virtual bool is_collide(const IBody& other) const override;
+	virtual bool is_collided(const IBody& other) const override;
 	// 球体との衝突判定
 	virtual bool intersects(const BoundingSphere& other) const override;
 	// カプセルとの衝突判定

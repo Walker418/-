@@ -37,7 +37,7 @@ public:
 	// €–S
 	void die();
 	// Õ“Ë‚µ‚Ä‚¢‚é‚©
-	bool is_collide(const Actor& other) const;
+	bool is_collided(const Actor& other) const;
 	// €–S‚µ‚Ä‚¢‚é‚©
 	bool is_dead() const;
 

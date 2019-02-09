@@ -26,7 +26,7 @@ IBodyPtr BoundingCapsule::transform(const Matrix& matrix) const
 }
 
 // Õ“Ë”»’è
-bool BoundingCapsule::is_collide(const IBody& other) const
+bool BoundingCapsule::is_collided(const IBody& other) const
 {
 	// ‚Ç‚¿‚ç‚©‚Ì”»’è‚ª–³Œø‚Å‚ ‚ê‚ÎAfalse‚ğ•Ô‚·
 	if (!is_enable() || !other.is_enable()) return false;

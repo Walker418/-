@@ -63,6 +63,7 @@ void SceneGamePlay::draw() const
 	world_.draw();
 
 	// デバッグメッセージ
+	/*
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
 
@@ -73,6 +74,7 @@ void SceneGamePlay::draw() const
 	auto player_forward = player->pose().Forward();
 	float player_angle = Vector3::Angle(player_forward, Vector3::Forward);
 	DrawFormatString(0, 15, Cr, "プレイヤーの角度： %f", player_angle);
+	*/
 }
 
 // 終了しているか

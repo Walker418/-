@@ -34,8 +34,8 @@ void World::update(float delta_time)
 	actors_.update(delta_time);
 	// 接触判定を行う
 	actors_.collide(ActorGroup::Player, ActorGroup::Enemy);
-	actors_.collide(ActorGroup::PlayerAttack, ActorGroup::Enemy);
 	actors_.collide(ActorGroup::Player, ActorGroup::EnemyAttack);
+	actors_.collide(ActorGroup::PlayerAttack, ActorGroup::Enemy);
 	// 死亡したアクターを削除
 	actors_.remove();
 

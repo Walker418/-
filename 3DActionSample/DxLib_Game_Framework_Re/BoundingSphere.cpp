@@ -23,7 +23,7 @@ IBodyPtr BoundingSphere::transform(const Matrix& matrix) const
 }
 
 // Õ“Ë”»’è
-bool BoundingSphere::is_collide(const IBody& other) const
+bool BoundingSphere::is_collided(const IBody& other) const
 {
 	// ‚Ç‚¿‚ç‚©‚Ì”»’è‚ª–³Œø‚Å‚ ‚ê‚ÎAfalse‚ğ•Ô‚·
 	if (!is_enable() || !other.is_enable()) return false;
