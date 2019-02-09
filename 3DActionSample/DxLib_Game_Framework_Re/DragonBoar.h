@@ -37,7 +37,7 @@ private:
 
 public:
 	// コンストラクタ
-	DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3(0.0f, 12.5f, 0.0f), 11.0f));
+	DragonBoar(IWorld* world, const Vector3& position, float angle = 0.0f, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3(0.0f, 12.5f, 0.0f), 11.0f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -66,10 +66,17 @@ private:
 	// 死亡状態での更新
 	void death(float delta_time);
 
-	// プレイヤーは近くにいるか
-	bool near_player();
+	// プレイヤーは攻撃距離内にいるか
+	bool player_in_range_distance() const;
+	// プレイヤーが攻撃できる角度にいるか
+	bool player_in_range_angle() const;
+	// プレイヤーを攻撃できるか
+	bool can_attack_player() const;
+
 	// 次の行動を決定
 	void next_move();
+	// 次の目的地を取得
+	Vector3 next_destination() const;
 
 	// 地面との接触処理
 	void intersect_ground();
@@ -88,7 +95,6 @@ private:
 
 	// 現在の体力
 	int				current_hp_;
-	bool			is_collided{ false };
 
 	// 最大体力
 	const int		HP{ 100 };

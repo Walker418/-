@@ -11,15 +11,16 @@
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // コンストラクタ
-Player::Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body) :
+Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Actor(world, "Player", position, body),
 	mesh_{ MESH_PALADIN, MOTION_IDLE },
 	motion_{ MOTION_IDLE },
 	state_{ PlayerState::Normal },
 	state_timer_{ 0.0f },
-	is_ground_{ false }
+	is_ground_{ false },
+	is_guard_{ false }
 {
-	rotation_ = rotation;
+	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
 }
@@ -34,6 +35,9 @@ void Player::update(float delta_time)
 	intersect_ground();
 	// 壁との接触処理
 	intersect_wall();
+
+	// ガード状態をリセット
+	is_guard_ = false;
 
 	// プレーヤーの状態を更新
 	update_state(delta_time);
@@ -58,6 +62,19 @@ void Player::draw() const
 
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
+
+	// デバッグメッセージ
+	unsigned int Cr;
+	Cr = GetColor(255, 255, 255);
+
+	if (is_guard_)
+	{
+		DrawString(0, 0, "ガード中", Cr);
+	}
+	else
+	{
+		DrawString(0, 0, "ガードしていない", Cr);
+	}
 }
 
 // 衝突リアクション
@@ -209,7 +226,7 @@ void Player::normal(float delta_time)
 	if (velocity_.x != 0.0f || velocity_.z != 0.0f)		// 移動していれば
 	{
 		// rotation_ = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);
-		
+
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
 		rotation_ = Matrix::Lerp(rotation_, new_rotation, 0.1f);							// 補間で方向を転換する
 	}
@@ -294,6 +311,7 @@ void Player::guard(float delta_time)
 	if (state_timer_ >= guard_ready_time)
 	{
 		motion_ = MOTION_GUARD_IDLE;	// ガード中のモーションに移行
+		is_guard_ = true;				// ガード状態を有効化
 
 		// Xキーが押されると、ガード攻撃を使用
 		if (CheckHitKey(KEY_INPUT_SPACE))
@@ -312,6 +330,8 @@ void Player::guard(float delta_time)
 // ガードによるノックバック中の更新
 void Player::blocking(float delta_time)
 {
+	is_guard_ = true;				// ガード状態を有効化
+
 	// モーション終了後、ガード状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{

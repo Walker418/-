@@ -59,7 +59,7 @@ private:
 
 public:
 	// コンストラクタ
-	Player(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 8.5f, 0.0f), Matrix::Identity, 11.0f, 2.5f));
+	Player(IWorld* world, const Vector3& position, float angle = 0.0f, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(0.0f, 8.5f, 0.0f), Matrix::Identity, 11.0f, 2.5f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -112,6 +112,8 @@ private:
 	float			state_timer_{ 0.0f };
 	// 接地しているか
 	bool			is_ground_{ false };
+	// ガードしているか
+	bool			is_guard_{ false };
 
 	// 現在の体力
 	int				current_hp_;

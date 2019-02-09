@@ -26,7 +26,8 @@ private:
 	float yaw_angle_{ 0.0f };				// y軸角度
 	float pitch_angle_{ 0.0f };				// x軸角度
 
-	const float RotateSpeed{ 3.0f };		// カメラの回転速度
+	const float YawSpeed{ 3.0f };			// カメラのy軸回転速度
+	const float PitchSpeed{ 1.5f };			// カメラのy軸回転速度
 	const float CameraHeight{ 22.0f };		// 注視点の高さ
 	const float CameraDistance{ 60.0f };	// 注視点との距離
 	const float PitchMax{ 15.0f };			// 仰角最大値

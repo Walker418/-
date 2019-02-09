@@ -3,20 +3,20 @@
 #include "EventMessage.h"
 #include "Field.h"
 #include "Line.h"
-
+#include "ActorGroup.h"
+#include "Random.h"
 
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 // コンストラクタ
-DragonBoar::DragonBoar(IWorld* world, const Vector3& position, const Matrix& rotation, const IBodyPtr& body) :
+DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Actor(world, "DragonBoar", position, body),
-	mesh_{ MESH_DRAGONBOAR, DragonBoarMotion::MOTION_IDLE },
-	motion_{ DragonBoarMotion::MOTION_IDLE },
-	state_{ DragonBoarState::Idle },
-	state_timer_{ 0.0f },
-	is_collided{ false }
+	mesh_{ MESH_DRAGONBOAR, DragonBoarMotion::MOTION_ROAR },
+	motion_{ DragonBoarMotion::MOTION_ROAR },
+	state_{ DragonBoarState::Roar },
+	state_timer_{ 0.0f }
 {
-	rotation_ = rotation;
+	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
 }
@@ -24,8 +24,6 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, const Matrix& rot
 // 更新
 void DragonBoar::update(float delta_time)
 {
-	is_collided = false;
-
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
@@ -58,26 +56,26 @@ void DragonBoar::draw() const
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
 
+	/*
+	// デバッグメッセージ
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
 
-	if (is_collided)
+	if (can_attack_player())
 	{
-		DrawString(0, 0, "プレイヤーと接触している", Cr);
+		DrawString(0, 0, "攻撃できる", Cr);
 	}
 	else
 	{
-		DrawString(0, 0, "プレイヤーと接触していない", Cr);
+		DrawString(0, 0, "攻撃できない", Cr);
 	}
+	*/
 }
 
 // 衝突リアクション
 void DragonBoar::react(Actor& other)
 {
-	if (other.name() == "Player")
-	{
-		is_collided = true;
-	}
+	
 }
 
 // メッセージ処理
@@ -128,7 +126,7 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 // 待機状態での更新
 void DragonBoar::idle(float delta_time)
 {
-	// 3秒後、次の状態の移行
+	// 3秒後、次の状態へ移行
 	if (state_timer_ >= 180.0f)
 	{
 		change_state(DragonBoarState::Roar, MOTION_ROAR);
@@ -138,7 +136,7 @@ void DragonBoar::idle(float delta_time)
 // 移動状態での更新
 void DragonBoar::move(float delta_time)
 {
-
+	
 }
 
 // 攻撃状態での更新
@@ -150,7 +148,7 @@ void DragonBoar::attack(float delta_time)
 // 咆哮状態での更新
 void DragonBoar::roar(float delta_time)
 {
-	// モーション終了後、通常状態に戻る
+	// モーション終了後、待機状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		change_state(DragonBoarState::Idle, MOTION_IDLE);
@@ -160,7 +158,11 @@ void DragonBoar::roar(float delta_time)
 // 怯み状態での更新
 void DragonBoar::damage(float delta_time)
 {
-
+	// モーション終了後、移動状態に戻る
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	{
+		change_state(DragonBoarState::Move, MOTION_IDLE);
+	}
 }
 
 // 死亡状態での更新
@@ -174,16 +176,71 @@ void DragonBoar::death(float delta_time)
 	}
 }
 
-// プレイヤーは近くにいるか
-bool DragonBoar::near_player()
+// プレイヤーは攻撃距離内にいるか
+bool DragonBoar::player_in_range_distance() const
 {
-	return false;
+	// プレイヤーの参照を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+
+	// プレイヤーが存在しない場合、falseを返す
+	if (player == nullptr) return false;
+
+	// 自身からプレイヤーまでの距離を求め、攻撃距離内であればTrueを返す
+	return (Vector3::Distance(position_, player->position()) <= 50.0f);
+}
+
+// プレイヤーが攻撃できる角度にいるか
+bool DragonBoar::player_in_range_angle() const
+{
+	// プレイヤーの参照を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+
+	// プレイヤーが存在しない場合、falseを返す
+	if (player == nullptr) return false;
+
+	// 自身からプレイヤーまでの角度を求め、攻撃角度内であればTrueを返す
+	return (Vector3::Angle(rotation_.Forward(), player->position()) <= 25.0f);
+}
+
+// プレイヤーを攻撃できるか
+bool DragonBoar::can_attack_player() const
+{
+	// プレイヤーが攻撃できる距離内にいなければ、Falseを返す
+	if (!player_in_range_distance()) return false;
+	// プレイヤーが攻撃できる角度内にいなければ、Falseを返す
+	if (!player_in_range_angle()) return false;
+
+	// 条件を全て満たしていれば、Trueを返す
+	return true;
 }
 
 // 次の行動を決定
 void DragonBoar::next_move()
 {
+	// 乱数生成器で乱数を生成し、次の行動を決める
+	Random rand = Random();
+	rand.randomize();
 
+	int i = rand.rand(0, 6);
+	switch (i)
+	{
+
+	default:
+		break;
+	}
+}
+
+// 次の目的地を取得
+Vector3 DragonBoar::next_destination() const
+{
+	// プレイヤーの参照を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+
+	// プレイヤーが存在しない場合、現在の座標を返す
+	if (player == nullptr) return position_;
+
+	// プレイヤーが存在する場合、その座標を返す
+	return player->position();
 }
 
 // 地面との接触処理

@@ -59,20 +59,20 @@ void TPCamera::move(float delta_time)
 	// ¶‰E‰ñ“]
 	if (CheckHitKey(KEY_INPUT_LEFT))		// ¶
 	{
-		yaw_angle_ -= RotateSpeed * delta_time;
+		yaw_angle_ -= YawSpeed * delta_time;
 	}
 	else if (CheckHitKey(KEY_INPUT_RIGHT))	// ‰E
 	{
-		yaw_angle_ += RotateSpeed * delta_time;
+		yaw_angle_ += YawSpeed * delta_time;
 	}
 	// ã‰º‰ñ“]
 	if (CheckHitKey(KEY_INPUT_UP))			// ‘O
 	{
-		pitch_angle_ += RotateSpeed * delta_time;
+		pitch_angle_ += PitchSpeed * delta_time;
 	}
 	else if (CheckHitKey(KEY_INPUT_DOWN))	// Œã
 	{
-		pitch_angle_ -= RotateSpeed * delta_time;
+		pitch_angle_ -= PitchSpeed * delta_time;
 	}
 
 	// ƒJƒƒ‰‚Ì‹ÂŠp‚ğ§ŒÀ
