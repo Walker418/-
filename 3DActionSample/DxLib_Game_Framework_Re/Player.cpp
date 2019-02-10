@@ -63,6 +63,7 @@ void Player::draw() const
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
 
+	/*
 	// デバッグメッセージ
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
@@ -75,6 +76,7 @@ void Player::draw() const
 	{
 		DrawString(0, 0, "ガードしていない", Cr);
 	}
+	*/
 }
 
 // 衝突リアクション
@@ -186,24 +188,24 @@ void Player::normal(float delta_time)
 	// 前後移動
 	if (CheckHitKey(KEY_INPUT_W))		// 前
 	{
-		forward_speed = WalkSpeed;
+		forward_speed = DashSpeed;
 	}
 	else if (CheckHitKey(KEY_INPUT_S))	// 後
 	{
-		forward_speed = -WalkSpeed;
+		forward_speed = -DashSpeed;
 	}
 	// 左右移動
 	if (CheckHitKey(KEY_INPUT_A))		// 左
 	{
-		left_speed = WalkSpeed;
+		left_speed = DashSpeed;
 	}
 	else if (CheckHitKey(KEY_INPUT_D))	// 右
 	{
-		left_speed = -WalkSpeed;
+		left_speed = -DashSpeed;
 	}
 	// 移動していれば、歩行モーションに変更
 	if (forward_speed != 0.0f || left_speed != 0.0f)
-		motion = MOTION_WALK;
+		motion = MOTION_DASH;
 
 	// 状態を更新
 	change_state(PlayerState::Normal, motion);
@@ -228,7 +230,7 @@ void Player::normal(float delta_time)
 		// rotation_ = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);
 
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
-		rotation_ = Matrix::Lerp(rotation_, new_rotation, 0.1f);							// 補間で方向を転換する
+		rotation_ = Matrix::Lerp(rotation_, new_rotation, 0.1f);	// 補間で方向を転換する
 	}
 
 	// 移動処理終了

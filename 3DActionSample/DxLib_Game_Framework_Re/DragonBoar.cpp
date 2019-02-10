@@ -56,7 +56,7 @@ void DragonBoar::draw() const
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
 
-	/*
+	
 	// デバッグメッセージ
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
@@ -69,7 +69,7 @@ void DragonBoar::draw() const
 	{
 		DrawString(0, 0, "攻撃できない", Cr);
 	}
-	*/
+	
 }
 
 // 衝突リアクション
@@ -98,6 +98,9 @@ void DragonBoar::update_state(float delta_time)
 		break;
 	case(DragonBoarState::Attack):
 		attack(delta_time);
+		break;
+	case(DragonBoarState::Dash):
+		dash(delta_time);
 		break;
 	case(DragonBoarState::Roar):
 		roar(delta_time);
@@ -136,22 +139,58 @@ void DragonBoar::idle(float delta_time)
 // 移動状態での更新
 void DragonBoar::move(float delta_time)
 {
-	
+	// プレイヤーが攻撃範囲内に居れば、噛みつく攻撃を行う
+	if (can_attack_player())
+	{
+		change_state(DragonBoarState::Attack, MOTION_BITE);
+	}
+
+	// ============================================================
+	// プレイヤーに向かって移動
+	Vector3 next_position = get_player_position();	// プレイヤーの位置を取得
+	next_position.y = 0.0f;							// プレイヤー座標の高さを無視
+	float angle_to_player = get_angle_to_player();	// プレイヤー向きの角度を取得
+
+	// プレイヤーに向ける
+	Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, next_position.Normalize(), Vector3::Up);	// 新しい方向を設定
+	rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);		// 補間で方向を転換する
+	// 移動処理
+
+
+	// 移動処理終了
+	// ============================================================
+
+	/*
+	// 移動状態が8秒間維持したら、次の状態を抽選し、移行する
+	if (state_timer_ >= 480.0f)
+	{
+		next_move();
+	}
+	*/
 }
 
 // 攻撃状態での更新
 void DragonBoar::attack(float delta_time)
 {
+	// モーション終了後、移動状態に戻る
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	{
+		change_state(DragonBoarState::Move, MOTION_IDLE);
+	}
+}
 
+// 突進状態での更新
+void DragonBoar::dash(float delta_time)
+{
 }
 
 // 咆哮状態での更新
 void DragonBoar::roar(float delta_time)
 {
-	// モーション終了後、待機状態に戻る
+	// モーション終了後、移動状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		change_state(DragonBoarState::Idle, MOTION_IDLE);
+		change_state(DragonBoarState::Move, MOTION_IDLE);
 	}
 }
 
@@ -186,7 +225,7 @@ bool DragonBoar::player_in_range_distance() const
 	if (player == nullptr) return false;
 
 	// 自身からプレイヤーまでの距離を求め、攻撃距離内であればTrueを返す
-	return (Vector3::Distance(position_, player->position()) <= 50.0f);
+	return (Vector3::Distance(position_, get_player_position()) <= 50.0f);
 }
 
 // プレイヤーが攻撃できる角度にいるか
@@ -199,7 +238,7 @@ bool DragonBoar::player_in_range_angle() const
 	if (player == nullptr) return false;
 
 	// 自身からプレイヤーまでの角度を求め、攻撃角度内であればTrueを返す
-	return (Vector3::Angle(rotation_.Forward(), player->position()) <= 25.0f);
+	return (get_angle_to_player() <= 20.0f);
 }
 
 // プレイヤーを攻撃できるか
@@ -221,17 +260,13 @@ void DragonBoar::next_move()
 	Random rand = Random();
 	rand.randomize();
 
-	int i = rand.rand(0, 6);
-	switch (i)
-	{
+	int i = rand.rand(0, 10);
+	
 
-	default:
-		break;
-	}
 }
 
-// 次の目的地を取得
-Vector3 DragonBoar::next_destination() const
+// プレイヤーの位置を取得
+Vector3 DragonBoar::get_player_position() const
 {
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
@@ -241,6 +276,18 @@ Vector3 DragonBoar::next_destination() const
 
 	// プレイヤーが存在する場合、その座標を返す
 	return player->position();
+}
+
+// プレイヤーへの角度を取得
+float DragonBoar::get_angle_to_player() const
+{
+	// プレイヤーの参照を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+
+	// プレイヤーが存在しない場合、0°を返す
+	if (player == nullptr) return 0.0f;
+
+	return Vector3::Angle(rotation_.Forward(), player->position());
 }
 
 // 地面との接触処理

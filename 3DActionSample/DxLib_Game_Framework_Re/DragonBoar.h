@@ -18,6 +18,7 @@ private:
 		Idle,		// 静止待機
 		Move,		// 移動
 		Attack,		// 攻撃
+		Dash,		// 突進
 		Roar,		// 咆哮
 		Damage,		// 怯む
 		Death,		// 死亡
@@ -59,6 +60,8 @@ private:
 	void move(float delta_time);
 	// 攻撃状態での更新
 	void attack(float delta_time);
+	// 突進状態での更新
+	void dash(float delta_time);
 	// 咆哮状態での更新
 	void roar(float delta_time);
 	// 怯み状態での更新
@@ -75,8 +78,10 @@ private:
 
 	// 次の行動を決定
 	void next_move();
-	// 次の目的地を取得
-	Vector3 next_destination() const;
+	// プレイヤーの位置を取得
+	Vector3 get_player_position() const;
+	// プレイヤーへの角度を取得
+	float get_angle_to_player() const;
 
 	// 地面との接触処理
 	void intersect_ground();
@@ -95,11 +100,19 @@ private:
 
 	// 現在の体力
 	int				current_hp_;
+	// 怒り状態であるか
+	bool			is_anger_{ false };
+	// 怒りカウンター
+	float			anger_counter_{ 0.0f };
 
 	// 最大体力
 	const int		HP{ 100 };
 	// 移動速度
 	const float		WalkSpeed{ 0.28f };
+	// 突進速度
+	const float		DashSpeed{ 0.5f };
+	// 回転速度
+	const float		RotateSpeed{ 0.02f };
 	// 重力
 	const float		Gravity{ 0.03f };
 };

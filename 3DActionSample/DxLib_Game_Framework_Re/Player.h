@@ -122,6 +122,8 @@ private:
 	const int		HP{ 100 };
 	// 移動速度
 	const float		WalkSpeed{ 0.28f };
+	// ダッシュ速度
+	const float		DashSpeed{ 0.6f };
 	// 重力
 	const float		Gravity{ 0.03f };
 };
