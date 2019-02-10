@@ -56,7 +56,7 @@ void DragonBoar::draw() const
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
 
-	
+
 	// デバッグメッセージ
 	unsigned int Cr;
 	Cr = GetColor(255, 255, 255);
@@ -69,13 +69,13 @@ void DragonBoar::draw() const
 	{
 		DrawString(0, 0, "攻撃できない", Cr);
 	}
-	
+
 }
 
 // 衝突リアクション
 void DragonBoar::react(Actor& other)
 {
-	
+
 }
 
 // メッセージ処理
@@ -143,20 +143,32 @@ void DragonBoar::move(float delta_time)
 	if (can_attack_player())
 	{
 		change_state(DragonBoarState::Attack, MOTION_BITE);
+
+		return;
 	}
 
 	// ============================================================
-	// プレイヤーに向かって移動
+	// 以下は移動処理
+
+	// 何もしていない場合、待機モーションに変更
+	motion_ = MOTION_IDLE;
+
 	Vector3 next_position = get_player_position();	// プレイヤーの位置を取得
 	next_position.y = 0.0f;							// プレイヤー座標の高さを無視
-	float angle_to_player = get_angle_to_player();	// プレイヤー向きの角度を取得
 
 	// プレイヤーに向ける
 	Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, next_position.Normalize(), Vector3::Up);	// 新しい方向を設定
 	rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);		// 補間で方向を転換する
-	// 移動処理
+	
+	// 向いている方向へ移動
+	velocity_ = Vector3::Zero;						// 移動量をリセット
+	velocity_ += rotation_.Forward() * WalkSpeed;	// 移動速度を加算
+	position_ += velocity_ * delta_time;			// 次の位置を計算
 
-
+	// 移動していれば、移動モーションに変更
+	if (velocity_.x != 0.0f || velocity_.z != 0.0f)
+		motion_ = MOTION_WALK;
+		
 	// 移動処理終了
 	// ============================================================
 
@@ -261,7 +273,7 @@ void DragonBoar::next_move()
 	rand.randomize();
 
 	int i = rand.rand(0, 10);
-	
+
 
 }
 

@@ -120,7 +120,7 @@ private:
 
 	// 最大体力
 	const int		HP{ 100 };
-	// 移動速度
+	// 歩行速度
 	const float		WalkSpeed{ 0.28f };
 	// ダッシュ速度
 	const float		DashSpeed{ 0.6f };

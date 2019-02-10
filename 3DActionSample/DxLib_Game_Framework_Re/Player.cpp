@@ -166,16 +166,6 @@ void Player::normal(float delta_time)
 		}
 	}
 
-	/*
-	// 死亡テスト
-	if (GamePad::trigger(GamePad::L))
-	{
-		change_state(PlayerState::Death, MOTION_DEATH);
-
-		return;
-	}
-	*/
-
 	// ============================================================
 	// 以下は移動処理
 	int motion{ MOTION_IDLE };		// 何もしなければ、待機モーションに変更
@@ -220,9 +210,9 @@ void Player::normal(float delta_time)
 	camera_forward.Normalize();
 
 	// 移動量を計算し、プレイヤーを移動させる
-	velocity_ += camera_forward * forward_speed;
-	velocity_ += camera.Left() * left_speed;
-	position_ += velocity_ * delta_time;
+	velocity_ += camera_forward * forward_speed;	// 前後速度を加算
+	velocity_ += camera.Left() * left_speed;		// 左右速度を加算
+	position_ += velocity_ * delta_time;			// 次の位置を計算
 
 	// プレイヤーを回転させる
 	if (velocity_.x != 0.0f || velocity_.z != 0.0f)		// 移動していれば
