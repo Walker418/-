@@ -20,7 +20,7 @@ private:
 		Attack,		// 攻撃
 		Dash,		// 突進
 		Roar,		// 咆哮
-		Damage,		// 怯む
+		Wince,		// 怯む
 		Death,		// 死亡
 	};
 
@@ -32,7 +32,7 @@ private:
 		MOTION_DASH = 5,	// ダッシュ
 		MOTION_BITE = 3,	// 噛みつく
 		MOTION_ROAR = 2,	// 咆哮
-		MOTION_DAMAGE = 1,	// 怯む
+		MOTION_WINCE = 1,	// 怯み
 		MOTION_DEATH = 0,	// 死亡
 	};
 
@@ -65,10 +65,12 @@ private:
 	// 咆哮状態での更新
 	void roar(float delta_time);
 	// 怯み状態での更新
-	void damage(float delta_time);
+	void wince(float delta_time);
 	// 死亡状態での更新
 	void death(float delta_time);
 
+	// プレイヤーは前にいるか
+	bool player_in_front() const;
 	// プレイヤーは攻撃距離内にいるか
 	bool player_in_range_distance() const;
 	// プレイヤーが攻撃できる角度にいるか
@@ -100,6 +102,8 @@ private:
 
 	// 現在の体力
 	int				current_hp_;
+	// 怯み累積値
+	int				current_wince_{ 0 };
 	// 怒り状態であるか
 	bool			is_anger_{ false };
 	// 怒りカウンター
@@ -115,6 +119,9 @@ private:
 	const float		RotateSpeed{ 0.015f };
 	// 重力
 	const float		Gravity{ 0.03f };
+
+	// 怯み耐性
+	const int		ToWince{ 15 };
 };
 
 #endif // !DRAGON_BOAR_H_

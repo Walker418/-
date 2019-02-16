@@ -38,8 +38,8 @@ void SceneGamePlay::start()
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 
 	// アクターはここに追加
-	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));		// プレイヤー
-	world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));		// 敵
+	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));			// プレイヤー
+	// world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));	// 敵
 }
 
 // 更新
@@ -113,6 +113,11 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	{
 	case EventMessage::PlayerDead:	// プレイヤーが死亡した場合
 		is_end_ = true;				// シーン終了
+		break;
+	case EventMessage::EnemyDead:	// 敵が死亡した場合
+		is_end_ = true;				// シーン終了
+		break;
+	default:
 		break;
 	}
 }

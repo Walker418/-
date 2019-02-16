@@ -6,6 +6,8 @@
 #include "Field.h"
 #include "Line.h"
 #include "BoundingSphere.h"
+#include "ActorGroup.h"
+#include "PlayerAttack.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -18,7 +20,8 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	state_{ PlayerState::Normal },
 	state_timer_{ 0.0f },
 	is_ground_{ false },
-	is_guard_{ false }
+	is_guard_{ false },
+	is_attack_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -52,6 +55,8 @@ void Player::update(float delta_time)
 	if (current_hp_ <= 0 && state_ != PlayerState::Death)
 	{
 		change_state(PlayerState::Death, MOTION_DEATH);
+
+		return;
 	}
 }
 
@@ -62,6 +67,11 @@ void Player::draw() const
 
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
+	// 線分で方向を示す（デバッグモードのみ）
+	unsigned int Cr;
+	Cr = GetColor(255, 0, 0);
+
+	DrawLine3D(position_, position_ + pose().Forward() * 10.0f, Cr);
 
 	/*
 	// デバッグメッセージ
@@ -82,7 +92,8 @@ void Player::draw() const
 // 衝突リアクション
 void Player::react(Actor& other)
 {
-
+	// 怯みや死亡状態では反応しない
+	if (state_ == PlayerState::Damage || state_ == PlayerState::Death) return;
 }
 
 // メッセージ処理
@@ -131,7 +142,7 @@ void Player::update_state(float delta_time)
 		break;
 	}
 
-	state_timer_ += delta_time;			// 状態タイマーの加算
+	state_timer_ += delta_time;			// 状態タイマーを加算
 }
 
 // 状態の変更
@@ -140,6 +151,7 @@ void Player::change_state(PlayerState state, int motion)
 	motion_ = motion;
 	state_ = state;
 	state_timer_ = 0.0f;
+	is_attack_ = false;
 }
 
 // 通常状態での更新
@@ -230,6 +242,14 @@ void Player::normal(float delta_time)
 // 攻撃（1段目）での更新
 void Player::slash1(float delta_time)
 {
+	// 攻撃判定を発生
+	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !is_attack_)
+	{
+		is_attack_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
+	}
+
 	// モーション終了の前に、Xキーが押されると、攻撃の2段階目に移行
 	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
@@ -250,6 +270,14 @@ void Player::slash1(float delta_time)
 // 攻撃（2段目）での更新
 void Player::slash2(float delta_time)
 {
+	// 攻撃判定を発生
+	if (state_timer_ >= 0.5f && !is_attack_)
+	{
+		is_attack_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
+	}
+
 	// モーション終了の前に、Xキーが押されると、攻撃の3段階目に移行
 	if (CheckHitKey(KEY_INPUT_SPACE))
 	{
@@ -270,6 +298,14 @@ void Player::slash2(float delta_time)
 // 攻撃（3段目）での更新
 void Player::slash3(float delta_time)
 {
+	// 攻撃判定を発生
+	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
+	{
+		is_attack_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 14.0f + Vector3(0.0f, 6.5f, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
+	}
+
 	// モーション再生の間、キャラクターを前進させる
 	if (state_timer_ <= mesh_.motion_end_time() + 28.0f)
 	{

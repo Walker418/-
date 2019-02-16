@@ -19,7 +19,7 @@ private:
 		Slash1,			// 攻撃（1段目）
 		Slash2,			// 攻撃（2段目）
 		Slash3,			// 攻撃（3段目）
-		Damage,			// 被弾
+		Damage,			// 怯み
 		Guard,			// ガード
 		Blocking,		// ガードによるノックバック
 		GuardAttack,	// ガード攻撃
@@ -38,7 +38,7 @@ private:
 		MOTION_SLASH_2 = 21,			// 攻撃（2段目）
 		MOTION_SLASH_3 = 22,			// 攻撃（3段目）
 		MOTION_JUMP_ATTACK = 19,		// ジャンプ攻撃
-		MOTION_IMPACT = 17,				// 被弾
+		MOTION_IMPACT = 17,				// 怯み
 		MOTION_GUARD_BEGIN = 11,		// ガード開始
 		MOTION_GUARD_IDLE = 14,			// ガード中
 		MOTION_GUARD_BLOCK = 12,		// ガードによるノックバック
@@ -114,6 +114,8 @@ private:
 	bool			is_ground_{ false };
 	// ガードしているか
 	bool			is_guard_{ false };
+	// 攻撃判定を発生したのか
+	bool			is_attack_{ false };
 
 	// 現在の体力
 	int				current_hp_;
