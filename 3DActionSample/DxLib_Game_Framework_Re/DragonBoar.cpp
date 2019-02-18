@@ -103,6 +103,7 @@ void DragonBoar::handle_message(EventMessage message, void* param)
 	// プレイヤーからダメージを受ける
 	if (message == EventMessage::EnemyDamage)
 	{
+		// メッセージからプレイヤーの攻撃力と怯み値を取得し、ダメージ計算を行う
 		Damage* damage = (Damage*)param;
 		current_hp_ -= damage->power;
 		current_wince_ += damage->impact;
@@ -178,9 +179,9 @@ void DragonBoar::move(float delta_time)
 
 	// ============================================================
 	// 以下は移動処理
-	/*
+	
 	// 何もしていない場合、待機モーションに変更
-	motion_ = MOTION_IDLE;
+	int motion{ MOTION_IDLE };
 
 	Vector3 next_position = get_player_position();	// プレイヤーの位置を取得
 	next_position.y = 0.0f;							// プレイヤー座標の高さを無視
@@ -188,7 +189,7 @@ void DragonBoar::move(float delta_time)
 	// プレイヤーに向ける
 	Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, next_position.Normalize(), Vector3::Up);	// 新しい方向を設定
 	rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);		// 補間で方向を転換する
-
+	/*
 	// 向いている方向へ移動
 	velocity_ = Vector3::Zero;						// 移動量をリセット
 	velocity_ += rotation_.Forward() * WalkSpeed;	// 移動速度を加算
@@ -196,18 +197,13 @@ void DragonBoar::move(float delta_time)
 
 	// 移動していれば、移動モーションに変更
 	if (velocity_.x != 0.0f || velocity_.z != 0.0f)
-		motion_ = MOTION_WALK;
+		motion = MOTION_WALK;
+		*/
+	// 状態を更新
+	change_state(DragonBoarState::Move, motion);
 
 	// 移動処理終了
 	// ============================================================
-
-	/*
-	// 移動状態が8秒間維持したら、次の状態を抽選し、移行する
-	if (state_timer_ >= 480.0f)
-	{
-		next_move();
-	}
-	*/
 }
 
 // 攻撃状態での更新
@@ -224,7 +220,8 @@ void DragonBoar::attack(float delta_time)
 	// モーション終了後、移動状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		change_state(DragonBoarState::Move, MOTION_IDLE);
+		// change_state(DragonBoarState::Move, MOTION_IDLE);
+		move(delta_time);
 	}
 }
 
@@ -240,7 +237,8 @@ void DragonBoar::roar(float delta_time)
 	// モーション終了後、移動状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		change_state(DragonBoarState::Move, MOTION_IDLE);
+		// change_state(DragonBoarState::Move, MOTION_IDLE);
+		move(delta_time);
 	}
 }
 
@@ -251,7 +249,8 @@ void DragonBoar::wince(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		current_wince_ = 0;
-		change_state(DragonBoarState::Move, MOTION_IDLE);
+		// change_state(DragonBoarState::Move, MOTION_IDLE);
+		move(delta_time);
 	}
 }
 
@@ -275,7 +274,7 @@ bool DragonBoar::player_in_front() const
 	// プレイヤーが存在しない場合、falseを返す
 	if (player == nullptr) return false;
 
-	// 外積、内積でプレイヤーがいる方向を判定
+	// 内積でプレイヤーがいる方向を判定
 	Vector3 to_target = player->position() - position_;								// プレイヤー方向のベクトル
 	float forward_dot_target = Vector3::Dot(rotation_.Forward(), to_target);		// 前方向とプレイヤーの内積
 
@@ -306,7 +305,7 @@ bool DragonBoar::player_in_range_angle() const
 	if (player == nullptr) return false;
 
 	// 自身からプレイヤーまでの角度を求め、攻撃角度内であればTrueを返す
-	return (get_angle_to_player() <= 20.0f);
+	return (get_angle_to_player() <= 10.0f);
 }
 
 // プレイヤーを攻撃できるか

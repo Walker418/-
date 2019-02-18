@@ -101,6 +101,9 @@ private:
 	// 壁との接触処理
 	void intersect_wall();
 
+	// ガードは成立するか
+	bool can_block(Vector3 atk_pos);
+
 private:
 	// アニメーションメッシュ
 	AnimatedMesh	mesh_{ MESH_PALADIN };

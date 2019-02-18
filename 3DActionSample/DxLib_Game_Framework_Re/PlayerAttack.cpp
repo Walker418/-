@@ -36,7 +36,7 @@ void PlayerAttack::draw() const
 void PlayerAttack::react(Actor& other)
 {
 	// 敵へのダメージ構造体を生成
-	Damage damage{ power_, impact_ };
+	Damage damage{ position_, power_, impact_ };
 	// 敵へダメージメッセージを送る
 	other.handle_message(EventMessage::EnemyDamage, &damage);
 	// 敵に当たると消滅

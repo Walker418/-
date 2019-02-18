@@ -109,11 +109,22 @@ void Player::handle_message(EventMessage message, void* param)
 	// 敵からダメージを受ける
 	if (message == EventMessage::PlayerDamage)
 	{
+		// メッセージから敵の攻撃を取得
 		Damage* damage = (Damage*)param;
-		current_hp_ -= damage->power;
+		Vector3 atk_pos = damage->position;
 
-		// 怯み状態へ移行
-		change_state(PlayerState::Damage, MOTION_IMPACT);
+		// ガード判定
+		if (is_guard_ && can_block(atk_pos))
+		{
+			// 攻撃判定の位置がプレイヤーより前の場合、ガードが成立する
+			change_state(PlayerState::Blocking, MOTION_GUARD_BLOCK);
+
+			return;
+		}
+		
+		// ガードが成立しない場合、ダメージを計算する
+		current_hp_ -= damage->power;						// ダメージ計算
+		change_state(PlayerState::Damage, MOTION_IMPACT);	// 怯み状態へ移行
 
 		return;
 	}
@@ -470,4 +481,15 @@ void Player::intersect_wall()
 		position_.x = intersect.x;
 		position_.z = intersect.z;
 	}
+}
+
+// ガードは成立するか
+bool Player::can_block(Vector3 atk_pos)
+{
+	// 内積で攻撃判定のある方向を判定
+	Vector3 to_attack = atk_pos - position_;									// 攻撃判定方向のベクトル
+	float forward_dot_target = Vector3::Dot(rotation_.Forward(), to_attack);	// 前方向と攻撃判定の内積
+
+	// 前方向とプレイヤーの内積が0以上であれば、Trueを返す
+	return (forward_dot_target >= 0.0f);
 }
