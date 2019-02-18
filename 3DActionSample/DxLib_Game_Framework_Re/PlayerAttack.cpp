@@ -1,6 +1,8 @@
 #include "PlayerAttack.h"
+#include "EventMessage.h"
+#include "Damage.h"
 
-// クラス：プレイヤーの攻撃判定
+// クラス：プレイヤーの攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // コンストラクタ
@@ -33,17 +35,10 @@ void PlayerAttack::draw() const
 // 衝突リアクション
 void PlayerAttack::react(Actor& other)
 {
-
-}
-
-// 威力の取得
-int PlayerAttack::power() const
-{
-	return power_;
-}
-
-// 怯み値の取得
-int PlayerAttack::impact() const
-{
-	return impact_;
+	// 敵へのダメージ構造体を生成
+	Damage damage{ power_, impact_ };
+	// 敵へダメージメッセージを送る
+	other.handle_message(EventMessage::EnemyDamage, &damage);
+	// 敵に当たると消滅
+	die();
 }

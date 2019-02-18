@@ -5,7 +5,7 @@
 #include "IBodyPtr.h"
 #include "BoundingSphere.h"
 
-// クラス：プレイヤーの攻撃判定
+// クラス：プレイヤーの攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 class PlayerAttack : public Actor
 {
@@ -18,15 +18,11 @@ public:
 	virtual void draw() const override;
 	// 衝突リアクション
 	virtual void react(Actor& other) override;
-	// 威力の取得
-	int power() const;
-	// 怯み値の取得
-	int impact() const;
 
 private:
 	float destroy_counter_{ 0.0f };	// 消滅カウンター
 	int power_{ 0 };				// 威力
-	int impact_{ 0 };			// 怯み値
+	int impact_{ 0 };				// 怯み値
 };
 
 #endif // !PLAYER_ATTACK_H_

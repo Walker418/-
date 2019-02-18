@@ -136,6 +136,7 @@
     <ClCompile Include="CollisionTriangle.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="DragonBoar.cpp" />
+    <ClCompile Include="EnemyAttack.cpp" />
     <ClCompile Include="Field.cpp" />
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />
@@ -186,8 +187,10 @@
     <ClInclude Include="CollisionMesh.h" />
     <ClInclude Include="CollisionTriangle.h" />
     <ClInclude Include="Color.h" />
+    <ClInclude Include="Damage.h" />
     <ClInclude Include="DragonBoar.h" />
     <ClInclude Include="DummyBody.h" />
+    <ClInclude Include="EnemyAttack.h" />
     <ClInclude Include="EventMessage.h" />
     <ClInclude Include="Field.h" />
     <ClInclude Include="FieldPtr.h" />

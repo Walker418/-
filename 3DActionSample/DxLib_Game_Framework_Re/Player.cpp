@@ -8,6 +8,7 @@
 #include "BoundingSphere.h"
 #include "ActorGroup.h"
 #include "PlayerAttack.h"
+#include "Damage.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -87,6 +88,9 @@ void Player::draw() const
 		DrawString(0, 0, "ガードしていない", Cr);
 	}
 	*/
+
+	Cr = GetColor(255, 255, 255);
+	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", current_hp_);
 }
 
 // 衝突リアクション
@@ -99,7 +103,20 @@ void Player::react(Actor& other)
 // メッセージ処理
 void Player::handle_message(EventMessage message, void* param)
 {
+	// 怯みや死亡状態では反応しない
+	if (state_ == PlayerState::Damage || state_ == PlayerState::Death) return;
 
+	// 敵からダメージを受ける
+	if (message == EventMessage::PlayerDamage)
+	{
+		Damage* damage = (Damage*)param;
+		current_hp_ -= damage->power;
+
+		// 怯み状態へ移行
+		change_state(PlayerState::Damage, MOTION_IMPACT);
+
+		return;
+	}
 }
 
 // 状態の更新
@@ -151,6 +168,7 @@ void Player::change_state(PlayerState state, int motion)
 	motion_ = motion;
 	state_ = state;
 	state_timer_ = 0.0f;
+
 	is_attack_ = false;
 }
 
@@ -246,7 +264,7 @@ void Player::slash1(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 17.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
 
@@ -274,7 +292,7 @@ void Player::slash2(float delta_time)
 	if (state_timer_ >= 0.5f && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 17.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
 	}
 
@@ -324,7 +342,7 @@ void Player::slash3(float delta_time)
 void Player::damage(float delta_time)
 {
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		normal(delta_time);
 	}
@@ -371,6 +389,14 @@ void Player::blocking(float delta_time)
 // ガード攻撃での更新
 void Player::guard_attack(float delta_time)
 {
+	// 攻撃判定を発生
+	if (state_timer_ >= mesh_.motion_end_time() * 1.12f && !is_attack_)
+	{
+		is_attack_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
+	}
+
 	// モーション終了後、ガード状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 1.8f)
 	{

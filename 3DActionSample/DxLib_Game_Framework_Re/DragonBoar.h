@@ -104,6 +104,8 @@ private:
 	int				current_hp_;
 	// 怯み累積値
 	int				current_wince_{ 0 };
+	// 攻撃判定を発生したのか
+	bool			is_attack_{ false };
 	// 怒り状態であるか
 	bool			is_anger_{ false };
 	// 怒りカウンター

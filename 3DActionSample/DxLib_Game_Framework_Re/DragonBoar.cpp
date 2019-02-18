@@ -5,6 +5,8 @@
 #include "Line.h"
 #include "ActorGroup.h"
 #include "Random.h"
+#include "EnemyAttack.h"
+#include "Damage.h"
 
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -15,7 +17,8 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, cons
 	mesh_{ MESH_DRAGONBOAR, DragonBoarMotion::MOTION_ROAR },
 	motion_{ DragonBoarMotion::MOTION_ROAR },
 	state_{ DragonBoarState::Roar },
-	state_timer_{ 0.0f }
+	state_timer_{ 0.0f },
+	is_attack_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -74,24 +77,38 @@ void DragonBoar::draw() const
 	DrawLine3D(position_, position_ + pose().Forward() * 50.0f, Cr);
 
 	// デバッグメッセージ
-	Cr = GetColor(255, 255, 255);
+	// Cr = GetColor(255, 255, 255);
 	// DrawFormatString(0, 0, Cr, "プレイヤーへの角度： %f", get_angle_to_player());
+	/*
 	if (player_in_front())
 		DrawString(0, 0, "プレイヤーは前にいる", Cr);
 	else
 		DrawString(0, 0, "プレイヤーは後にいる", Cr);
+		*/
 }
 
 // 衝突リアクション
 void DragonBoar::react(Actor& other)
 {
-
+	// 死亡状態では反応しない
+	if (state_ == DragonBoarState::Death) return;
 }
 
 // メッセージ処理
 void DragonBoar::handle_message(EventMessage message, void* param)
 {
+	// 死亡状態では反応しない
+	if (state_ == DragonBoarState::Death) return;
 
+	// プレイヤーからダメージを受ける
+	if (message == EventMessage::EnemyDamage)
+	{
+		Damage* damage = (Damage*)param;
+		current_hp_ -= damage->power;
+		current_wince_ += damage->impact;
+
+		return;
+	}
 }
 
 // 状態の更新
@@ -134,6 +151,8 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 	motion_ = motion;
 	state_ = state;
 	state_timer_ = 0.0f;
+
+	is_attack_ = false;
 }
 
 // 待機状態での更新
@@ -159,7 +178,7 @@ void DragonBoar::move(float delta_time)
 
 	// ============================================================
 	// 以下は移動処理
-	
+	/*
 	// 何もしていない場合、待機モーションに変更
 	motion_ = MOTION_IDLE;
 
@@ -181,7 +200,7 @@ void DragonBoar::move(float delta_time)
 
 	// 移動処理終了
 	// ============================================================
-	
+
 	/*
 	// 移動状態が8秒間維持したら、次の状態を抽選し、移行する
 	if (state_timer_ >= 480.0f)
@@ -194,6 +213,14 @@ void DragonBoar::move(float delta_time)
 // 攻撃状態での更新
 void DragonBoar::attack(float delta_time)
 {
+	// 攻撃判定を発生
+	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
+	{
+		is_attack_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 43.0f + Vector3(0.0f, 12.5f, 0.0f);
+		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 20));
+	}
+
 	// モーション終了後、移動状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
@@ -223,6 +250,7 @@ void DragonBoar::wince(float delta_time)
 	// モーション終了後、移動状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
+		current_wince_ = 0;
 		change_state(DragonBoarState::Move, MOTION_IDLE);
 	}
 }
