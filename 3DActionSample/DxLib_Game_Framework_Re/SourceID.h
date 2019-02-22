@@ -11,7 +11,8 @@ enum
 
 	// モデル
 	MESH_PALADIN,		// プレイヤー
-	MESH_DRAGONBOAR,	// 敵
+	MESH_GHOUL,			// 雑魚敵
+	MESH_DRAGONBOAR,	// ボス敵
 };
 
 #endif // !SOURCE_ID_H_

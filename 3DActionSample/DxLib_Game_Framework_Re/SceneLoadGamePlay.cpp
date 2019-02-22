@@ -29,7 +29,8 @@ void SceneLoadGamePlay::update(float delta_time)
 		Billboard::load(0, "test_assets/Particle02.png");										// ビルボード
 
 		SkeletalMesh::load(MESH_PALADIN, "assets/Paladin/Paladin.mv1");							// プレイヤーモデル
-		SkeletalMesh::load(MESH_DRAGONBOAR, "assets/DragonBoar/DragonBoar.mv1");				// 敵モデル
+		SkeletalMesh::load(MESH_GHOUL, "assets/Ghoul/ghoul.mv1");								// 雑魚敵モデル
+		SkeletalMesh::load(MESH_DRAGONBOAR, "assets/DragonBoar/DragonBoar.mv1");				// ボス敵モデル
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;

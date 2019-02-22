@@ -25,13 +25,15 @@ private:
 		GuardAttack,	// ガード攻撃
 		GuardEnd,		// ガード終了
 		Death,			// 死亡
+		LeftSkip,		// 左回避
+		RightSkip,		// 右回避
 	};
 
 	// 列挙型：プレイヤーのモーション
 	enum PlayerMotion
 	{
 		MOTION_IDLE = 16,				// 静止待機
-		MOTION_WALK = 23,				// 前方へ歩行
+		MOTION_WALK = 25,				// 前方へ歩行
 		MOTION_DASH = 9,				// 前方へダッシュ
 		MOTION_JUMP = 18,				// ジャンプ
 		MOTION_SLASH_1 = 20,			// 攻撃（1段目）
@@ -55,6 +57,8 @@ private:
 		MOTION_CROUCH_GUARD_END = 4,	// しゃがみガード終了
 		MOTION_CROUCH_END = 1,			// しゃがみ終了
 		MOTION_DEATH = 10,				// 死亡
+		MOTION_STRAFE_LEFT = 23,		// 左ダッシュ
+		MOTION_STRAFE_RIGHT = 24,		// 右ダッシュ
 	};
 
 public:
@@ -95,14 +99,24 @@ private:
 	void guard_end(float delta_time);
 	// 死亡状態での更新
 	void death(float delta_time);
+	// 左回避状態での更新
+	void left_skip(float delta_time);
+	// 右回避状態での更新
+	void right_skip(float delta_time);
 
 	// 地面との接触処理
 	void intersect_ground();
 	// 壁との接触処理
 	void intersect_wall();
+	// 回避準備
+	void ready_to_skip();
 
 	// ガードは成立するか
 	bool can_block(Vector3 atk_pos);
+	// 回避を使えるか
+	bool can_skip();
+	// 無敵時間内であるか
+	bool is_invincible();
 
 private:
 	// アニメーションメッシュ
@@ -119,6 +133,12 @@ private:
 	bool			is_guard_{ false };
 	// 攻撃判定を発生したのか
 	bool			is_attack_{ false };
+	// 無敵時間タイマー
+	float			invincible_timer_{ 0.0f };
+	// 回避タイマー
+	float			skip_timer_{ 0.0f };
+	// 回避インターバル
+	float			skip_interval_{ 0.0f };
 
 	// 現在の体力
 	int				current_hp_;

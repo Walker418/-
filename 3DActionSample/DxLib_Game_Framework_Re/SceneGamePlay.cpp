@@ -39,7 +39,7 @@ void SceneGamePlay::start()
 
 	// アクターはここに追加
 	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));			// プレイヤー
-	world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));	// 敵
+	// world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));	// 敵
 }
 
 // 更新
@@ -98,6 +98,7 @@ void SceneGamePlay::end()
 
 	// 素材を破棄
 	SkeletalMesh::erase(MESH_PALADIN);
+	SkeletalMesh::erase(MESH_GHOUL);
 	SkeletalMesh::erase(MESH_DRAGONBOAR);
 
 	CollisionMesh::erase(MESH_STAGE_CASTLE);

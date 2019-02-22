@@ -19,7 +19,7 @@ public:
 	// コンストラクタ
 	Actor();
 	// コンストラクタ
-	Actor(IWorld* world, const std::string& name, const Vector3& position, const IBodyPtr& body = std::shared_ptr<DummyBody>());
+	Actor(IWorld* world, const std::string& name, const Vector3& position = Vector3::Zero, const IBodyPtr& body = std::shared_ptr<DummyBody>());
 	// 仮想デストラクタ
 	virtual ~Actor();
 
