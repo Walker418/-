@@ -25,6 +25,7 @@ private:
 		GuardAttack,	// ガード攻撃
 		GuardEnd,		// ガード終了
 		Death,			// 死亡
+		Skip,			// 回避
 		LeftSkip,		// 左回避
 		RightSkip,		// 右回避
 	};
@@ -99,6 +100,8 @@ private:
 	void guard_end(float delta_time);
 	// 死亡状態での更新
 	void death(float delta_time);
+	// 回避状態での更新
+	void skip(float delta_time);
 	// 左回避状態での更新
 	void left_skip(float delta_time);
 	// 右回避状態での更新
