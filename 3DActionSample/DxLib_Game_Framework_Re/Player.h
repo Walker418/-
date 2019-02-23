@@ -152,6 +152,8 @@ private:
 	const float		WalkSpeed{ 0.28f };
 	// ダッシュ速度
 	const float		DashSpeed{ 0.6f };
+	// 回転速度
+	const float		RotateSpeed{ 0.3f };
 	// 重力
 	const float		Gravity{ 0.03f };
 };

@@ -310,7 +310,7 @@ void Player::normal(float delta_time)
 		// rotation_ = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);
 
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// V‚µ‚¢•ûŒü‚ğİ’è
-		rotation_ = Matrix::Lerp(rotation_, new_rotation, 0.1f);	// •âŠÔ‚Å•ûŒü‚ğ“]Š·‚·‚é
+		rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);	// •âŠÔ‚Å•ûŒü‚ğ“]Š·‚·‚é
 	}
 
 	// ˆÚ“®ˆ—I—¹

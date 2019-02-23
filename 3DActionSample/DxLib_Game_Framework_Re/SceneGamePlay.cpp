@@ -9,6 +9,7 @@
 #include "Light.h"
 #include "Player.h"
 #include "DragonBoar.h"
+#include "Ghoul.h"
 
 #include "SkeletalMesh.h"
 #include "CollisionMesh.h"
@@ -40,6 +41,7 @@ void SceneGamePlay::start()
 	// アクターはここに追加
 	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));			// プレイヤー
 	// world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));	// 敵
+	world_.add_actor(ActorGroup::Enemy, new_actor<Ghoul>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));
 }
 
 // 更新

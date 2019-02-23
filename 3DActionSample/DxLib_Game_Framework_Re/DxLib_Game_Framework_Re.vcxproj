@@ -142,6 +142,7 @@
     <ClCompile Include="FreeCamera.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GamePad.cpp" />
+    <ClCompile Include="Ghoul.cpp" />
     <ClCompile Include="Graphics2D.cpp" />
     <ClCompile Include="Graphics3D.cpp" />
     <ClCompile Include="Keyboard.cpp" />
