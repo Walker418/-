@@ -266,7 +266,7 @@ void DragonBoar::death(float delta_time)
 }
 
 // プレイヤーは前にいるか
-bool DragonBoar::player_in_front() const
+bool DragonBoar::player_in_forward() const
 {
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
@@ -295,7 +295,7 @@ bool DragonBoar::player_in_range_distance() const
 	return (Vector3::Distance(position_, get_player_position()) <= 50.0f);
 }
 
-// プレイヤーが攻撃できる角度にいるか
+// プレイヤーは攻撃できる角度にいるか
 bool DragonBoar::player_in_range_angle() const
 {
 	// プレイヤーの参照を取得
@@ -311,8 +311,13 @@ bool DragonBoar::player_in_range_angle() const
 // プレイヤーを攻撃できるか
 bool DragonBoar::can_attack_player() const
 {
+	// プレイヤーの参照を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+	// プレイヤーが存在しない場合、falseを返す
+	if (player == nullptr) return false;
+
 	// プレイヤーが前にいなければ、、Falseを返す
-	if (!player_in_front()) return false;
+	if (!player_in_forward()) return false;
 	// プレイヤーが攻撃できる距離内にいなければ、Falseを返す
 	if (!player_in_range_distance()) return false;
 	// プレイヤーが攻撃できる角度内にいなければ、Falseを返す
@@ -329,7 +334,7 @@ void DragonBoar::next_move()
 	Random rand = Random();
 	rand.randomize();
 
-	int i = rand.rand(0, 10);
+	int i = rand.rand_int(0, 10);
 
 
 }

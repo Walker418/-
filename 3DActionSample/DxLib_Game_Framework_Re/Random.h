@@ -11,9 +11,9 @@ public:
 	// ‰Šú‰»
 	static void randomize(unsigned int seed);
 	// intŒ^‚Ì—”‚Ì¶¬
-	static int rand(int min, int max);
+	static int rand_int(int min, int max);
 	// floatŒ^‚Ì—”‚Ì¶¬
-	static float rand(float min, float max);
+	static float rand_float(float min, float max);
 	// —”ƒV[ƒh‚Ìæ“¾
 	static unsigned int seed();
 };

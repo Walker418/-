@@ -70,10 +70,10 @@ private:
 	void death(float delta_time);
 
 	// プレイヤーは前にいるか
-	bool player_in_front() const;
+	bool player_in_forward() const;
 	// プレイヤーは攻撃距離内にいるか
 	bool player_in_range_distance() const;
-	// プレイヤーが攻撃できる角度にいるか
+	// プレイヤーは攻撃できる角度にいるか
 	bool player_in_range_angle() const;
 	// プレイヤーを攻撃できるか
 	bool can_attack_player() const;

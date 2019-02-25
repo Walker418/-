@@ -14,9 +14,9 @@ public:
 	Ray(const Vector3& position, Vector3& direction) :
 		position{ position }, direction{ direction } { }
 	// ç¿ïW
-	Vector3 position{ 0.0f,0.0f,0.0f };
+	Vector3 position{ 0.0f, 0.0f, 0.0f };
 	// ï˚å¸
-	Vector3 direction{ 0.0f,0.0f,0.0f };
+	Vector3 direction{ 0.0f, 0.0f, 0.0f };
 };
 
 #endif // !RAY_H_

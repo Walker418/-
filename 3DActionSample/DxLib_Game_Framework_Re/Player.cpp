@@ -311,6 +311,7 @@ void Player::normal(float delta_time)
 
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// V‚µ‚¢•ûŒü‚ðÝ’è
 		rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);	// •âŠÔ‚Å•ûŒü‚ð“]Š·‚·‚é
+		rotation_.NormalizeRotationMatrix();							// ‰ñ“]s—ñ‚ð³‹K‰»
 	}
 
 	// ˆÚ“®ˆ—I—¹
@@ -335,7 +336,7 @@ void Player::slash1(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 17.0f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
 
@@ -382,7 +383,7 @@ void Player::slash2(float delta_time)
 	if (state_timer_ >= 0.5f && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 17.0f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
 	}
 
@@ -429,7 +430,7 @@ void Player::slash3(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 14.0f + Vector3(0.0f, 6.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 13.5f + Vector3(0.0f, 6.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
 	}
 

@@ -24,7 +24,7 @@ void Random::randomize(unsigned int seed)
 }
 
 // intŒ^‚Ì—”‚Ì¶¬
-int Random::rand(int min, int max)
+int Random::rand_int(int min, int max)
 {
 	std::uniform_int_distribution<int> dist(min, max);
 
@@ -32,7 +32,7 @@ int Random::rand(int min, int max)
 }
 
 // floatŒ^‚Ì—”‚Ì¶¬
-float Random::rand(float min, float max)
+float Random::rand_float(float min, float max)
 {
 	std::uniform_real_distribution<float> dist(min, max);
 

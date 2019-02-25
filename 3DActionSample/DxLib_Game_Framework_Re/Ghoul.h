@@ -67,6 +67,26 @@ private:
 	// 壁との接触処理
 	void intersect_wall();
 
+	// 次の行動を決定
+	void next_move();
+	// 次の目的地を決定
+	void next_destination();
+	// プレイヤーの位置を取得
+	Vector3 get_player_position() const;
+	// プレイヤーへの角度を取得
+	float get_angle_to_player() const;
+
+	// プレイヤーを取得
+	bool player_exists() const;
+	// プレイヤーは前にいるか
+	bool player_in_forward() const;
+	// プレイヤーは攻撃距離内にいるか
+	bool player_in_range_distance() const;
+	// プレイヤーは攻撃できる角度にいるか
+	bool player_in_range_angle() const;
+	// プレイヤーを攻撃できるか
+	bool can_attack_player() const;
+
 private:
 	// アニメーションメッシュ
 	AnimatedMesh	mesh_{ MESH_GHOUL };
@@ -74,6 +94,8 @@ private:
 	int				motion_{ GhoulMotion::MOTION_IDLE };
 	// 敵の状態
 	GhoulState		state_{ GhoulState::Idle };
+	// 前の状態
+	GhoulState		previous_state_;
 	// 状態タイマー
 	float			state_timer_{ 0.0f };
 
@@ -83,13 +105,17 @@ private:
 	int				current_wince_{ 0 };
 	// 攻撃判定を発生したのか
 	bool			is_attack_{ false };
+	// 次の目的地
+	Vector3			next_destination_;
+	// プレイヤーに追従中なのか
+	bool			is_following_player_{ false };
 
 	// 最大体力
 	const int		HP{ 20 };
 	// 移動速度
-	const float		WalkSpeed{ 0.15f };
+	const float		WalkSpeed{ 0.28f };
 	// 回転速度
-	const float		RotateSpeed{ 0.015f };
+	const float		RotateSpeed{ 0.3f };
 	// 重力
 	const float		Gravity{ 0.03f };
 
