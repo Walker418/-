@@ -1,44 +1,70 @@
 #ifndef MOUSE_H_
 #define MOUSE_H_
 
+#include <DxLib.h>
+#include <array>
 #include "Vector2.h"
 
-// クラス：マウス入力
-// 製作者：何 兆祺（"Jacky" Ho Siu Ki）
+// マウスのボタン
+namespace MouseButton
+{
+	const UINT Left = MOUSE_INPUT_LEFT;			// 左ボタン
+	const UINT Right = MOUSE_INPUT_RIGHT;		// 右ボタン
+	const UINT Middle = MOUSE_INPUT_MIDDLE;		// 中央ボタン
+	const UINT Button4 = MOUSE_INPUT_4;			// ボタン4
+	const UINT Button5 = MOUSE_INPUT_5;			// ボタン5
+	const UINT Button6 = MOUSE_INPUT_6;			// ボタン6
+	const UINT Button7 = MOUSE_INPUT_7;			// ボタン7
+	const UINT Button8 = MOUSE_INPUT_8;			// ボタン8
+}
+
+// マウス入力クラス
 class Mouse
 {
-public:
-	// マウスのボタンの定義
-	static const int Left;
-	static const int Right;
-	static const int Middle;
+private:
+	// コンストラクタ
+	Mouse();
+	// デストラクタ
+	~Mouse() = default;
 
-	// 初期化
-	static void initialize();
-	// 更新
-	static void update();
-	// マウスカーソルの位置の取得
-	static Vector2 cursor_point();
-	// マウスカーソルの位置の設定
-	static void cursor_point(const Vector2& point);
-	// マウスカーソルの表示
-	static void show_cursor();
-	// マウスカーソルの非表示
-	static void hide_cursor();
+public:
+	// マウスクラスの取得
+	static Mouse &getInstance()
+	{
+		static Mouse m;
+		return m;
+	}
+
 	// ボタンが押されているか
-	static bool state(int button);
+	bool State(UINT button);
 	// ボタンが押されたか
-	static bool trigger(int button);
+	bool Trigger(UINT button);
 	// ボタンが離されたか
-	static bool release(int button);
-	// 終了処理
-	static void finalize();
+	bool Release(UINT button);
+
+	// マウスカーソルの位置を取得
+	Vector2 cursor_point();
+	// マウスカーソルの位置を設定
+	void cursor_point(const Vector2& point);
+	// マウスカーソルの表示
+	void show_cursor();
+	// マウスカーソルの非表示
+	void hide_cursor();
+
+	// 更新
+	void update();
+
+	// コピー禁止
+	Mouse(const Mouse&) = delete;
+	Mouse& operator = (const Mouse&) = delete;
+	// 移動禁止
+	Mouse(Mouse&&) = delete;
+	Mouse& operator = (Mouse&&) = delete;
 
 private:
-	// 今回の入力状態
-	static int current_state_;
-	// 前回の入力状態
-	static int previous_state_;
+	// 入力状態保存用変数
+	int current_state_;		// 現フレーム
+	int previous_state_;	// 前フレーム
 };
 
 #endif // !MOUSE_H_

@@ -155,6 +155,7 @@
     <ClCompile Include="MyGame.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAttack.cpp" />
+    <ClCompile Include="PlayerInput.cpp" />
     <ClCompile Include="Quaternion.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="SceneGamePlay.cpp" />

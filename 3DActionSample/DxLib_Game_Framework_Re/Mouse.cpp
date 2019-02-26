@@ -1,40 +1,41 @@
 #include "Mouse.h"
-#include <DxLib.h>
 
-// マウスのボタンの定義
-const int Mouse::Left{ PAD_INPUT_LEFT };
-const int Mouse::Right{ PAD_INPUT_RIGHT };
-const int Mouse::Middle{ PAD_INPUT_UP };
+// マウス入力クラス
 
-// 今回の入力状態
-int Mouse::current_state_{ 0 };
-// 前回の入力状態
-int Mouse::previous_state_{ 0 };
-
-// 初期化
-void Mouse::initialize()
+// コンストラクタ
+Mouse::Mouse() :
+	current_state_{ 0 }, previous_state_{ 0 }
 {
-	current_state_ = 0;
-	previous_state_ = 0;
+	SetUseDirectInputFlag(TRUE);	// これを実行しないと、マウス5ボタンまでしか取得できない
 }
 
-// 更新
-void Mouse::update()
+// ボタンが押されているか
+bool Mouse::State(UINT button)
 {
-	previous_state_ = current_state_;
-	current_state_ = GetMouseInput();
+	return (current_state_ & button) != 0;
 }
 
-// マウスカーソルの位置の取得
+// ボタンが押されたか
+bool Mouse::Trigger(UINT button)
+{
+	return (current_state_ & ~previous_state_ & button) != 0;
+}
+
+// ボタンが離されたか
+bool Mouse::Release(UINT button)
+{
+	return (~current_state_ & previous_state_ & button) != 0;
+}
+
+// マウスカーソルの位置を取得
 Vector2 Mouse::cursor_point()
 {
 	int x = 0, y = 0;
 	GetMousePoint(&x, &y);
-
 	return Vector2(float(x), float(y));
 }
 
-// マウスカーソルの位置の設定
+// マウスカーソルの位置を設定
 void Mouse::cursor_point(const Vector2& point)
 {
 	SetMousePoint(int(point.x), int(point.y));
@@ -52,27 +53,9 @@ void Mouse::hide_cursor()
 	SetMouseDispFlag(FALSE);
 }
 
-// ボタンが押されているか
-bool Mouse::state(int button)
+// 更新
+void Mouse::update()
 {
-	return (current_state_ & button) != 0;
-}
-
-// ボタンが押されたか
-bool Mouse::trigger(int button)
-{
-	return (current_state_ & previous_state_ & button) != 0;
-}
-
-// ボタンが離されたか
-bool Mouse::release(int button)
-{
-	return (~current_state_ & previous_state_ & button) != 0;
-}
-
-// 終了処理
-void Mouse::finalize()
-{
-	// 初期化と同じ処理
-	initialize();
+	previous_state_ = current_state_;
+	current_state_ = GetMouseInput();
 }

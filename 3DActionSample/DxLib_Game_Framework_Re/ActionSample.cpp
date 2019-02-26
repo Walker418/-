@@ -21,13 +21,6 @@ ActionSample::ActionSample() :
 // 開始
 void ActionSample::start()
 {
-	// 基本クラスの初期化
-	Graphics3D::initialize();
-	SkeletalMesh::initialize();
-	CollisionMesh::initialize();
-	Skybox::initialize();
-	Billboard::initialize();
-
 	// シーンクラスの初期化
 	scene_manager_.initialize();
 	// シーンを読み込む
@@ -55,14 +48,4 @@ void ActionSample::end()
 {
 	// シーンマネージャーを終了
 	scene_manager_.end();
-
-	// 各リソースを削除
-
-
-	// 基本クラスを終了
-	Billboard::finalize();
-	SkeletalMesh::finalize();
-	CollisionMesh::finalize();
-	Skybox::finalize();
-	Graphics3D::finalize();
 }

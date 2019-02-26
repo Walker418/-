@@ -3,6 +3,7 @@
 #include "ActorGroup.h"
 #include "Graphics3D.h"
 #include "MathHelper.h"
+#include "PlayerInput.h"
 
 TPCamera::TPCamera(IWorld* world) :
 	Actor(world, "Camera", Vector3::Zero)
@@ -57,20 +58,20 @@ void TPCamera::move(float delta_time)
 	// à»â∫ÇÕâÒì]ëÄçÏ
 
 	// ç∂âEâÒì]
-	if (CheckHitKey(KEY_INPUT_LEFT))		// ç∂
+	if (PlayerInput::camera_turn_left())		// ç∂
 	{
 		yaw_angle_ -= YawSpeed * delta_time;
 	}
-	else if (CheckHitKey(KEY_INPUT_RIGHT))	// âE
+	else if (PlayerInput::camera_turn_right())	// âE
 	{
 		yaw_angle_ += YawSpeed * delta_time;
 	}
 	// è„â∫âÒì]
-	if (CheckHitKey(KEY_INPUT_UP))			// ëO
+	if (PlayerInput::camera_turn_up())			// è„
 	{
 		pitch_angle_ += PitchSpeed * delta_time;
 	}
-	else if (CheckHitKey(KEY_INPUT_DOWN))	// å„
+	else if (PlayerInput::camera_turn_down())	// â∫
 	{
 		pitch_angle_ -= PitchSpeed * delta_time;
 	}

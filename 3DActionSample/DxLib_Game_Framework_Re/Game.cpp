@@ -9,6 +9,9 @@
 
 #include "Sound.h"
 #include "GamePad.h"
+#include "Keyboard.h"
+#include "Mouse.h"
+#include "PlayerInput.h"
 
 // クラス：ゲームアプリケーション
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -40,9 +43,7 @@ int Game::run()
 	CollisionMesh::initialize();
 	Skybox::initialize();
 	Billboard::initialize();
-
 	Sound::initialize();
-	GamePad::initialize();
 
 	// 開始
 	start();
@@ -51,7 +52,11 @@ int Game::run()
 	while (ProcessMessage() == 0 && is_running())
 	{
 		// ゲームパッドを更新
-		GamePad::update();
+		GamePad::getInstance().update();
+		// キーボードを更新
+		Keyboard::getInstance().update();
+		// マウスを更新
+		Mouse::getInstance().update();
 		// 更新
 		update(1.0f);
 		// 画面をクリア
@@ -72,7 +77,6 @@ int Game::run()
 	Skybox::finalize();
 	Graphics3D::finalize();
 	Sound::finalize();
-	GamePad::finalize();
 
 	// DxLibを終了
 	DxLib_End();
@@ -101,5 +105,5 @@ void Game::end()
 bool Game::is_running() const
 {
 	// Escapeキーで強制終了
-	return CheckHitKey(KEY_INPUT_ESCAPE) == 0;
+	return PlayerInput::game_end() == 0;
 }

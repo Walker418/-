@@ -9,6 +9,7 @@
 #include "ActorGroup.h"
 #include "PlayerAttack.h"
 #include "Damage.h"
+#include "PlayerInput.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -209,7 +210,7 @@ void Player::normal(float delta_time)
 	if (is_ground_)
 	{
 		// スペースバーが押されると、攻撃する
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (PlayerInput::attack())
 		{
 			// 攻撃状態に移行
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
@@ -218,7 +219,7 @@ void Player::normal(float delta_time)
 		}
 
 		// 左Ctrlキーが押されると、ガード状態に移行
-		if (CheckHitKey(KEY_INPUT_LCONTROL))
+		if (PlayerInput::guard())
 		{
 			change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
 
@@ -246,20 +247,20 @@ void Player::normal(float delta_time)
 	float left_speed{ 0.0f };		// 左向き速度
 
 	// 前後移動
-	if (CheckHitKey(KEY_INPUT_W))		// 前
+	if (PlayerInput::move_forward())		// 前
 	{
 		forward_speed = DashSpeed;
 	}
-	else if (CheckHitKey(KEY_INPUT_S))	// 後
+	else if (PlayerInput::move_backward())	// 後
 	{
 		forward_speed = -DashSpeed;
 	}
 	// 左右移動
-	if (CheckHitKey(KEY_INPUT_A))		// 左
+	if (PlayerInput::move_left())			// 左
 	{
 		left_speed = DashSpeed;
 	}
-	else if (CheckHitKey(KEY_INPUT_D))	// 右
+	else if (PlayerInput::move_right())		// 右
 	{
 		left_speed = -DashSpeed;
 	}
@@ -290,7 +291,7 @@ void Player::normal(float delta_time)
 	// ============================================================
 
 	// 回避
-	if (CheckHitKey(KEY_INPUT_LSHIFT) && is_ground_ && can_skip())
+	if (PlayerInput::skip() && is_ground_ && can_skip())
 	{
 		ready_to_skip();
 
@@ -316,7 +317,7 @@ void Player::slash1(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() + 5.5f && state_timer_ < mesh_.motion_end_time() + 18.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の2段階目に移行
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (PlayerInput::attack())
 		{
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
@@ -324,7 +325,7 @@ void Player::slash1(float delta_time)
 
 		// 方向+回避入力されると、回避状態に移行
 		// 左回避
-		if (CheckHitKey(KEY_INPUT_A) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_left() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -332,7 +333,7 @@ void Player::slash1(float delta_time)
 			return;
 		}
 		// 右回避
-		if (CheckHitKey(KEY_INPUT_D) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_right() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -363,7 +364,7 @@ void Player::slash2(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() + 5.0f && state_timer_ < mesh_.motion_end_time() + 18.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の2段階目に移行
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (PlayerInput::attack())
 		{
 			change_state(PlayerState::Slash3, MOTION_SLASH_3);
 			return;
@@ -371,7 +372,7 @@ void Player::slash2(float delta_time)
 
 		// 方向+回避入力されると、回避状態に移行
 		// 左回避
-		if (CheckHitKey(KEY_INPUT_A) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_left() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -379,7 +380,7 @@ void Player::slash2(float delta_time)
 			return;
 		}
 		// 右回避
-		if (CheckHitKey(KEY_INPUT_D) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_right() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -423,7 +424,7 @@ void Player::slash3(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
 	{
 		// 左回避
-		if (CheckHitKey(KEY_INPUT_A) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_left() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -431,7 +432,7 @@ void Player::slash3(float delta_time)
 			return;
 		}
 		// 右回避
-		if (CheckHitKey(KEY_INPUT_D) && CheckHitKey(KEY_INPUT_LSHIFT))
+		if (PlayerInput::move_right() && PlayerInput::skip())
 		{
 			ready_to_skip();
 
@@ -474,13 +475,13 @@ void Player::guard(float delta_time)
 		motion_ = MOTION_GUARD_IDLE;	// ガード中のモーションに移行
 
 		// Xキーが押されると、ガード攻撃を使用
-		if (CheckHitKey(KEY_INPUT_SPACE))
+		if (PlayerInput::attack())
 		{
 			change_state(PlayerState::GuardAttack, MOTION_GUARD_SLASH);
 		}
 
 		// Rキーが離れたら、ガード終了状態に移行
-		if (!CheckHitKey(KEY_INPUT_LCONTROL))
+		if (PlayerInput::guard_end())
 		{
 			change_state(PlayerState::GuardEnd, MOTION_GUARD_END);
 		}
