@@ -460,13 +460,18 @@ void Player::damage(float delta_time)
 // ガード時の更新
 void Player::guard(float delta_time)
 {
+	// ガードの発生はモーションの再生より早い
+	if (state_timer_ >= 5.0f)
+	{
+		is_guard_ = true;				// ガード状態を有効化
+	}
+
 	// ガード開始のモーション終了後、ガード待機モーションを再生し、
 	// 以降Rキーが離れたら、ガード終了状態に移行
 	float guard_ready_time = mesh_.motion_end_time() + 15.0f;	// ガード開始までの時間;
 	if (state_timer_ >= guard_ready_time)
 	{
 		motion_ = MOTION_GUARD_IDLE;	// ガード中のモーションに移行
-		is_guard_ = true;				// ガード状態を有効化
 
 		// Xキーが押されると、ガード攻撃を使用
 		if (CheckHitKey(KEY_INPUT_SPACE))
