@@ -345,11 +345,14 @@ Vector3 DragonBoar::get_player_position() const
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
 
-	// プレイヤーが存在しない場合、現在の座標を返す
+	// プレイヤーが存在しない場合、現在自分の座標を返す
 	if (player == nullptr) return position_;
 
-	// プレイヤーが存在する場合、その座標を返す
-	return player->position();
+	// プレイヤーが存在する場合、その座標を返す（y成分は無視する）
+	auto pos = player->position();
+	pos.y = 0.0f;
+
+	return pos;
 }
 
 // プレイヤーへの角度を取得
@@ -362,7 +365,7 @@ float DragonBoar::get_angle_to_player() const
 	if (player == nullptr) return 0.0f;
 
 	// return Vector3::Angle(rotation_.Forward(), player->position());
-	return Vector3::Angle(position_ + pose().Forward(), player->position());
+	return Vector3::Angle(position_ + pose().Forward(), get_player_position());
 }
 
 // 地面との接触処理

@@ -106,8 +106,8 @@ void Player::draw() const
 // 衝突リアクション
 void Player::react(Actor& other)
 {
-	// 無敵時間中、怯みや死亡状態では反応しない
-	if (is_invincible() || state_ == PlayerState::Death) return;
+	// 死亡状態では反応しない
+	if (state_ == PlayerState::Death) return;
 }
 
 // メッセージ処理
@@ -263,35 +263,7 @@ void Player::normal(float delta_time)
 	{
 		left_speed = -DashSpeed;
 	}
-	/*
-	// ここで左右方向への回避を挿入
-	// 左回避
-	if (left_speed > 0.0f && CheckHitKey(KEY_INPUT_LSHIFT) && can_skip())
-	{
-		ready_to_skip();
 
-		// プレイヤーの向きをカメラと同じにする
-		rotation_ = Matrix::CreateWorld(Vector3::Zero, camera_forward, Vector3::Up);
-
-		// 左回避状態へ移行
-		change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
-
-		return;
-	}
-	// 右回避
-	else if (left_speed < 0.0f && CheckHitKey(KEY_INPUT_LSHIFT) && can_skip())
-	{
-		ready_to_skip();
-
-		// プレイヤーの向きをカメラと同じにする
-		rotation_ = Matrix::CreateWorld(Vector3::Zero, camera_forward, Vector3::Up);
-
-		// 右回避状態へ移行
-		change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
-
-		return;
-	}
-	*/
 	// 移動していれば、歩行モーションに変更
 	if (forward_speed != 0.0f || left_speed != 0.0f)
 		motion = MOTION_DASH;
@@ -311,7 +283,7 @@ void Player::normal(float delta_time)
 
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
 		rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);	// 補間で方向を転換する
-		rotation_.NormalizeRotationMatrix();							// 回転行列を正規化
+		rotation_ = Matrix::NormalizeRotationMatrix(rotation_);			// 回転行列を正規化
 	}
 
 	// 移動処理終了

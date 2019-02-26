@@ -166,7 +166,7 @@ void Ghoul::move(float delta_time)
 	// 目的地に向く
 	Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, next_destination_.Normalize(), Vector3::Up);	// 新しい方向を設定
 	rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);		// 補間で方向を転換する
-	rotation_.NormalizeRotationMatrix();								// 回転行列を正規化
+	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);				// 回転行列を正規化
 
 	velocity_ = Vector3::Zero;						// 移動量をリセット
 	velocity_ += rotation_.Forward() * WalkSpeed;	// 移動速度を加算
@@ -347,11 +347,14 @@ Vector3 Ghoul::get_player_position() const
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
 
-	// プレイヤーが存在しない場合、現在の座標を返す
+	// プレイヤーが存在しない場合、現在自分の座標を返す
 	if (player == nullptr) return position_;
 
-	// プレイヤーが存在する場合、その座標を返す
-	return player->position();
+	// プレイヤーが存在する場合、その座標を返す（y成分は無視する）
+	auto pos = player->position();
+	pos.y = 0.0f;
+
+	return pos;
 }
 
 // プレイヤーへの角度を取得
@@ -363,7 +366,7 @@ float Ghoul::get_angle_to_player() const
 	// プレイヤーが存在しない場合、0°を返す
 	if (player == nullptr) return 0.0f;
 
-	return Vector3::Angle(position_ + pose().Forward(), player->position());
+	return Vector3::Angle(position_ + pose().Forward(), get_player_position());
 }
 
 // プレイヤーは存在するか
