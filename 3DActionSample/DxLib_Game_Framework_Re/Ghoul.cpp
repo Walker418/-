@@ -4,7 +4,6 @@
 #include "Field.h"
 #include "Line.h"
 #include "ActorGroup.h"
-#include "Random.h"
 #include "EnemyAttack.h"
 #include "Damage.h"
 
@@ -27,6 +26,9 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	current_wince_ = 0;
 	previous_state_ = state_;
 	next_destination_ = Vector3::Zero;
+	rand_.randomize();
+
+	ready_to_idle();
 }
 
 // 更新
@@ -148,8 +150,8 @@ void Ghoul::change_state(GhoulState state, int motion)
 // 待機状態での更新
 void Ghoul::idle(float delta_time)
 {
-	// 3秒後、次の行動を抽選
-	if (state_timer_ >= 180.0f)
+	// 一定時間後、次の行動を抽選（待機状態の維持時間は乱数で決める）
+	if (state_timer_ >= idle_time_)
 		next_move();
 }
 
@@ -162,22 +164,46 @@ void Ghoul::move(float delta_time)
 		next_destination_ = get_player_position();
 	}
 
-	// 目的地に向かって移動
-	// 目的地に向く
-	Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, next_destination_.Normalize(), Vector3::Up);	// 新しい方向を設定
-	rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);		// 補間で方向を転換する
-	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);				// 回転行列を正規化
-
-	velocity_ = Vector3::Zero;						// 移動量をリセット
-	velocity_ += rotation_.Forward() * WalkSpeed;	// 移動速度を加算
-	position_ += velocity_ * delta_time;			// 次の位置を計算
-
-	// プレイヤーが攻撃範囲内にいれば、攻撃する
-	if (can_attack_player())
+	// 回転処理
+	float angle_to_target = get_angle_to_target(next_destination_);
+	
+	if (angle_to_target >= 0.5f)
 	{
-		change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
-		return;
+		motion_ = MOTION_TURN_RIGHT;
+		rotation_ *= Matrix::CreateRotationY(RotateSpeed * delta_time);
 	}
+	else if (angle_to_target <= -0.5f)
+	{
+		motion_ = MOTION_TURN_LEFT;
+		rotation_ *= Matrix::CreateRotationY(-RotateSpeed * delta_time);
+	}
+
+	// プレイヤーとの角度差が大きい場合、回転モーションを再生し、回転してから移動する
+	if (angle_to_target >= 135.0f)
+	{
+		motion_ = MOTION_TURN_RIGHT;
+		rotation_ *= Matrix::CreateRotationY(RotateSpeed * 2 * delta_time);
+	}
+	else if (angle_to_target <= -135.0f)
+	{
+		motion_ = MOTION_TURN_LEFT;
+		rotation_ *= Matrix::CreateRotationY(RotateSpeed * 2 * delta_time);
+	}
+
+	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);		// 回転行列を初期化
+
+	if (get_unsigned_angle_to_target(next_destination_) <= 10.0f)
+	{
+		motion_ = MOTION_WALK;
+
+		// 移動処理
+		velocity_ = Vector3::Zero;						// 移動量をリセット
+		velocity_ += rotation_.Forward() * WalkSpeed;	// 移動速度を加算
+		position_ += velocity_ * delta_time;			// 次の位置を計算
+	}
+
+	// プレイヤーに近づけば、少し待ってから攻撃する
+
 
 	// 3秒後、次の行動を抽選
 	if (state_timer_ >= 180.0f)
@@ -203,16 +229,15 @@ void Ghoul::attack(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
 	{
 		is_attack_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 12.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 13.0f + Vector3(0.0f, 12.5f, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
 	}
 
-	// モーション終了後、次の行動を抽選
+	// モーション終了後、待機行動へ移行
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		// change_state(DragonBoarState::Move, MOTION_IDLE);
-		// move(delta_time);
-		next_move();
+		ready_to_idle();
+		change_state(GhoulState::Idle, MOTION_IDLE);
 	}
 }
 
@@ -270,11 +295,8 @@ void Ghoul::intersect_wall()
 // 次の行動を決定
 void Ghoul::next_move()
 {
-	Random rand = Random();
-	rand.randomize();
-
 	// 乱数で次の行動を決定
-	int i = rand.rand_int(0, 4);
+	int i = rand_.rand_int(0, 4);
 
 	switch (i)
 	{
@@ -285,6 +307,7 @@ void Ghoul::next_move()
 			next_move();
 			return;
 		}
+		ready_to_idle();
 		change_state(GhoulState::Idle, GhoulMotion::MOTION_IDLE);
 		break;
 	case 1:
@@ -307,26 +330,21 @@ void Ghoul::next_move()
 // 次の目的地を決定
 void Ghoul::next_destination()
 {
-	Random rand = Random();
-	rand.randomize();
-
-	int i = rand.rand_int(0, 3);
+	int i = rand_.rand_int(0, 5);
 
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// i = 1、またはプレイヤーは存在しない場合、ランダムで座標を生成する
-	if (i == 1 || player == nullptr)
+	
+	// i = 0、またはプレイヤーは存在しない場合、ランダムで座標を生成する
+	if (i == 0 || player == nullptr)
 	{
 		// プレイヤー追従を解除
 		is_following_player_ = false;
 
-		// x軸の座標を生成
-		rand.randomize();
-		float x = rand.rand_float(-100, 101);
+		// x軸の座標を生成;
+		float x = rand_.rand_float(-50, 51);
 		// z軸の座標を生成
-		rand.randomize();
-		float z = rand.rand_float(-100, 101);
+		float z = rand_.rand_float(-50, 51);
 		// 生成した座標を目的地にする
 		Vector3 new_dest = Vector3(x, 0.0f, z);
 		next_destination_ = new_dest;
@@ -358,15 +376,29 @@ Vector3 Ghoul::get_player_position() const
 }
 
 // プレイヤーへの角度を取得
-float Ghoul::get_angle_to_player() const
+float Ghoul::get_angle_to_target(Vector3 target) const
 {
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
+	// 目的地方向へのベクトル
+	Vector3 to_target = target - position_;
+	// 前方向とターゲットの外積
+	Vector3 forward_cross_target = Vector3::Cross(rotation_.Forward(), to_target);
+	// 前方向とターゲットの内積
+	float forward_dot_target = Vector3::Dot(rotation_.Forward(), to_target);
 
-	// プレイヤーが存在しない場合、0°を返す
-	if (player == nullptr) return 0.0f;
+	if (forward_cross_target.y >= 0.0f)
+	{
+		return Vector3::Angle(pose().Forward(), to_target);
+	}
+	else
+	{
+		return -Vector3::Angle(pose().Forward(), to_target);
+	}
+}
 
-	return Vector3::Angle(position_ + pose().Forward(), get_player_position());
+// プレイヤーへの角度を取得（符号無し）
+float Ghoul::get_unsigned_angle_to_target(Vector3 target) const
+{
+	return std::abs(get_angle_to_target(target));
 }
 
 // プレイヤーは存在するか
@@ -388,13 +420,10 @@ bool Ghoul::player_in_forward() const
 	// プレイヤーが存在しない場合、falseを返す
 	if (player == nullptr) return false;
 
-	// 内積でプレイヤーがいる方向を判定
-	Vector3 to_target = player->position() - position_;								// プレイヤー方向のベクトル
-	float forward_dot_target = Vector3::Dot(rotation_.Forward(), to_target);		// 前方向とプレイヤーの内積
-
-	// 前方向とプレイヤーの内積が0以上であれば、Trueを返す
-	return (forward_dot_target >= 0.0f);
+	return (get_unsigned_angle_to_target(get_player_position()) <= 90.0f);
 }
+
+
 
 // プレイヤーは攻撃距離内にいるか
 bool Ghoul::player_in_range_distance() const
@@ -419,7 +448,7 @@ bool Ghoul::player_in_range_angle() const
 	if (player == nullptr) return false;
 
 	// 自身からプレイヤーまでの角度を求め、攻撃角度内であればTrueを返す
-	return (get_angle_to_player() <= 10.0f);
+	return (get_unsigned_angle_to_target(get_player_position()) <= 10.0f);
 }
 
 // プレイヤーを攻撃できるか
@@ -436,4 +465,12 @@ bool Ghoul::can_attack_player() const
 
 	// 条件を全て満たしていれば、Trueを返す
 	return true;
+}
+
+// 待機状態への移行準備
+void Ghoul::ready_to_idle()
+{
+	// 乱数で待機時間を決める
+	int i = rand_.rand_int(1, 3);
+	idle_time_ = 60 * (float)i;
 }

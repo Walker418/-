@@ -45,6 +45,9 @@ int Game::run()
 	Billboard::initialize();
 	Sound::initialize();
 
+	// マウスカーソルを隠す
+	Mouse::getInstance().hide_cursor();
+
 	// 開始
 	start();
 

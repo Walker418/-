@@ -6,6 +6,7 @@
 #include "IBodyPtr.h"
 #include "BoundingCapsule.h"
 #include "SourceID.h"
+#include "Random.h"
 
 // クラス：グール
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -28,6 +29,8 @@ private:
 	{
 		MOTION_IDLE = 0,
 		MOTION_WALK = 1,
+		MOTION_TURN_LEFT = 2,
+		MOTION_TURN_RIGHT = 3,
 		MOTION_WINCE = 4,
 		MOTION_ATTACK = 5,
 		MOTION_DEATH = 6
@@ -73,8 +76,10 @@ private:
 	void next_destination();
 	// プレイヤーの位置を取得
 	Vector3 get_player_position() const;
-	// プレイヤーへの角度を取得
-	float get_angle_to_player() const;
+	// 次の目的地への角度を取得（符号付き）
+	float get_angle_to_target(Vector3 target) const;
+	// プレイヤーへの角度を取得（符号無し）
+	float get_unsigned_angle_to_target(Vector3 target) const;
 
 	// プレイヤーを取得
 	bool player_exists() const;
@@ -87,6 +92,9 @@ private:
 	// プレイヤーを攻撃できるか
 	bool can_attack_player() const;
 
+	// 待機状態への移行準備
+	void ready_to_idle();
+
 private:
 	// アニメーションメッシュ
 	AnimatedMesh	mesh_{ MESH_GHOUL };
@@ -98,6 +106,8 @@ private:
 	GhoulState		previous_state_;
 	// 状態タイマー
 	float			state_timer_{ 0.0f };
+	// 乱数生成器
+	Random			rand_;
 
 	// 現在の体力
 	int				current_hp_;
@@ -109,13 +119,15 @@ private:
 	Vector3			next_destination_;
 	// プレイヤーに追従中なのか
 	bool			is_following_player_{ false };
+	// 次の待機維持時間
+	float			idle_time_{ 60.0f };
 
 	// 最大体力
 	const int		HP{ 20 };
 	// 移動速度
 	const float		WalkSpeed{ 0.28f };
 	// 回転速度
-	const float		RotateSpeed{ 0.3f };
+	const float		RotateSpeed{ 1.0f };
 	// 重力
 	const float		Gravity{ 0.03f };
 
