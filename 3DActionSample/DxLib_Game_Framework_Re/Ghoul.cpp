@@ -26,9 +26,10 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	current_wince_ = 0;
 	previous_state_ = state_;
 	next_destination_ = Vector3::Zero;
+	attack_count_ = 0;
 	rand_.randomize();
 
-	ready_to_idle();
+	ready_to_next_state();
 }
 
 // 更新
@@ -138,6 +139,8 @@ void Ghoul::update_state(float delta_time)
 // 状態の変更
 void Ghoul::change_state(GhoulState state, int motion)
 {
+	if (state != GhoulState::Attack) attack_count_ = 0;
+
 	previous_state_ = state_;
 
 	motion_ = motion;
@@ -151,7 +154,7 @@ void Ghoul::change_state(GhoulState state, int motion)
 void Ghoul::idle(float delta_time)
 {
 	// 一定時間後、次の行動を抽選（待機状態の維持時間は乱数で決める）
-	if (state_timer_ >= idle_time_)
+	if (state_timer_ >= state_time_)
 		next_move();
 }
 
@@ -164,12 +167,13 @@ void Ghoul::move(float delta_time)
 		next_destination_ = get_player_position();
 	}
 
+	motion_ = MOTION_TURN_RIGHT;
+
 	// 回転処理
 	float angle_to_target = get_angle_to_target(next_destination_);
 	
 	if (angle_to_target >= 0.5f)
 	{
-		motion_ = MOTION_TURN_RIGHT;
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * delta_time);
 	}
 	else if (angle_to_target <= -0.5f)
@@ -181,18 +185,16 @@ void Ghoul::move(float delta_time)
 	// プレイヤーとの角度差が大きい場合、回転モーションを再生し、回転してから移動する
 	if (angle_to_target >= 135.0f)
 	{
-		motion_ = MOTION_TURN_RIGHT;
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * 2 * delta_time);
 	}
 	else if (angle_to_target <= -135.0f)
 	{
-		motion_ = MOTION_TURN_LEFT;
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * 2 * delta_time);
 	}
 
 	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);		// 回転行列を初期化
 
-	if (get_unsigned_angle_to_target(next_destination_) <= 10.0f)
+	if (get_unsigned_angle_to_target(next_destination_) <= 15.0f)
 	{
 		motion_ = MOTION_WALK;
 
@@ -205,8 +207,8 @@ void Ghoul::move(float delta_time)
 	// プレイヤーに近づけば、少し待ってから攻撃する
 
 
-	// 3秒後、次の行動を抽選
-	if (state_timer_ >= 180.0f)
+	// 一定時間後、次の行動を抽選
+	if (state_timer_ >= state_time_)
 		next_move();
 }
 
@@ -217,7 +219,6 @@ void Ghoul::wince(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
 		current_wince_ = 0;
-		// change_state(GhoulState::Move, MOTION_IDLE);
 		next_move();
 	}
 }
@@ -233,11 +234,12 @@ void Ghoul::attack(float delta_time)
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
 	}
 
-	// モーション終了後、待機行動へ移行
+	// モーション終了後、次の行動を抽選
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		ready_to_idle();
-		change_state(GhoulState::Idle, MOTION_IDLE);
+		ready_to_next_state();
+		// change_state(GhoulState::Idle, MOTION_IDLE);
+		next_move();
 	}
 }
 
@@ -295,35 +297,41 @@ void Ghoul::intersect_wall()
 // 次の行動を決定
 void Ghoul::next_move()
 {
-	// 乱数で次の行動を決定
-	int i = rand_.rand_int(0, 4);
+	ready_to_next_state();
 
-	switch (i)
+	// 乱数で次の行動を決定
+	int i = rand_.rand_int(0, 6);
+
+	if (i == 0)
 	{
-	case 0:
 		// 待機行動は連続に発生しない
 		if (previous_state_ == GhoulState::Idle)
 		{
 			next_move();
 			return;
 		}
-		ready_to_idle();
 		change_state(GhoulState::Idle, GhoulMotion::MOTION_IDLE);
-		break;
-	case 1:
+
+		return;
+	}
+	else if (i < 5)
+	{
 		next_destination();		// 次の目的地を決定
 		change_state(GhoulState::Move, GhoulMotion::MOTION_WALK);
-		break;
-	case 2:
-		next_destination();		// 次の目的地を決定
-		change_state(GhoulState::Move, GhoulMotion::MOTION_WALK);
-		break;
-	case 3:
+
+		return;
+	}
+	else
+	{
+		if (attack_count_ >= 2)
+		{
+			next_move();
+			return;
+		}
+		++attack_count_;
 		change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
-		break;
-	default:
-		next_move();
-		break;
+
+		return;
 	}
 }
 
@@ -467,10 +475,10 @@ bool Ghoul::can_attack_player() const
 	return true;
 }
 
-// 待機状態への移行準備
-void Ghoul::ready_to_idle()
+// 次の状態への移行準備
+void Ghoul::ready_to_next_state()
 {
-	// 乱数で待機時間を決める
+	// 乱数で次の状態維持時間を決める
 	int i = rand_.rand_int(1, 3);
-	idle_time_ = 60 * (float)i;
+	state_time_ = 60 * (float)i;
 }

@@ -92,8 +92,8 @@ private:
 	// プレイヤーを攻撃できるか
 	bool can_attack_player() const;
 
-	// 待機状態への移行準備
-	void ready_to_idle();
+	// 次の状態への移行準備
+	void ready_to_next_state();
 
 private:
 	// アニメーションメッシュ
@@ -119,8 +119,11 @@ private:
 	Vector3			next_destination_;
 	// プレイヤーに追従中なのか
 	bool			is_following_player_{ false };
-	// 次の待機維持時間
-	float			idle_time_{ 60.0f };
+	// 次の状態維持時間
+	float			state_time_{ 60.0f };
+	// 連続攻撃回数
+	int				attack_count_{ 0 };
+
 
 	// 最大体力
 	const int		HP{ 20 };
