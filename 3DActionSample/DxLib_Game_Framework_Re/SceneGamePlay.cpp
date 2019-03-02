@@ -9,7 +9,7 @@
 #include "Light.h"
 #include "Player.h"
 #include "DragonBoar.h"
-#include "Ghoul.h"
+#include "GamePlayManager.h"
 
 #include "SkeletalMesh.h"
 #include "CollisionMesh.h"
@@ -39,24 +39,14 @@ void SceneGamePlay::start()
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
 
 	// アクターはここに追加
-	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));			// プレイヤー
-	// world_.add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));	// 敵
-	world_.add_actor(ActorGroup::Enemy, new_actor<Ghoul>(&world_, Vector3{ 0.0f, 0.0f, 0.0f }, 180.0f));
+	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));	// プレイヤー
+	world_.add_actor(ActorGroup::Effect, new_actor<GamePlayManager>(&world_));							// ゲームプレイ管理者
 }
 
 // 更新
 void SceneGamePlay::update(float delta_time)
 {
 	world_.update(delta_time);
-
-	// プレイヤーが死亡した場合、ゲーム終了
-	/*
-	auto player = world_.find_actor(ActorGroup::Player, "Player");	// プレイヤーを検索
-	if (!player)
-	{
-		is_end_ = true;
-	}
-	*/
 }
 
 // 描画
@@ -112,15 +102,20 @@ void SceneGamePlay::end()
 void SceneGamePlay::handle_message(EventMessage message, void* param)
 {
 	// 受け取ったメッセージの種類によって、処理を行う
-	switch (message)
+
+	// プレイヤーが死亡した場合
+	if (message == EventMessage::PlayerDead)
 	{
-	case EventMessage::PlayerDead:	// プレイヤーが死亡した場合
-		is_end_ = true;				// シーン終了
-		break;
-	case EventMessage::EnemyDead:	// 敵が死亡した場合
-		is_end_ = true;				// シーン終了
-		break;
-	default:
-		break;
+		// シーン終了（ゲームオーバーシーンへ移行）
+		is_end_ = true;
+		return;
+	}
+
+	// ボス敵が死亡した場合
+	if (message == EventMessage::BossDead)
+	{
+		// シーン終了（ゲームクリアシーンへ移行）
+
+		return;
 	}
 }

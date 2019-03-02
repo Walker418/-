@@ -23,7 +23,7 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	state_timer_{ 0.0f },
 	is_ground_{ false },
 	is_guard_{ false },
-	is_attack_{ false },
+	attack_on_{ false },
 	invincible_timer_{ 0.0f },
 	skip_timer_{ 0.0f },
 	skip_interval_{ 0.0f }
@@ -200,7 +200,7 @@ void Player::change_state(PlayerState state, int motion)
 	state_ = state;
 	state_timer_ = 0.0f;
 
-	is_attack_ = false;
+	attack_on_ = false;
 }
 
 // ’Êíó‘Ô‚Å‚ÌXV
@@ -305,9 +305,9 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// UŒ‚”»’è‚ð”­¶
-	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !is_attack_)
+	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !attack_on_)
 	{
-		is_attack_ = true;
+		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
@@ -352,9 +352,9 @@ void Player::slash1(float delta_time)
 void Player::slash2(float delta_time)
 {
 	// UŒ‚”»’è‚ð”­¶
-	if (state_timer_ >= 0.5f && !is_attack_)
+	if (state_timer_ >= 0.5f && !attack_on_)
 	{
-		is_attack_ = true;
+		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
 	}
@@ -399,9 +399,9 @@ void Player::slash2(float delta_time)
 void Player::slash3(float delta_time)
 {
 	// UŒ‚”»’è‚ð”­¶
-	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
+	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
 	{
-		is_attack_ = true;
+		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 13.5f + Vector3(0.0f, 6.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
 	}
@@ -504,9 +504,9 @@ void Player::blocking(float delta_time)
 void Player::guard_attack(float delta_time)
 {
 	// UŒ‚”»’è‚ð”­¶
-	if (state_timer_ >= mesh_.motion_end_time() * 1.12f && !is_attack_)
+	if (state_timer_ >= mesh_.motion_end_time() * 1.12f && !attack_on_)
 	{
-		is_attack_ = true;
+		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}

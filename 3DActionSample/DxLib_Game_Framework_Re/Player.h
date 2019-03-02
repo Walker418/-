@@ -135,7 +135,7 @@ private:
 	// ガードしているか
 	bool			is_guard_{ false };
 	// 攻撃判定を発生したのか
-	bool			is_attack_{ false };
+	bool			attack_on_{ false };
 	// 無敵時間タイマー
 	float			invincible_timer_{ 0.0f };
 	// 回避タイマー

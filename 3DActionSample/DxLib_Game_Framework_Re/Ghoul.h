@@ -114,7 +114,7 @@ private:
 	// 怯み累積値
 	int				current_wince_{ 0 };
 	// 攻撃判定を発生したのか
-	bool			is_attack_{ false };
+	bool			attack_on_{ false };
 	// 次の目的地
 	Vector3			next_destination_;
 	// プレイヤーに追従中なのか

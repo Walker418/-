@@ -8,6 +8,7 @@ enum class EventMessage
 	None,			// ダミー
 	PlayerDead,		// プレイヤー死亡
 	EnemyDead,		// 敵死亡
+	BossDead,		// ボス敵死亡
 	PlayerDamage,	// プレイヤーがダメージを受ける
 	EnemyDamage,	// 敵がダメージを受ける
 };

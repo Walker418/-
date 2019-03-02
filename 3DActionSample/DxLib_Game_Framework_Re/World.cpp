@@ -125,7 +125,7 @@ void World::each_actor(ActorGroup group, std::function<void(const ActorPtr&)> fn
 }
 
 // メッセージの送信
-void World::send_message(EventMessage message, void * param)
+void World::send_message(EventMessage message, void* param)
 {
 	handle_message(message, param);
 }

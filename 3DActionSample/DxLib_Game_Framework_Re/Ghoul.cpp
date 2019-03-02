@@ -17,7 +17,7 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	motion_{ GhoulMotion::MOTION_IDLE },
 	state_{ GhoulState::Idle },
 	state_timer_{ 0.0f },
-	is_attack_{ false },
+	attack_on_{ false },
 	is_following_player_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
@@ -55,6 +55,7 @@ void Ghoul::update(float delta_time)
 	// HPが0以下になると、死亡状態に移行
 	if (current_hp_ <= 0 && state_ != GhoulState::Death)
 	{
+		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
 		change_state(GhoulState::Death, MOTION_DEATH);
 
 		return;
@@ -139,7 +140,11 @@ void Ghoul::update_state(float delta_time)
 // 状態の変更
 void Ghoul::change_state(GhoulState state, int motion)
 {
-	if (state != GhoulState::Attack) attack_count_ = 0;
+	// 連続攻撃回数カウンターを更新
+	if (state == GhoulState::Attack)
+		++attack_count_;
+	else
+		attack_count_ = 0;
 
 	previous_state_ = state_;
 
@@ -147,7 +152,7 @@ void Ghoul::change_state(GhoulState state, int motion)
 	state_ = state;
 	state_timer_ = 0.0f;
 
-	is_attack_ = false;
+	attack_on_ = false;
 }
 
 // 待機状態での更新
@@ -171,7 +176,7 @@ void Ghoul::move(float delta_time)
 
 	// 回転処理
 	float angle_to_target = get_angle_to_target(next_destination_);
-	
+
 	if (angle_to_target >= 0.5f)
 	{
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * delta_time);
@@ -194,7 +199,8 @@ void Ghoul::move(float delta_time)
 
 	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);		// 回転行列を初期化
 
-	if (get_unsigned_angle_to_target(next_destination_) <= 15.0f)
+	// 目的地に向かって移動
+	if (get_unsigned_angle_to_target(next_destination_) <= 18.0f && !can_attack_player())
 	{
 		motion_ = MOTION_WALK;
 
@@ -205,7 +211,10 @@ void Ghoul::move(float delta_time)
 	}
 
 	// プレイヤーに近づけば、少し待ってから攻撃する
+	if (can_attack_player())
+	{
 
+	}
 
 	// 一定時間後、次の行動を抽選
 	if (state_timer_ >= state_time_)
@@ -227,9 +236,9 @@ void Ghoul::wince(float delta_time)
 void Ghoul::attack(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() && !is_attack_)
+	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
 	{
-		is_attack_ = true;
+		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 13.0f + Vector3(0.0f, 12.5f, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
 	}
@@ -328,7 +337,6 @@ void Ghoul::next_move()
 			next_move();
 			return;
 		}
-		++attack_count_;
 		change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
 
 		return;
@@ -342,7 +350,7 @@ void Ghoul::next_destination()
 
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
-	
+
 	// i = 0、またはプレイヤーは存在しない場合、ランダムで座標を生成する
 	if (i == 0 || player == nullptr)
 	{
