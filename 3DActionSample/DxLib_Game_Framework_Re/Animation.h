@@ -27,6 +27,11 @@ public:
 	// 終了時間の取得
 	float end_time() const;
 
+	// アニメーションの再生速度の変更
+	void change_speed(float speed);
+	// アニメーションの再生速度のリセット
+	void reset_speed();
+
 private:
 	// 補間フレーム数
 	const float LerpTime{ 10.0f };
@@ -44,6 +49,8 @@ private:
 	float		lerp_timer_{ 0.0f };
 	// アニメーション変換行列
 	Matrices	local_matrices_;
+	// アニメーションの再生速度倍率
+	float		animation_speed_{ 1.0f };
 };
 
 #endif // !ANIMATION_H_

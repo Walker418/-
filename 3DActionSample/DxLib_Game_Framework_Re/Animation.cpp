@@ -8,7 +8,8 @@
 Animation::Animation(int model, int motion) :
 	model_{ model },
 	motion_{ motion },
-	prev_motion_{ motion }
+	prev_motion_{ motion },
+	animation_speed_{ 1.0f }
 {
 	SkeletalMesh::bind(model_);									// メッシュをバインド
 	SkeletalMesh::bind_animation(motion_, motion_timer_);		// アニメーションをバインド
@@ -26,7 +27,7 @@ void Animation::update(float delta_time)
 	SkeletalMesh::get_local_matrices(local_matrices_.data());
 
 	// アニメーションタイマーを更新
-	motion_timer_ = std::fmod(motion_timer_ + 0.5f * delta_time, end_time());
+	motion_timer_ = std::fmod(motion_timer_ + 0.5f * delta_time * animation_speed_, end_time());
 	// 補間タイマーを更新
 	lerp_timer_ = std::fmin(lerp_timer_ + delta_time, LerpTime);
 }
@@ -70,4 +71,16 @@ float Animation::end_time() const
 	SkeletalMesh::bind(model_);
 
 	return SkeletalMesh::end_time(motion_);
+}
+
+// アニメーションの再生速度の変更
+void Animation::change_speed(float speed)
+{
+	animation_speed_ = speed;
+}
+
+// アニメーションの再生速度のリセット
+void Animation::reset_speed()
+{
+	animation_speed_ = 1.0f;
 }

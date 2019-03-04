@@ -29,6 +29,11 @@ public:
 	// モーションの終了時間の取得
 	float motion_end_time() const;
 
+	// モーションの再生速度の変更
+	void change_speed(float speed);
+	// モーションの再生速度のリセット
+	void reset_speed();
+
 private:
 	// メッシュ
 	int				mesh_;

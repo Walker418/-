@@ -49,3 +49,15 @@ float AnimatedMesh::motion_end_time() const
 {
 	return animation_.end_time();
 }
+
+// モーションの再生速度の変更
+void AnimatedMesh::change_speed(float speed)
+{
+	animation_.change_speed(speed);
+}
+
+// モーションの再生速度のリセット
+void AnimatedMesh::reset_speed()
+{
+	animation_.reset_speed();
+}
