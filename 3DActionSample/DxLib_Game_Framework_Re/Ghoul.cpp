@@ -18,7 +18,8 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	state_{ GhoulState::Idle },
 	state_timer_{ 0.0f },
 	attack_on_{ false },
-	is_following_player_{ false }
+	is_following_player_{ false },
+	is_moving_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -29,7 +30,7 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	attack_count_ = 0;
 	rand_.randomize();
 
-	ready_to_next_state();
+	ready_to_next_state(1, 3);
 }
 
 // 更新
@@ -64,8 +65,8 @@ void Ghoul::update(float delta_time)
 	// 怯み累積値が一定量を越えたら、怯み状態に移行
 	if (current_wince_ >= ToWince && state_ != GhoulState::Wince)
 	{
+		current_wince_ = 0;
 		change_state(GhoulState::Wince, MOTION_WINCE);
-
 		return;
 	}
 }
@@ -102,10 +103,10 @@ void Ghoul::handle_message(EventMessage message, void* param)
 	{
 		// メッセージからプレイヤーの攻撃力と怯み値を取得し、ダメージ計算を行う
 		Damage* damage = (Damage*)param;
-		current_hp_ -= damage->power;
-		current_wince_ += damage->impact;
-
-		return;
+		if (state_ != GhoulState::Death)
+			current_hp_ -= damage->power;
+		if (state_ != GhoulState::Wince)
+			current_wince_ += damage->impact;
 	}
 }
 
@@ -166,19 +167,22 @@ void Ghoul::idle(float delta_time)
 // 移動状態での更新
 void Ghoul::move(float delta_time)
 {
-	// プレイヤーを追従中の場合、常時目的地の座標をプレイヤーの座標にする
-	if (is_following_player_)
-	{
-		next_destination_ = get_player_position();
-	}
+	// ============================================================
+	// 以下は移動中の処理
 
-	motion_ = MOTION_TURN_RIGHT;
+	float interval = 0.0f;	// 次の行動への移行タイミングの変数を宣言しておく
 
-	// 回転処理
+	// プレイヤーを追従していれば、常時目的地の座標を更新
+	if (is_following_player_)	next_destination_ = get_player_position();
+
+	// 目的地の方向に向いてから、目的地へ移動
+	// 回転処理（プレイヤーに追従している場合、移動完了後でもプレイヤーに向けるようになっている）
+	motion_ = MOTION_IDLE;
 	float angle_to_target = get_angle_to_target(next_destination_);
 
 	if (angle_to_target >= 0.5f)
 	{
+		motion_ = MOTION_TURN_RIGHT;
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * delta_time);
 	}
 	else if (angle_to_target <= -0.5f)
@@ -199,8 +203,7 @@ void Ghoul::move(float delta_time)
 
 	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);		// 回転行列を初期化
 
-	// 目的地に向かって移動
-	if (get_unsigned_angle_to_target(next_destination_) <= 18.0f && !can_attack_player())
+	if (is_moving_ && get_unsigned_angle_to_target(next_destination_) <= 18.0f)
 	{
 		motion_ = MOTION_WALK;
 
@@ -210,15 +213,49 @@ void Ghoul::move(float delta_time)
 		position_ += velocity_ * delta_time;			// 次の位置を計算
 	}
 
-	// プレイヤーに近づけば、少し待ってから攻撃する
-	if (can_attack_player())
+	if (is_moving_)
 	{
+		// 目的地に着くと、移動完了
+		if (Vector3::Distance(position_, next_destination_) <= 25.0f)
+		{
+			interval = state_timer_ + 60.0f;	// 次の行動は1秒後に実行
+			is_moving_ = false;					// 移動完了
+		}
 
+		// 行動の維持時間を超えたら、次の行動を抽選
+		if (move_timer_ >= state_time_)
+		{
+			next_move();
+		}
+
+		move_timer_ += delta_time;
 	}
 
-	// 一定時間後、次の行動を抽選
-	if (state_timer_ >= state_time_)
-		next_move();
+	// 移動中の処理終了
+	// ============================================================
+
+	// ============================================================
+	// 以下は移動完了後の処理
+
+	if (!is_moving_)
+	{
+		// 次の行動を実行
+		if (state_timer_ >= interval)
+		{
+			// プレイヤーを追従していた場合、攻撃行動に移行（攻撃行動は最大2回まで連続）
+			if (is_following_player_ && attack_count_ < 2)
+			{
+				change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
+			}
+			else
+			{
+				next_move();	// 次の行動を抽選
+			}
+		}
+	}
+
+	// 移動完了後の処理終了
+	// ============================================================
 }
 
 // 怯み状態での更新
@@ -227,7 +264,6 @@ void Ghoul::wince(float delta_time)
 	// モーション終了後、次の行動を抽選
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		current_wince_ = 0;
 		next_move();
 	}
 }
@@ -246,8 +282,6 @@ void Ghoul::attack(float delta_time)
 	// モーション終了後、次の行動を抽選
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		ready_to_next_state();
-		// change_state(GhoulState::Idle, MOTION_IDLE);
 		next_move();
 	}
 }
@@ -306,11 +340,11 @@ void Ghoul::intersect_wall()
 // 次の行動を決定
 void Ghoul::next_move()
 {
-	ready_to_next_state();
-
 	// 乱数で次の行動を決定
 	int i = rand_.rand_int(0, 6);
 
+	// 待機、移動、攻撃状態への移行確率は1/6、2/3、1/6になっている
+	// 待機状態への移行
 	if (i == 0)
 	{
 		// 待機行動は連続に発生しない
@@ -319,17 +353,23 @@ void Ghoul::next_move()
 			next_move();
 			return;
 		}
+		ready_to_next_state(2, 4);
 		change_state(GhoulState::Idle, GhoulMotion::MOTION_IDLE);
 
 		return;
 	}
+	// 移動状態への移行
 	else if (i < 5)
 	{
-		next_destination();		// 次の目的地を決定
+		next_destination();			// 次の目的地を決定
+		ready_to_next_state(4, 8);	// 移動状態は4～8秒間維持
+		move_timer_ = 0.0f;			// 移動状態タイマーをリセット
+		is_moving_ = true;
 		change_state(GhoulState::Move, GhoulMotion::MOTION_WALK);
 
 		return;
 	}
+	// 攻撃状態への移行
 	else
 	{
 		if (attack_count_ >= 2)
@@ -346,7 +386,7 @@ void Ghoul::next_move()
 // 次の目的地を決定
 void Ghoul::next_destination()
 {
-	int i = rand_.rand_int(0, 5);
+	int i = rand_.rand_int(0, 2);
 
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
@@ -358,9 +398,9 @@ void Ghoul::next_destination()
 		is_following_player_ = false;
 
 		// x軸の座標を生成;
-		float x = rand_.rand_float(-50, 51);
+		float x = rand_.rand_float(-135, 136);
 		// z軸の座標を生成
-		float z = rand_.rand_float(-50, 51);
+		float z = rand_.rand_float(-135, 136);
 		// 生成した座標を目的地にする
 		Vector3 new_dest = Vector3(x, 0.0f, z);
 		next_destination_ = new_dest;
@@ -484,9 +524,9 @@ bool Ghoul::can_attack_player() const
 }
 
 // 次の状態への移行準備
-void Ghoul::ready_to_next_state()
+void Ghoul::ready_to_next_state(int min, int max)
 {
 	// 乱数で次の状態維持時間を決める
-	int i = rand_.rand_int(1, 3);
+	int i = rand_.rand_int(min, max);
 	state_time_ = 60 * (float)i;
 }

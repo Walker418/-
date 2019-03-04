@@ -93,7 +93,7 @@ private:
 	bool can_attack_player() const;
 
 	// 次の状態への移行準備
-	void ready_to_next_state();
+	void ready_to_next_state(int min, int max);
 
 private:
 	// アニメーションメッシュ
@@ -106,6 +106,8 @@ private:
 	GhoulState		previous_state_;
 	// 状態タイマー
 	float			state_timer_{ 0.0f };
+	// 移動状態タイマー（移動状態中、プレイヤーが攻撃範囲にいなければ加算）
+	float			move_timer_{ 0.0f };
 	// 乱数生成器
 	Random			rand_;
 
@@ -119,6 +121,8 @@ private:
 	Vector3			next_destination_;
 	// プレイヤーに追従中なのか
 	bool			is_following_player_{ false };
+	// 移動中なのか
+	bool			is_moving_{ false };
 	// 次の状態維持時間
 	float			state_time_{ 60.0f };
 	// 連続攻撃回数

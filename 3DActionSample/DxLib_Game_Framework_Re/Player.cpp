@@ -99,9 +99,10 @@ void Player::draw() const
 		DrawString(0, 0, "ガードしていない", Cr);
 	}
 	*/
-
+	/*
 	Cr = GetColor(255, 255, 255);
 	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", current_hp_);
+	*/
 }
 
 // 衝突リアクション
