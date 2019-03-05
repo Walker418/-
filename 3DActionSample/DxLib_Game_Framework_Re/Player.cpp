@@ -247,25 +247,36 @@ void Player::normal(float delta_time)
 	float forward_speed{ 0.0f };	// 前向き速度
 	float left_speed{ 0.0f };		// 左向き速度
 
-	// 前後移動
-	if (PlayerInput::move_forward())		// 前
+	// 移動は接地状態でしかできない
+	if (is_ground_)
 	{
-		forward_speed = DashSpeed;
-	}
-	else if (PlayerInput::move_backward())	// 後
-	{
-		forward_speed = -DashSpeed;
-	}
-	// 左右移動
-	if (PlayerInput::move_left())			// 左
-	{
-		left_speed = DashSpeed;
-	}
-	else if (PlayerInput::move_right())		// 右
-	{
-		left_speed = -DashSpeed;
-	}
+		// WASDによる移動
+		// 前後移動
+		if (PlayerInput::move_forward())		// 前
+		{
+			forward_speed = DashSpeed;
+		}
+		else if (PlayerInput::move_backward())	// 後
+		{
+			forward_speed = -DashSpeed;
+		}
+		// 左右移動
+		if (PlayerInput::move_left())			// 左
+		{
+			left_speed = DashSpeed;
+		}
+		else if (PlayerInput::move_right())		// 右
+		{
+			left_speed = -DashSpeed;
+		}
 
+		// 左スティックによる移動
+		if (!PlayerInput::keyboard_move())
+		{
+			forward_speed = DashSpeed * PlayerInput::L_stick_move().y;	// 前後
+			left_speed = -DashSpeed * PlayerInput::L_stick_move().x;	// 左右
+		}
+	}
 	// 移動していれば、歩行モーションに変更
 	if (forward_speed != 0.0f || left_speed != 0.0f)
 		motion = MOTION_DASH;

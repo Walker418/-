@@ -32,25 +32,45 @@ bool PlayerInput::skip()
 // 前移動
 bool PlayerInput::move_forward()
 {
-	return (GamePad::getInstance().GetCurrent_L_Stick().y > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::W));
+	// return (GamePad::getInstance().GetCurrent_L_Stick().y > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::W));
+	return Keyboard::getInstance().KeyStateDown(Keycode::W);
 }
 
 // 後移動
 bool PlayerInput::move_backward()
 {
-	return (GamePad::getInstance().GetCurrent_L_Stick().y < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::S));
+	// return (GamePad::getInstance().GetCurrent_L_Stick().y < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::S));
+	return Keyboard::getInstance().KeyStateDown(Keycode::S);
 }
 
 // 左移動
 bool PlayerInput::move_left()
 {
-	return (GamePad::getInstance().GetCurrent_L_Stick().x < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::A));
+	// return (GamePad::getInstance().GetCurrent_L_Stick().x < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::A));
+	return Keyboard::getInstance().KeyStateDown(Keycode::A);
 }
 
 // 右移動
 bool PlayerInput::move_right()
 {
-	return (GamePad::getInstance().GetCurrent_L_Stick().x > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::D));
+	// return (GamePad::getInstance().GetCurrent_L_Stick().x > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::D));
+	return Keyboard::getInstance().KeyStateDown(Keycode::D);
+}
+
+// キーボードで移動しているか
+bool PlayerInput::keyboard_move()
+{
+	// いずれかの方向入力があれば、Trueを返す
+	return (move_forward() || move_backward() || move_left() || move_right());
+}
+
+// 左スティックによる移動
+Vector2 PlayerInput::L_stick_move()
+{
+	// キーボードで移動している場合は反応しない（Vector2::Zeroを返す）
+	if (keyboard_move())	return Vector2::Zero;
+
+	return (GamePad::getInstance().L_Stick());
 }
 
 // カメラ左回転

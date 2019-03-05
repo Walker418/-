@@ -1,6 +1,8 @@
 #ifndef PLAYER_INPUT_H_
 #define PLAYER_INPUT_H_
 
+#include "Vector2.h"
+
 // クラス：プレイヤー入力
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
@@ -24,6 +26,11 @@ public:
 	static bool move_left();
 	// 右移動
 	static bool move_right();
+	// キーボードで移動しているか
+	static bool keyboard_move();
+
+	// 左スティックによる移動
+	static Vector2 L_stick_move();
 
 	// カメラ左回転
 	static bool camera_turn_left();

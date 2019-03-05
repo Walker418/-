@@ -73,7 +73,7 @@ public:
 	// いずれかのボタンが離されているか
 	bool AnyButtonStateUp(int pad = PadNo::Pad1);
 	
-	// POV（十字キー？）の入力された瞬間の方向を取得
+	// POV（十字キー）の入力された瞬間の方向を取得
 	int POVTriggerDown(int pad = PadNo::Pad1);
 	// POVの入力されてる方向を取得
 	int POVStateDown(int pad = PadNo::Pad1);
