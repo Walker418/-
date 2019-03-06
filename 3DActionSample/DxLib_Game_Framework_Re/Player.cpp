@@ -330,7 +330,7 @@ void Player::slash1(float delta_time)
 	// モーション終了の前に、次の攻撃や回避への移行
 	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
 	{
-		/*
+		
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
 		{
@@ -338,14 +338,13 @@ void Player::slash1(float delta_time)
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
-		*/
+		
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
 		// 左回避
 		if (PlayerInput::move_left() && PlayerInput::skip())
 		{
 			ready_to_skip();
-
 			change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
 			return;
 		}
@@ -353,7 +352,6 @@ void Player::slash1(float delta_time)
 		if (PlayerInput::move_right() && PlayerInput::skip())
 		{
 			ready_to_skip();
-
 			change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
 			return;
 		}
@@ -363,6 +361,7 @@ void Player::slash1(float delta_time)
 			// 入力した方向とプレイヤーの左ベクトルの差が少なかったら、回避行動に移る
 			// プレイヤーの方向入力を取得
 			auto input = PlayerInput::L_stick_move();
+
 			// カメラを取得
 			auto camera = world_->camera()->pose();
 			// カメラの正面ベクトルを取得
@@ -372,18 +371,26 @@ void Player::slash1(float delta_time)
 			// 正規化
 			camera_forward.Normalize();
 
-			
-			
+			// 入力した方向を、カメラからのベクトルに変換
+			Vector3 direction = Vector3::Zero;
+			direction += camera_forward * input.y;
+			direction += camera.Left() * -input.x;
+			direction.Normalize();
 
 			// 左回避
-			/*if (Vector3::Angle(rotation_.Left(), vector) <= 10.0f)
+			if (Vector3::Angle(rotation_.Left(), direction) <= 25.0f)
 			{
 				ready_to_skip();
-
 				change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
 				return;
-			}*/
+			}
 			// 右回避
+			if (Vector3::Angle(rotation_.Right(), direction) <= 25.0f)
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
 		}
 	}
 
