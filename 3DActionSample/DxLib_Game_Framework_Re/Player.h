@@ -120,6 +120,8 @@ private:
 	bool can_skip();
 	// 無敵時間内であるか
 	bool is_invincible();
+	// スーパーアーマー状態であるか
+	bool is_super_armor();
 
 private:
 	// アニメーションメッシュ

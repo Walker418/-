@@ -130,14 +130,16 @@ void Player::handle_message(EventMessage message, void* param)
 		{
 			// 攻撃判定の位置がプレイヤーより前の場合、ガードが成立する
 			change_state(PlayerState::Blocking, MOTION_GUARD_BLOCK);
-
 			return;
 		}
 
 		// ガードが成立しない場合、ダメージを計算する
 		current_hp_ -= damage->power;						// ダメージ計算
-		change_state(PlayerState::Damage, MOTION_IMPACT);	// 怯み状態へ移行
-
+		// スーパーアーマー状態でなければ、怯み状態へ移行
+		if (!is_super_armor())
+		{
+			change_state(PlayerState::Damage, MOTION_IMPACT);
+		}
 		return;
 	}
 }
@@ -202,6 +204,8 @@ void Player::change_state(PlayerState state, int motion)
 	state_timer_ = 0.0f;
 
 	attack_on_ = false;
+
+	if (state == PlayerState::Normal)	mesh_.reset_speed();	// 通常状態に戻るとき、必ずモーション速度をリセット
 }
 
 // 通常状態での更新
@@ -214,8 +218,8 @@ void Player::normal(float delta_time)
 		if (PlayerInput::attack())
 		{
 			// 攻撃状態に移行
+			mesh_.change_speed(1.2f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
-
 			return;
 		}
 
@@ -223,7 +227,6 @@ void Player::normal(float delta_time)
 		if (PlayerInput::guard())
 		{
 			change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
-
 			return;
 		}
 	}
@@ -270,7 +273,7 @@ void Player::normal(float delta_time)
 			left_speed = -DashSpeed;
 		}
 
-		// 左スティックによる移動
+		// 左スティックによる移動（WASD操作していなければ有効）
 		if (!PlayerInput::keyboard_move())
 		{
 			forward_speed = DashSpeed * PlayerInput::L_stick_move().y;	// 前後
@@ -317,7 +320,7 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() - 6.5f && !attack_on_)
+	if (state_timer_ >= mesh_.motion_end_time() - 15.0f && !attack_on_)
 	{
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
@@ -325,16 +328,19 @@ void Player::slash1(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ >= mesh_.motion_end_time() + 5.5f && state_timer_ < mesh_.motion_end_time() + 18.0f && is_ground_)
+	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
 	{
+		/*
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
 		{
+			mesh_.reset_speed();
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
-
+		*/
 		// 方向+回避入力されると、回避状態に移行
+		// キーボード操作による入力
 		// 左回避
 		if (PlayerInput::move_left() && PlayerInput::skip())
 		{
@@ -351,10 +357,38 @@ void Player::slash1(float delta_time)
 			change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
 			return;
 		}
+		// パッド操作による入力
+		if (!PlayerInput::keyboard_move() && PlayerInput::skip())
+		{
+			// 入力した方向とプレイヤーの左ベクトルの差が少なかったら、回避行動に移る
+			// プレイヤーの方向入力を取得
+			auto input = PlayerInput::L_stick_move();
+			// カメラを取得
+			auto camera = world_->camera()->pose();
+			// カメラの正面ベクトルを取得
+			auto camera_forward = camera.Forward();
+			// カメラのy軸成分を無視する
+			camera_forward.y = 0;
+			// 正規化
+			camera_forward.Normalize();
+
+			
+			
+
+			// 左回避
+			/*if (Vector3::Angle(rotation_.Left(), vector) <= 10.0f)
+			{
+				ready_to_skip();
+
+				change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}*/
+			// 右回避
+		}
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
 	{
 		normal(delta_time);
 	}
@@ -587,7 +621,7 @@ void Player::left_skip(float delta_time)
 		normal(delta_time);
 	}
 
-	velocity_ = rotation_.Left() * 1.0f;
+	velocity_ = rotation_.Left() * 1.2f;
 	position_ += velocity_ * delta_time;
 
 	if (skip_timer_ <= 0.0f)
@@ -611,7 +645,7 @@ void Player::right_skip(float delta_time)
 		normal(delta_time);
 	}
 
-	velocity_ = rotation_.Right() * 1.0f;
+	velocity_ = rotation_.Right() * 1.2f;
 	position_ += velocity_ * delta_time;
 
 	if (skip_timer_ <= 0.0f)
@@ -699,4 +733,10 @@ bool Player::can_skip()
 bool Player::is_invincible()
 {
 	return (invincible_timer_ > 0.0f || state_ == PlayerState::Damage);
+}
+
+// スーパーアーマー状態であるか
+bool Player::is_super_armor()
+{
+	return state_ == PlayerState::Slash3;
 }

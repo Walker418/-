@@ -275,7 +275,7 @@ void Ghoul::attack(float delta_time)
 	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 13.0f + Vector3(0.0f, 12.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 10.0f + Vector3(0.0f, 12.5f, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
 	}
 

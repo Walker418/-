@@ -11,7 +11,7 @@ class EnemyAttack : public Actor
 {
 public:
 	// コンストラクタ
-	EnemyAttack(IWorld* world, const Vector3& position, int power = 0, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3::Zero, 8.0f));
+	EnemyAttack(IWorld* world, const Vector3& position, int power = 0, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3::Zero, 6.0f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
