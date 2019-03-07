@@ -324,17 +324,21 @@ void Player::slash1(float delta_time)
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
 
-	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
+	// モーション終了の前に、次の攻撃への移行
+	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
 		{
-			mesh_.reset_speed();
+			mesh_.change_speed(1.1f);
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
-		
+	}
+
+	// モーション終了の前に、回避への移行
+	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 15.0f && is_ground_)
+	{
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
