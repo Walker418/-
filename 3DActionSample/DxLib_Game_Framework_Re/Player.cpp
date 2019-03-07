@@ -25,8 +25,7 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	is_guard_{ false },
 	attack_on_{ false },
 	invincible_timer_{ 0.0f },
-	skip_timer_{ 0.0f },
-	skip_interval_{ 0.0f }
+	skip_timer_{ 0.0f }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -66,10 +65,6 @@ void Player::update(float delta_time)
 
 	// 無敵時間タイマーを更新
 	if (invincible_timer_ > 0.0f)	invincible_timer_ -= delta_time;
-
-	// 回避インターバルを更新
-	if (skip_interval_ > 0.0f)
-		skip_interval_ -= delta_time;
 }
 
 // 描画
@@ -431,7 +426,7 @@ void Player::slash2(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > mesh_.motion_end_time() + 4.0f && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
+	if (state_timer_ > mesh_.motion_end_time() + 2.0f && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の3段階目に移行
 		if (PlayerInput::attack())
@@ -528,15 +523,6 @@ void Player::slash2(float delta_time)
 // 攻撃（3段目）での更新
 void Player::slash3(float delta_time)
 {
-	/*
-	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
-	{
-		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 13.5f + Vector3(0.0f, 6.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
-	}
-
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
 	{
@@ -544,41 +530,97 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション再生の間、キャラクターを前進させる
-	if (state_timer_ <= mesh_.motion_end_time() + 28.0f)
+	if (state_timer_ <= mesh_.motion_end_time() + 23.0f)
 	{
 		velocity_ = rotation_.Forward() * 0.15f;
 		position_ += velocity_ * delta_time;
 	}
-
-	// モーション終了の前に、回避への移行
-	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
+	
+	// 攻撃判定を発生
+	if (state_timer_ >= mesh_.motion_end_time() - 12.0f && !attack_on_)
 	{
-		// 前回避
-		if (!PlayerInput::move_left() && !PlayerInput::move_right() && PlayerInput::evasion())
+		attack_on_ = true;
+		Vector3 attack_position = position_ + pose().Forward() * 15.5f + Vector3(0.0f, 9.5f, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
+	}
+	
+	if (state_timer_ > mesh_.motion_end_time() + 5.0f && state_timer_ <= mesh_.motion_end_time() + 30.0f && is_ground_)
+	{
+		// 方向+回避入力されると、回避状態に移行
+		// キーボード操作による入力
+		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			ready_to_skip();
-			change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-			return;
+			// 左回避
+			if (PlayerInput::move_left())
+			{
+				ready_to_skip();
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}
+			// 右回避
+			else if (PlayerInput::move_right())
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+				return;
+			}
 		}
-		// 左回避
-		if (PlayerInput::move_left() && PlayerInput::evasion())
+
+		// パッド操作による入力
+		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			ready_to_skip();
-			change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-			return;
-		}
-		// 右回避
-		if (PlayerInput::move_right() && PlayerInput::evasion())
-		{
-			ready_to_skip();
-			change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-			return;
+			// プレイヤーの方向入力を取得
+			auto input = PlayerInput::L_stick_move();
+
+			// カメラを取得
+			auto camera = world_->camera()->pose();
+			// カメラの正面ベクトルを取得
+			auto camera_forward = camera.Forward();
+			// カメラのy軸成分を無視する
+			camera_forward.y = 0;
+			// 正規化
+			camera_forward.Normalize();
+
+			// 入力した方向を、カメラからのベクトルに変換
+			Vector3 direction = Vector3::Zero;
+			direction += camera_forward * input.y;
+			direction += camera.Left() * -input.x;
+			direction.Normalize();
+
+			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
+			// 左回避
+			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
+			{
+				ready_to_skip();
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}
+			// 右回避
+			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+				return;
+			}
 		}
 	}
-	*/
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
+	if (state_timer_ >= mesh_.motion_end_time() + 35.0f)
 	{
 		normal(delta_time);
 	}
@@ -684,16 +726,16 @@ void Player::forward_evasion(float delta_time)
 	if (!is_ground_)
 	{
 		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
+	// プレイヤーの座標を移動
 	velocity_ = rotation_.Forward() * 1.2f;
 	position_ += velocity_ * delta_time;
 
+	// 回避終了後、通常状態に戻る
 	if (skip_timer_ <= 0.0f)
 	{
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
@@ -708,16 +750,16 @@ void Player::left_evasion(float delta_time)
 	if (!is_ground_)
 	{
 		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
+	// プレイヤーの座標を移動
 	velocity_ = rotation_.Left() * 1.2f;
 	position_ += velocity_ * delta_time;
 
+	// 回避終了後、通常状態に戻る
 	if (skip_timer_ <= 0.0f)
 	{
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
@@ -732,16 +774,16 @@ void Player::right_evasion(float delta_time)
 	if (!is_ground_)
 	{
 		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
+	// プレイヤーの座標を移動
 	velocity_ = rotation_.Right() * 1.2f;
 	position_ += velocity_ * delta_time;
 
+	// 回避終了後、通常状態に戻る
 	if (skip_timer_ <= 0.0f)
 	{
-		skip_interval_ = 15.0f;		// 回避インターバルを設定
 		normal(delta_time);
 	}
 
