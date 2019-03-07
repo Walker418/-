@@ -16,7 +16,7 @@ public:
 	// ガード入力を終了したか
 	static bool guard_end();
 	// 回避入力をしたか
-	static bool skip();
+	static bool evasion();
 
 	// 前移動
 	static bool move_forward();
@@ -31,6 +31,8 @@ public:
 
 	// 左スティックによる移動
 	static Vector2 L_stick_move();
+	// 左スティックで移動しているか
+	static bool gamepad_move();
 
 	// カメラ左回転
 	static bool camera_turn_left();

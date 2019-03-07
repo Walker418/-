@@ -180,14 +180,14 @@ void Player::update_state(float delta_time)
 	case PlayerState::Death:
 		death(delta_time);
 		break;
-	case PlayerState::Skip:
-		skip(delta_time);
+	case PlayerState::ForwardEvasion:
+		forward_evasion(delta_time);
 		break;
-	case PlayerState::LeftSkip:
-		left_skip(delta_time);
+	case PlayerState::LeftEvasion:
+		left_evasion(delta_time);
 		break;
-	case PlayerState::RightSkip:
-		right_skip(delta_time);
+	case PlayerState::RightEvasion:
+		right_evasion(delta_time);
 		break;
 	default:
 		break;
@@ -305,13 +305,10 @@ void Player::normal(float delta_time)
 	// ============================================================
 
 	// 回避
-	if (PlayerInput::skip() && is_ground_ && can_skip())
+	if (PlayerInput::evasion() && is_ground_)
 	{
 		ready_to_skip();
-
-		// 回避状態へ移行
-		change_state(PlayerState::Skip, PlayerMotion::MOTION_DASH);
-
+		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
 		return;
 	}
 }
@@ -330,7 +327,6 @@ void Player::slash1(float delta_time)
 	// モーション終了の前に、次の攻撃や回避への移行
 	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
 	{
-		
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
 		{
@@ -341,24 +337,34 @@ void Player::slash1(float delta_time)
 		
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
-		// 左回避
-		if (PlayerInput::move_left() && PlayerInput::skip())
+		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			ready_to_skip();
-			change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
-			return;
+			// 左回避
+			if (PlayerInput::move_left())
+			{
+				ready_to_skip();
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}
+			// 右回避
+			else if (PlayerInput::move_right())
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+				return;
+			}
 		}
-		// 右回避
-		if (PlayerInput::move_right() && PlayerInput::skip())
-		{
-			ready_to_skip();
-			change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
-			return;
-		}
+
 		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::skip())
+		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// 入力した方向とプレイヤーの左ベクトルの差が少なかったら、回避行動に移る
 			// プレイヤーの方向入力を取得
 			auto input = PlayerInput::L_stick_move();
 
@@ -377,18 +383,26 @@ void Player::slash1(float delta_time)
 			direction += camera.Left() * -input.x;
 			direction.Normalize();
 
+			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
 			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 25.0f)
+			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
 			{
 				ready_to_skip();
-				change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
 				return;
 			}
 			// 右回避
-			if (Vector3::Angle(rotation_.Right(), direction) <= 25.0f)
+			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
 			{
 				ready_to_skip();
-				change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
 				return;
 			}
 		}
@@ -404,6 +418,7 @@ void Player::slash1(float delta_time)
 // 攻撃（2段目）での更新
 void Player::slash2(float delta_time)
 {
+	/*
 	// 攻撃判定を発生
 	if (state_timer_ >= 0.5f && !attack_on_)
 	{
@@ -440,7 +455,7 @@ void Player::slash2(float delta_time)
 			return;
 		}
 	}
-
+	*/
 	// モーション終了後、通常状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
 	{
@@ -475,20 +490,25 @@ void Player::slash3(float delta_time)
 	// モーション終了の前に、回避への移行
 	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
 	{
-		// 左回避
-		if (PlayerInput::move_left() && PlayerInput::skip())
+		// 前回避
+		if (!PlayerInput::move_left() && !PlayerInput::move_right() && PlayerInput::evasion())
 		{
 			ready_to_skip();
-
-			change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
+			change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+			return;
+		}
+		// 左回避
+		if (PlayerInput::move_left() && PlayerInput::evasion())
+		{
+			ready_to_skip();
+			change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
 			return;
 		}
 		// 右回避
-		if (PlayerInput::move_right() && PlayerInput::skip())
+		if (PlayerInput::move_right() && PlayerInput::evasion())
 		{
 			ready_to_skip();
-
-			change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
+			change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
 			return;
 		}
 	}
@@ -593,8 +613,8 @@ void Player::death(float delta_time)
 	}
 }
 
-// 回避状態での更新
-void Player::skip(float delta_time)
+// 前回避状態での更新
+void Player::forward_evasion(float delta_time)
 {
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
@@ -604,7 +624,7 @@ void Player::skip(float delta_time)
 		normal(delta_time);
 	}
 
-	velocity_ = rotation_.Forward() * 1.0f;
+	velocity_ = rotation_.Forward() * 1.2f;
 	position_ += velocity_ * delta_time;
 
 	if (skip_timer_ <= 0.0f)
@@ -618,7 +638,7 @@ void Player::skip(float delta_time)
 }
 
 // 左回避状態での更新
-void Player::left_skip(float delta_time)
+void Player::left_evasion(float delta_time)
 {
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
@@ -642,7 +662,7 @@ void Player::left_skip(float delta_time)
 }
 
 // 右回避状態での更新
-void Player::right_skip(float delta_time)
+void Player::right_evasion(float delta_time)
 {
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
@@ -714,6 +734,8 @@ void Player::intersect_wall()
 // 回避準備
 void Player::ready_to_skip()
 {
+	// モーションの再生速度を引き上げる
+	mesh_.change_speed(1.5f);
 	// 回避時間と無敵時間を設定
 	skip_timer_ = 30.0f;			// 回避時間：0.5秒
 	invincible_timer_ = 12.0f;		// 無敵時間：0.2秒
@@ -728,12 +750,6 @@ bool Player::can_block(Vector3 atk_pos)
 
 	// 前方向とプレイヤーの内積が0以上であれば、Trueを返す
 	return (forward_dot_target >= 0.0f);
-}
-
-// ステップ回避を使えるか
-bool Player::can_skip()
-{
-	return skip_interval_ <= 0.0f;
 }
 
 // 無敵時間内であるか

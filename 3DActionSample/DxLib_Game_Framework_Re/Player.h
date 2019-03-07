@@ -25,9 +25,9 @@ private:
 		GuardAttack,	// ガード攻撃
 		GuardEnd,		// ガード終了
 		Death,			// 死亡
-		Skip,			// 回避
-		LeftSkip,		// 左回避
-		RightSkip,		// 右回避
+		ForwardEvasion,	// 前回避
+		LeftEvasion,	// 左回避
+		RightEvasion,	// 右回避
 	};
 
 	// 列挙型：プレイヤーのモーション
@@ -100,12 +100,12 @@ private:
 	void guard_end(float delta_time);
 	// 死亡状態での更新
 	void death(float delta_time);
-	// 回避状態での更新
-	void skip(float delta_time);
+	// 前回避状態での更新
+	void forward_evasion(float delta_time);
 	// 左回避状態での更新
-	void left_skip(float delta_time);
+	void left_evasion(float delta_time);
 	// 右回避状態での更新
-	void right_skip(float delta_time);
+	void right_evasion(float delta_time);
 
 	// 地面との接触処理
 	void intersect_ground();
@@ -116,8 +116,6 @@ private:
 
 	// ガードは成立するか
 	bool can_block(Vector3 atk_pos);
-	// 回避を使えるか
-	bool can_skip();
 	// 無敵時間内であるか
 	bool is_invincible();
 	// スーパーアーマー状態であるか

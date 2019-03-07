@@ -8,7 +8,7 @@
 // 攻撃入力をしたか
 bool PlayerInput::attack()
 {
-	return (GamePad::getInstance().ButtonTriggerDown(PadButton::B) || Keyboard::getInstance().KeyTriggerDown(Keycode::Space));
+	return (GamePad::getInstance().ButtonTriggerDown(PadButton::Y) || Keyboard::getInstance().KeyTriggerDown(Keycode::Space));
 }
 
 // ガード入力をしたか
@@ -24,7 +24,7 @@ bool PlayerInput::guard_end()
 }
 
 // 回避入力をしたか
-bool PlayerInput::skip()
+bool PlayerInput::evasion()
 {
 	return (GamePad::getInstance().ButtonTriggerDown(PadButton::A) || Keyboard::getInstance().KeyTriggerDown(Keycode::L_Shift));
 }
@@ -32,28 +32,24 @@ bool PlayerInput::skip()
 // 前移動
 bool PlayerInput::move_forward()
 {
-	// return (GamePad::getInstance().GetCurrent_L_Stick().y > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::W));
 	return Keyboard::getInstance().KeyStateDown(Keycode::W);
 }
 
 // 後移動
 bool PlayerInput::move_backward()
 {
-	// return (GamePad::getInstance().GetCurrent_L_Stick().y < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::S));
 	return Keyboard::getInstance().KeyStateDown(Keycode::S);
 }
 
 // 左移動
 bool PlayerInput::move_left()
 {
-	// return (GamePad::getInstance().GetCurrent_L_Stick().x < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::A));
 	return Keyboard::getInstance().KeyStateDown(Keycode::A);
 }
 
 // 右移動
 bool PlayerInput::move_right()
 {
-	// return (GamePad::getInstance().GetCurrent_L_Stick().x > 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::D));
 	return Keyboard::getInstance().KeyStateDown(Keycode::D);
 }
 
@@ -71,6 +67,13 @@ Vector2 PlayerInput::L_stick_move()
 	if (keyboard_move())	return Vector2::Zero;
 
 	return (GamePad::getInstance().L_Stick());
+}
+
+// 左スティックで移動しているか
+bool PlayerInput::gamepad_move()
+{
+	// 左スティックの入力は0でなければ、Trueを返す
+	return L_stick_move() != Vector2::Zero;
 }
 
 // カメラ左回転
