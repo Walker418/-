@@ -11,6 +11,8 @@ class PlayerInput
 public:
 	// 攻撃入力をしたか
 	static bool attack();
+	// ジャンプ攻撃入力をしたか
+	static bool jump_attack();
 	// ガード入力をしたか
 	static bool guard();
 	// ガード入力を終了したか

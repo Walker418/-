@@ -19,6 +19,7 @@ private:
 		Slash1,			// 攻撃（1段目）
 		Slash2,			// 攻撃（2段目）
 		Slash3,			// 攻撃（3段目）
+		JumpAttack,		// ジャンプ攻撃
 		Damage,			// 怯み
 		Guard,			// ガード
 		Blocking,		// ガードによるノックバック
@@ -88,6 +89,8 @@ private:
 	void slash2(float delta_time);
 	// 攻撃（3段目）での更新
 	void slash3(float delta_time);
+	// ジャンプ攻撃での更新
+	void jump_attack(float delta_time);
 	// 被弾状態での更新
 	void damage(float delta_time);
 	// ガード時の更新
@@ -136,6 +139,8 @@ private:
 	bool			is_guard_{ false };
 	// 攻撃判定を発生したのか
 	bool			attack_on_{ false };
+	// ジャンプ攻撃は開始したか
+	bool			jump_attack_started_{ false };
 	// 無敵時間タイマー
 	float			invincible_timer_{ 0.0f };
 	// 回避タイマー

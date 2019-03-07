@@ -11,22 +11,33 @@ bool PlayerInput::attack()
 	return (GamePad::getInstance().ButtonTriggerDown(PadButton::Y) || Keyboard::getInstance().KeyTriggerDown(Keycode::Space));
 }
 
+// ジャンプ攻撃入力をしたか
+bool PlayerInput::jump_attack()
+{
+	if (GamePad::getInstance().ButtonTriggerDown(PadButton::Y) && GamePad::getInstance().ButtonTriggerDown(PadButton::B))
+		return true;
+	if (Keyboard::getInstance().KeyTriggerDown(Keycode::C))
+		return true;
+
+	return false;
+}
+
 // ガード入力をしたか
 bool PlayerInput::guard()
 {
-	return (GamePad::getInstance().ButtonStateDown(PadButton::R) || Keyboard::getInstance().KeyStateDown(Keycode::L_Control));
+	return (GamePad::getInstance().ButtonStateDown(PadButton::R) || Keyboard::getInstance().KeyStateDown(Keycode::Z));
 }
 
 // ガード入力を終了したか
 bool PlayerInput::guard_end()
 {
-	return (GamePad::getInstance().ButtonStateUp(PadButton::R) && Keyboard::getInstance().KeyStateUp(Keycode::L_Control));
+	return (GamePad::getInstance().ButtonStateUp(PadButton::R) && Keyboard::getInstance().KeyStateUp(Keycode::Z));
 }
 
 // 回避入力をしたか
 bool PlayerInput::evasion()
 {
-	return (GamePad::getInstance().ButtonTriggerDown(PadButton::A) || Keyboard::getInstance().KeyTriggerDown(Keycode::L_Shift));
+	return (GamePad::getInstance().ButtonTriggerDown(PadButton::A) || Keyboard::getInstance().KeyTriggerDown(Keycode::X));
 }
 
 // 前移動
