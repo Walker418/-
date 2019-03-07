@@ -152,9 +152,9 @@ private:
 	// 最大体力
 	const int		HP{ 100 };
 	// 歩行速度
-	const float		WalkSpeed{ 0.28f };
+	const float		WalkSpeed{ 0.3f };
 	// ダッシュ速度
-	const float		DashSpeed{ 0.6f };
+	const float		DashSpeed{ 0.8f };
 	// 回転速度
 	const float		RotateSpeed{ 0.3f };
 	// 重力

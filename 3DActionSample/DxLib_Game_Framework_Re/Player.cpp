@@ -209,16 +209,15 @@ void Player::normal(float delta_time)
 	// 攻撃、ガードの行動は接地状態でしか移行できない
 	if (is_ground_)
 	{
-		// スペースバーが押されると、攻撃する
+		// 攻撃状態への移行
 		if (PlayerInput::attack())
 		{
-			// 攻撃状態に移行
-			mesh_.change_speed(1.2f);	// 次のモーション速度を設定
+			mesh_.change_speed(1.5f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 			return;
 		}
 
-		// 左Ctrlキーが押されると、ガード状態に移行
+		// ガード状態への移行
 		if (PlayerInput::guard())
 		{
 			mesh_.change_speed(1.5f);	// 次のモーション速度を設定
@@ -313,27 +312,29 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() - 15.0f && !attack_on_)
+	if (state_timer_ >= 30.0f && !attack_on_)
 	{
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
+
+		mesh_.change_speed(1.3f);	// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > mesh_.motion_end_time() - 1.0f && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
+	if (state_timer_ > 37.0f && state_timer_ <= 47.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.1f);
+			mesh_.change_speed(1.2f);
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
 	}
 
 	// モーション終了の前に、回避への移行
-	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 15.0f && is_ground_)
+	if (state_timer_ > 35.0f && state_timer_ < 55.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
@@ -407,9 +408,9 @@ void Player::slash1(float delta_time)
 			}
 		}
 	}
-
+	
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
+	if (state_timer_ >= 60.0f)
 	{
 		normal(delta_time);
 	}
@@ -419,27 +420,29 @@ void Player::slash1(float delta_time)
 void Player::slash2(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= 12.0f && !attack_on_)
+	if (state_timer_ >= 10.0f && !attack_on_)
 	{
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
+		mesh_.reset_speed();	// 以降のモーション速度を少し遅くにする
 	}
-
+	
 	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > mesh_.motion_end_time() + 2.0f && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
+	if (state_timer_ > 33.0f && state_timer_ <= 41.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の3段階目に移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.1f);
+			// mesh_.change_speed(1.1f);
+			mesh_.reset_speed();
 			change_state(PlayerState::Slash3, MOTION_SLASH_3);
 			return;
 		}
 	}
-
+	
 	// モーション終了の前に、回避への移行
-	if (state_timer_ > mesh_.motion_end_time() + 0.0f && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
+	if (state_timer_ > 20.0f && state_timer_ <= 41.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
@@ -513,9 +516,9 @@ void Player::slash2(float delta_time)
 			}
 		}
 	}
-
+	
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
+	if (state_timer_ >= 45.0f)
 	{
 		normal(delta_time);
 	}
@@ -529,7 +532,7 @@ void Player::slash3(float delta_time)
 	{
 		normal(delta_time);
 	}
-
+	/*
 	// モーション再生の間、キャラクターを前進させる
 	if (state_timer_ <= mesh_.motion_end_time() + 23.0f)
 	{
@@ -619,7 +622,7 @@ void Player::slash3(float delta_time)
 			}
 		}
 	}
-
+	*/
 	// モーション終了後、通常状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() + 35.0f)
 	{
@@ -655,7 +658,7 @@ void Player::guard(float delta_time)
 	// ガード攻撃への移行
 	if (PlayerInput::attack())
 	{
-		mesh_.change_speed(1.4f);
+		mesh_.change_speed(1.5f);
 		change_state(PlayerState::GuardAttack, MOTION_GUARD_SLASH);
 		return;
 	}
@@ -694,23 +697,43 @@ void Player::guard_attack(float delta_time)
 {
 	/*
 	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() * 1.12f && !attack_on_)
+	if (state_timer_ >= 35.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
 	*/
-
 	// モーション終了後の状態移行
 	// ガード状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 6.0f && PlayerInput::guard())
+	/*
+	if (state_timer_ >= mesh_.motion_end_time() + 10.0f && PlayerInput::guard())
 	{
 		state_ = PlayerState::Guard;
 		guard(delta_time);
 	}
-	// 通常状態に移行
-	else if (state_timer_ >= mesh_.motion_end_time() + 20.0f)
+	*/
+	/*
+	// モーション終了後の状態移行
+	if (state_timer_ >= mesh_.motion_end_time() + 8.0f && state_timer_ < mesh_.motion_end_time() + 15.0f)
+	{
+		// 攻撃（1段目）への移行
+		if (PlayerInput::attack())
+		{
+			mesh_.change_speed(1.2f);	// 次のモーション速度を設定
+			change_state(PlayerState::Slash1, MOTION_SLASH_1);
+			return;
+		}
+		// ガード状態に戻る
+		else if (PlayerInput::guard())
+		{
+			state_ = PlayerState::Guard;
+			guard(delta_time);
+		}
+	}
+	*/
+	// 通常状態への移行
+	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
 	{
 		normal(delta_time);
 	}
