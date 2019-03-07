@@ -325,7 +325,7 @@ void Player::slash1(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > mesh_.motion_end_time() && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
+	if (state_timer_ > mesh_.motion_end_time() - 1.0f && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
 	{
 		// 攻撃入力されると、攻撃の2段階目に移行
 		if (PlayerInput::attack())
@@ -422,44 +422,102 @@ void Player::slash1(float delta_time)
 // 攻撃（2段目）での更新
 void Player::slash2(float delta_time)
 {
-	/*
 	// 攻撃判定を発生
-	if (state_timer_ >= 0.5f && !attack_on_)
+	if (state_timer_ >= 10.0f && !attack_on_)
 	{
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
 	}
 
-	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ >= mesh_.motion_end_time() + 5.0f && state_timer_ < mesh_.motion_end_time() + 18.0f && is_ground_)
+	// モーション終了の前に、次の攻撃への移行
+	if (state_timer_ > mesh_.motion_end_time() + 4.0f && state_timer_ <= mesh_.motion_end_time() + 10.0f && is_ground_)
 	{
-		// 攻撃入力されると、攻撃の2段階目に移行
+		// 攻撃入力されると、攻撃の3段階目に移行
 		if (PlayerInput::attack())
 		{
+			mesh_.change_speed(1.1f);
 			change_state(PlayerState::Slash3, MOTION_SLASH_3);
 			return;
 		}
+	}
 
+	// モーション終了の前に、回避への移行
+	if (state_timer_ > mesh_.motion_end_time() + 0.0f && state_timer_ <= mesh_.motion_end_time() + 12.0f && is_ground_)
+	{
 		// 方向+回避入力されると、回避状態に移行
-		// 左回避
-		if (PlayerInput::move_left() && PlayerInput::skip())
+		// キーボード操作による入力
+		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			ready_to_skip();
-
-			change_state(PlayerState::LeftSkip, PlayerMotion::MOTION_STRAFE_LEFT);
-			return;
+			// 左回避
+			if (PlayerInput::move_left())
+			{
+				ready_to_skip();
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}
+			// 右回避
+			else if (PlayerInput::move_right())
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+				return;
+			}
 		}
-		// 右回避
-		if (PlayerInput::move_right() && PlayerInput::skip())
-		{
-			ready_to_skip();
 
-			change_state(PlayerState::RightSkip, PlayerMotion::MOTION_STRAFE_RIGHT);
-			return;
+		// パッド操作による入力
+		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
+		{
+			// プレイヤーの方向入力を取得
+			auto input = PlayerInput::L_stick_move();
+
+			// カメラを取得
+			auto camera = world_->camera()->pose();
+			// カメラの正面ベクトルを取得
+			auto camera_forward = camera.Forward();
+			// カメラのy軸成分を無視する
+			camera_forward.y = 0;
+			// 正規化
+			camera_forward.Normalize();
+
+			// 入力した方向を、カメラからのベクトルに変換
+			Vector3 direction = Vector3::Zero;
+			direction += camera_forward * input.y;
+			direction += camera.Left() * -input.x;
+			direction.Normalize();
+
+			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
+			// 左回避
+			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
+			{
+				ready_to_skip();
+				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+				return;
+			}
+			// 右回避
+			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
+			{
+				ready_to_skip();
+				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+				return;
+			}
+			// 前回避
+			else
+			{
+				ready_to_skip();
+				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+				return;
+			}
 		}
 	}
-	*/
+
 	// モーション終了後、通常状態に戻る
 	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
 	{
@@ -470,6 +528,7 @@ void Player::slash2(float delta_time)
 // 攻撃（3段目）での更新
 void Player::slash3(float delta_time)
 {
+	/*
 	// 攻撃判定を発生
 	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
 	{
@@ -516,9 +575,10 @@ void Player::slash3(float delta_time)
 			return;
 		}
 	}
+	*/
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 45.0f)
+	if (state_timer_ >= mesh_.motion_end_time() + 30.0f)
 	{
 		normal(delta_time);
 	}
