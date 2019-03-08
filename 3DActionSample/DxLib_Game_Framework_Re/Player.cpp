@@ -543,11 +543,12 @@ void Player::slash3(float delta_time)
 	if (state_timer_ >= 43.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.5f + Vector3(0.0f, 9.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
 	}
-	/*
-	if (state_timer_ > mesh_.motion_end_time() + 5.0f && state_timer_ <= mesh_.motion_end_time() + 30.0f && is_ground_)
+	
+	// モーション終了の前に、回避への移行
+	if (state_timer_ > 50.0f && state_timer_ <= mesh_.motion_end_time() + 70.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
 		// キーボード操作による入力
@@ -621,7 +622,7 @@ void Player::slash3(float delta_time)
 			}
 		}
 	}
-	*/
+	
 	// モーション終了後、通常状態に戻る
 	if (state_timer_ >= 72.0f)
 	{
