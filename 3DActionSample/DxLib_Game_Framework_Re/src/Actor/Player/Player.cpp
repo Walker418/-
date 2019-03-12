@@ -354,72 +354,13 @@ void Player::slash1(float delta_time)
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			// 左回避
-			if (PlayerInput::move_left())
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (PlayerInput::move_right())
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_keyboard();
 		}
 
 		// パッド操作による入力
 		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// プレイヤーの方向入力を取得
-			auto input = PlayerInput::L_stick_move();
-
-			// カメラを取得
-			auto camera = world_->camera()->pose();
-			// カメラの正面ベクトルを取得
-			auto camera_forward = camera.Forward();
-			// カメラのy軸成分を無視する
-			camera_forward.y = 0;
-			// 正規化
-			camera_forward.Normalize();
-
-			// 入力した方向を、カメラからのベクトルに変換
-			Vector3 direction = Vector3::Zero;
-			direction += camera_forward * input.y;
-			direction += camera.Left() * -input.x;
-			direction.Normalize();
-
-			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
-			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_pad();
 		}
 	}
 
@@ -461,72 +402,13 @@ void Player::slash2(float delta_time)
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			// 左回避
-			if (PlayerInput::move_left())
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (PlayerInput::move_right())
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_keyboard();
 		}
 
 		// パッド操作による入力
 		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// プレイヤーの方向入力を取得
-			auto input = PlayerInput::L_stick_move();
-
-			// カメラを取得
-			auto camera = world_->camera()->pose();
-			// カメラの正面ベクトルを取得
-			auto camera_forward = camera.Forward();
-			// カメラのy軸成分を無視する
-			camera_forward.y = 0;
-			// 正規化
-			camera_forward.Normalize();
-
-			// 入力した方向を、カメラからのベクトルに変換
-			Vector3 direction = Vector3::Zero;
-			direction += camera_forward * input.y;
-			direction += camera.Left() * -input.x;
-			direction.Normalize();
-
-			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
-			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_pad();
 		}
 	}
 
@@ -568,72 +450,13 @@ void Player::slash3(float delta_time)
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			// 左回避
-			if (PlayerInput::move_left())
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (PlayerInput::move_right())
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_keyboard();
 		}
 
 		// パッド操作による入力
 		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// プレイヤーの方向入力を取得
-			auto input = PlayerInput::L_stick_move();
-
-			// カメラを取得
-			auto camera = world_->camera()->pose();
-			// カメラの正面ベクトルを取得
-			auto camera_forward = camera.Forward();
-			// カメラのy軸成分を無視する
-			camera_forward.y = 0;
-			// 正規化
-			camera_forward.Normalize();
-
-			// 入力した方向を、カメラからのベクトルに変換
-			Vector3 direction = Vector3::Zero;
-			direction += camera_forward * input.y;
-			direction += camera.Left() * -input.x;
-			direction.Normalize();
-
-			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
-			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_pad();
 		}
 	}
 
@@ -681,72 +504,13 @@ void Player::jump_attack1(float delta_time)
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			// 左回避
-			if (PlayerInput::move_left())
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (PlayerInput::move_right())
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_keyboard();
 		}
 
 		// パッド操作による入力
 		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// プレイヤーの方向入力を取得
-			auto input = PlayerInput::L_stick_move();
-
-			// カメラを取得
-			auto camera = world_->camera()->pose();
-			// カメラの正面ベクトルを取得
-			auto camera_forward = camera.Forward();
-			// カメラのy軸成分を無視する
-			camera_forward.y = 0;
-			// 正規化
-			camera_forward.Normalize();
-
-			// 入力した方向を、カメラからのベクトルに変換
-			Vector3 direction = Vector3::Zero;
-			direction += camera_forward * input.y;
-			direction += camera.Left() * -input.x;
-			direction.Normalize();
-
-			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
-			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_pad();
 		}
 	}
 	
@@ -788,72 +552,13 @@ void Player::jump_attack2(float delta_time)
 		// キーボード操作による入力
 		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			// 左回避
-			if (PlayerInput::move_left())
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (PlayerInput::move_right())
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_keyboard();
 		}
 
 		// パッド操作による入力
 		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
 		{
-			// プレイヤーの方向入力を取得
-			auto input = PlayerInput::L_stick_move();
-
-			// カメラを取得
-			auto camera = world_->camera()->pose();
-			// カメラの正面ベクトルを取得
-			auto camera_forward = camera.Forward();
-			// カメラのy軸成分を無視する
-			camera_forward.y = 0;
-			// 正規化
-			camera_forward.Normalize();
-
-			// 入力した方向を、カメラからのベクトルに変換
-			Vector3 direction = Vector3::Zero;
-			direction += camera_forward * input.y;
-			direction += camera.Left() * -input.x;
-			direction.Normalize();
-
-			// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
-			// 左回避
-			if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-				return;
-			}
-			// 右回避
-			else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-			{
-				ready_to_skip();
-				change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-				return;
-			}
-			// 前回避
-			else
-			{
-				ready_to_skip();
-				change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-				return;
-			}
+			attack_to_evasion_pad();
 		}
 	}
 
@@ -923,7 +628,6 @@ void Player::blocking(float delta_time)
 // ガード攻撃での更新
 void Player::guard_attack(float delta_time)
 {
-	
 	// 攻撃判定を発生
 	if (state_timer_ >= 35.0f && !attack_on_)
 	{
@@ -931,35 +635,35 @@ void Player::guard_attack(float delta_time)
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
-	
-	// モーション終了後の状態移行
-	// ガード状態に戻る
-	/*
-	if (state_timer_ >= mesh_.motion_end_time() + 10.0f && PlayerInput::guard())
+
+	// モーション終了の前に、次の攻撃への移行
+	if (state_timer_ > 45.0f && state_timer_ < 60.0f)
 	{
-		state_ = PlayerState::Guard;
-		guard(delta_time);
-	}
-	*/
-	/*
-	// モーション終了後の状態移行
-	if (state_timer_ >= mesh_.motion_end_time() + 8.0f && state_timer_ < mesh_.motion_end_time() + 15.0f)
-	{
-		// 攻撃（1段目）への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.2f);	// 次のモーション速度を設定
+			mesh_.change_speed(1.6f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 			return;
 		}
-		// ガード状態に戻る
-		else if (PlayerInput::guard())
+	}
+
+	// モーション終了の前に、回避への移行
+	if (state_timer_ > 45.0f && state_timer_ < 60.0f && is_ground_)
+	{
+		// 方向+回避入力されると、回避状態に移行
+		// キーボード操作による入力
+		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
 		{
-			state_ = PlayerState::Guard;
-			guard(delta_time);
+			attack_to_evasion_keyboard();
+		}
+
+		// パッド操作による入力
+		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
+		{
+			attack_to_evasion_pad();
 		}
 	}
-	*/
+
 	// 通常状態への移行
 	if (state_timer_ >= mesh_.motion_end_time() + 15.0f)
 	{
@@ -1058,6 +762,77 @@ void Player::right_evasion(float delta_time)
 
 	// 回避タイマーの更新
 	skip_timer_ -= delta_time;
+}
+
+// 攻撃後の回避行動移行（ゲームパッド）
+void Player::attack_to_evasion_pad()
+{
+	// プレイヤーの方向入力を取得
+	auto input = PlayerInput::L_stick_move();
+
+	// カメラを取得
+	auto camera = world_->camera()->pose();
+	// カメラの正面ベクトルを取得
+	auto camera_forward = camera.Forward();
+	// カメラのy軸成分を無視する
+	camera_forward.y = 0;
+	// 正規化
+	camera_forward.Normalize();
+
+	// 入力した方向を、カメラからのベクトルに変換
+	Vector3 direction = Vector3::Zero;
+	direction += camera_forward * input.y;
+	direction += camera.Left() * -input.x;
+	direction.Normalize();
+
+	// 入力した方向とプレイヤーの方向ベクトルの差が少なかったら、回避行動に移る
+	// 左回避
+	if (Vector3::Angle(rotation_.Left(), direction) <= 45.0f)
+	{
+		ready_to_skip();
+		change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+		return;
+	}
+	// 右回避
+	else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
+	{
+		ready_to_skip();
+		change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+		return;
+	}
+	// 前回避
+	else
+	{
+		ready_to_skip();
+		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+		return;
+	}
+}
+
+// 攻撃後の回避行動移行（キーボード）
+void Player::attack_to_evasion_keyboard()
+{
+	// 左回避
+	if (PlayerInput::move_left())
+	{
+		ready_to_skip();
+		change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
+		return;
+	}
+	// 右回避
+	else if (PlayerInput::move_right())
+	{
+		ready_to_skip();
+		change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
+		return;
+	}
+	// 前回避
+	else
+	{
+		ready_to_skip();
+		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
+		return;
+	}
 }
 
 // 地面との接触処理
