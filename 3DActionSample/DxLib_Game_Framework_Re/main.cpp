@@ -1,5 +1,4 @@
-#include "MyGame.h"
-#include "ActionSample.h"
+#include "src/Game/ActionSample.h"
 
 int main()
 {
