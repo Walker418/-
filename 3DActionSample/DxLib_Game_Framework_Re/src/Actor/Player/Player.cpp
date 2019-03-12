@@ -80,9 +80,8 @@ void Player::draw() const
 	Cr = GetColor(255, 0, 0);
 	DrawLine3D(position_, position_ + pose().Forward() * 10.0f, Cr);
 
-
 	// デバッグメッセージ
-
+	/*
 	Cr = GetColor(255, 255, 255);
 	if (is_guard_)
 	{
@@ -92,7 +91,7 @@ void Player::draw() const
 	{
 		DrawString(0, 0, "ガードしていない", Cr);
 	}
-
+	*/
 	/*
 	Cr = GetColor(255, 255, 255);
 	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", current_hp_);
@@ -924,7 +923,7 @@ void Player::blocking(float delta_time)
 // ガード攻撃での更新
 void Player::guard_attack(float delta_time)
 {
-	/*
+	
 	// 攻撃判定を発生
 	if (state_timer_ >= 35.0f && !attack_on_)
 	{
@@ -932,7 +931,7 @@ void Player::guard_attack(float delta_time)
 		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
 	}
-	*/
+	
 	// モーション終了後の状態移行
 	// ガード状態に戻る
 	/*

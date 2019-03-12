@@ -125,9 +125,8 @@ private:
 	bool			is_moving_{ false };
 	// Ÿ‚Ìó‘ÔˆÛŠÔ
 	float			state_time_{ 60.0f };
-	// ˜A‘±UŒ‚‰ñ”
-	int				attack_count_{ 0 };
-
+	// UŒ‚‚ÌŠÔŠuŠÔ
+	float			attack_interval_{ 0.0f };
 
 	// Å‘å‘Ì—Í
 	const int		HP{ 20 };

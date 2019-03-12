@@ -19,7 +19,8 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	state_timer_{ 0.0f },
 	attack_on_{ false },
 	is_following_player_{ false },
-	is_moving_{ false }
+	is_moving_{ false },
+	attack_interval_{ 0.0f }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -27,7 +28,6 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	current_wince_ = 0;
 	previous_state_ = state_;
 	next_destination_ = Vector3::Zero;
-	attack_count_ = 0;
 	rand_.randomize();
 
 	ready_to_next_state(1, 3);
@@ -69,6 +69,10 @@ void Ghoul::update(float delta_time)
 		change_state(GhoulState::Wince, MOTION_WINCE);
 		return;
 	}
+
+	// 攻撃間隔カウンターを減算
+	if (attack_interval_ > 0.0f)
+		attack_interval_ -= delta_time;
 }
 
 // 描画
@@ -81,8 +85,11 @@ void Ghoul::draw() const
 	// 線分で方向を示す（デバッグモードのみ）
 	unsigned int Cr;
 	Cr = GetColor(255, 0, 0);
-
 	DrawLine3D(position_, position_ + pose().Forward() * 25.0f, Cr);
+
+	// デバッグメッセージ
+	Cr = GetColor(255, 255, 255);
+	DrawFormatString(0, 0, Cr, "攻撃間隔： %f", attack_interval_);
 }
 
 // 衝突リアクション
@@ -141,12 +148,6 @@ void Ghoul::update_state(float delta_time)
 // 状態の変更
 void Ghoul::change_state(GhoulState state, int motion)
 {
-	// 連続攻撃回数カウンターを更新
-	if (state == GhoulState::Attack)
-		++attack_count_;
-	else
-		attack_count_ = 0;
-
 	previous_state_ = state_;
 
 	motion_ = motion;
@@ -216,7 +217,7 @@ void Ghoul::move(float delta_time)
 	if (is_moving_)
 	{
 		// 目的地に着くと、移動完了
-		if (Vector3::Distance(position_, next_destination_) <= 25.0f)
+		if (can_attack_player() || Vector3::Distance(position_, next_destination_) <= 12.0f)
 		{
 			interval = state_timer_ + 60.0f;	// 次の行動は1秒後に実行
 			is_moving_ = false;					// 移動完了
@@ -242,9 +243,10 @@ void Ghoul::move(float delta_time)
 		// 次の行動を実行
 		if (state_timer_ >= interval)
 		{
-			// プレイヤーを追従していた場合、攻撃行動に移行（攻撃行動は最大2回まで連続）
-			if (is_following_player_ && attack_count_ < 2)
+			// プレイヤーは近くにいる場合、攻撃行動に移行
+			if (can_attack_player())
 			{
+				attack_interval_ = 120.0f;
 				change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
 			}
 			else
@@ -271,18 +273,23 @@ void Ghoul::wince(float delta_time)
 // 攻撃状態での更新
 void Ghoul::attack(float delta_time)
 {
+	float interval = 0.0f;	// 次の行動への移行タイミングの変数を宣言しておく
+
 	// 攻撃判定を発生
 	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 10.0f + Vector3(0.0f, 12.5f, 0.0f);
+		Vector3 attack_position = position_ + pose().Forward() * 8.0f + Vector3(0.0f, 12.5f, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
+		interval = state_timer_ + 90.0f;
 	}
 
 	// モーション終了後、次の行動を抽選
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		next_move();
+		motion_ = MOTION_IDLE;
+
+		if (state_timer_ >= interval)	next_move();
 	}
 }
 
@@ -372,13 +379,8 @@ void Ghoul::next_move()
 	// 攻撃状態への移行
 	else
 	{
-		if (attack_count_ >= 2)
-		{
-			next_move();
-			return;
-		}
+		attack_interval_ = 120.0f;
 		change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
-
 		return;
 	}
 }
@@ -491,7 +493,7 @@ bool Ghoul::player_in_range_distance() const
 	if (player == nullptr) return false;
 
 	// 自身からプレイヤーまでの距離を求め、攻撃距離内であればTrueを返す
-	return (Vector3::Distance(position_, get_player_position()) <= 25.0f);
+	return (Vector3::Distance(position_, get_player_position()) <= 12.0f);
 }
 
 // プレイヤーは攻撃できる角度にいるか
@@ -518,6 +520,8 @@ bool Ghoul::can_attack_player() const
 	if (!player_in_range_distance()) return false;
 	// プレイヤーが攻撃できる角度内にいなければ、Falseを返す
 	if (!player_in_range_angle()) return false;
+	// 攻撃間隔が0より大きい場合、Falseを返す
+	if (attack_interval_ > 0.0f) return false;
 
 	// 条件を全て満たしていれば、Trueを返す
 	return true;
