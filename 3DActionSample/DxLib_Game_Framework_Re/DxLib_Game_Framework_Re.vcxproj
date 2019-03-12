@@ -120,6 +120,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Actor\Enemy\Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Actor\Actor.cpp" />
     <ClCompile Include="src\Actor\ActorGroupManager.cpp" />
@@ -173,6 +174,7 @@
     <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Actor\Enemy\Enemy.h" />
     <ClInclude Include="src\Actor\Actor.h" />
     <ClInclude Include="src\Actor\ActorGroup.h" />
     <ClInclude Include="src\Actor\ActorGroupManager.h" />

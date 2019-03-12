@@ -12,7 +12,7 @@
 
 // コンストラクタ
 Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
-	Actor(world, "Ghoul", position, body),
+	Enemy(world, "Ghoul", position, angle, body),
 	mesh_{ MESH_GHOUL, GhoulMotion::MOTION_IDLE },
 	motion_{ GhoulMotion::MOTION_IDLE },
 	state_{ GhoulState::Idle },
@@ -22,7 +22,6 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	is_moving_{ false },
 	attack_interval_{ 0.0f }
 {
-	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
 	current_wince_ = 0;
@@ -88,8 +87,10 @@ void Ghoul::draw() const
 	DrawLine3D(position_, position_ + pose().Forward() * 25.0f, Cr);
 
 	// デバッグメッセージ
+	/*
 	Cr = GetColor(255, 255, 255);
 	DrawFormatString(0, 0, Cr, "攻撃間隔： %f", attack_interval_);
+	*/
 }
 
 // 衝突リアクション
@@ -303,47 +304,6 @@ void Ghoul::death(float delta_time)
 	}
 }
 
-// 地面との接触処理
-void Ghoul::intersect_ground()
-{
-	// フィールドを取得
-	auto& field = world_->field();
-	// 地面との接触点
-	Vector3 intersect;
-	// 接触判定用線分
-	Line line = Line(position_ + Vector3(0.0f, 2.5f, 0.0f), position_ - Vector3(0.0f, 1.0f, 0.0f));
-
-	// 地面との接触点を取得
-	if (field.collide_line(line.start, line.end, &intersect))
-	{
-		// 接地した場合、y軸座標を補正する（地面にめり込まない）
-		if (intersect.y >= position_.y)
-		{
-			velocity_.y = 0;			// y軸移動量を0にする
-			position_.y = intersect.y;	// y軸位置を補正
-		}
-	}
-}
-
-// 壁との接触処理
-void Ghoul::intersect_wall()
-{
-	// フィールドを取得
-	auto& field = world_->field();
-	// 壁との接触点
-	Vector3 intersect;
-	// 接触判定用球体
-	BoundingSphere sphere = BoundingSphere(position_ + Vector3(0.0f, 2.5f, 0.0f), 2.5f);
-
-	// 壁との接触点を取得
-	if (field.collide_sphere(sphere.position(), sphere.radius(), &intersect))
-	{
-		// プレイヤーの座標を補正
-		position_.x = intersect.x;
-		position_.z = intersect.z;
-	}
-}
-
 // 次の行動を決定
 void Ghoul::next_move()
 {
@@ -417,109 +377,17 @@ void Ghoul::next_destination()
 	}
 }
 
-// プレイヤーの位置を取得
-Vector3 Ghoul::get_player_position() const
-{
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// プレイヤーが存在しない場合、現在自分の座標を返す
-	if (player == nullptr) return position_;
-
-	// プレイヤーが存在する場合、その座標を返す（y成分は無視する）
-	auto pos = player->position();
-	pos.y = 0.0f;
-
-	return pos;
-}
-
-// プレイヤーへの角度を取得
-float Ghoul::get_angle_to_target(Vector3 target) const
-{
-	// 目的地方向へのベクトル
-	Vector3 to_target = target - position_;
-	// 前方向とターゲットの外積
-	Vector3 forward_cross_target = Vector3::Cross(rotation_.Forward(), to_target);
-	// 前方向とターゲットの内積
-	float forward_dot_target = Vector3::Dot(rotation_.Forward(), to_target);
-
-	if (forward_cross_target.y >= 0.0f)
-	{
-		return Vector3::Angle(pose().Forward(), to_target);
-	}
-	else
-	{
-		return -Vector3::Angle(pose().Forward(), to_target);
-	}
-}
-
-// プレイヤーへの角度を取得（符号無し）
-float Ghoul::get_unsigned_angle_to_target(Vector3 target) const
-{
-	return std::abs(get_angle_to_target(target));
-}
-
-// プレイヤーは存在するか
-bool Ghoul::player_exists() const
-{
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// プレイヤーが存在するかどうかを返す
-	return (player != nullptr);
-}
-
-// プレイヤーは前にいるか
-bool Ghoul::player_in_forward() const
-{
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// プレイヤーが存在しない場合、falseを返す
-	if (player == nullptr) return false;
-
-	return (get_unsigned_angle_to_target(get_player_position()) <= 90.0f);
-}
-
-
-
-// プレイヤーは攻撃距離内にいるか
-bool Ghoul::player_in_range_distance() const
-{
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// プレイヤーが存在しない場合、falseを返す
-	if (player == nullptr) return false;
-
-	// 自身からプレイヤーまでの距離を求め、攻撃距離内であればTrueを返す
-	return (Vector3::Distance(position_, get_player_position()) <= 12.0f);
-}
-
-// プレイヤーは攻撃できる角度にいるか
-bool Ghoul::player_in_range_angle() const
-{
-	// プレイヤーの参照を取得
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-
-	// プレイヤーが存在しない場合、falseを返す
-	if (player == nullptr) return false;
-
-	// 自身からプレイヤーまでの角度を求め、攻撃角度内であればTrueを返す
-	return (get_unsigned_angle_to_target(get_player_position()) <= 10.0f);
-}
-
 // プレイヤーを攻撃できるか
-bool Ghoul::can_attack_player() const
+bool Ghoul::can_attack_player()
 {
 	// プレイヤーが存在しない場合、falseを返す
 	if (!player_exists()) return false;
 	// プレイヤーが前にいなければ、、Falseを返す
 	if (!player_in_forward()) return false;
 	// プレイヤーが攻撃できる距離内にいなければ、Falseを返す
-	if (!player_in_range_distance()) return false;
+	if (!player_in_range_distance(Range)) return false;
 	// プレイヤーが攻撃できる角度内にいなければ、Falseを返す
-	if (!player_in_range_angle()) return false;
+	if (!player_in_range_angle(Angle)) return false;
 	// 攻撃間隔が0より大きい場合、Falseを返す
 	if (attack_interval_ > 0.0f) return false;
 

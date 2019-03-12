@@ -1,7 +1,7 @@
 #ifndef GHOUL_H_
 #define GHOUL_H_
 
-#include "../../Actor.h"
+#include "../Enemy.h"
 #include "../../../Graphic/AnimatedMesh.h"
 #include "../../Body/IBodyPtr.h"
 #include "../../Body/BoundingCapsule.h"
@@ -11,7 +11,7 @@
 // クラス：グール
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
-class Ghoul : public Actor
+class Ghoul : public Enemy
 {
 private:
 	// 列挙型：敵の状態
@@ -65,32 +65,13 @@ private:
 	// 死亡状態での更新
 	void death(float delta_time);
 
-	// 地面との接触処理
-	void intersect_ground();
-	// 壁との接触処理
-	void intersect_wall();
-
 	// 次の行動を決定
 	void next_move();
 	// 次の目的地を決定
 	void next_destination();
-	// プレイヤーの位置を取得
-	Vector3 get_player_position() const;
-	// 次の目的地への角度を取得（符号付き）
-	float get_angle_to_target(Vector3 target) const;
-	// プレイヤーへの角度を取得（符号無し）
-	float get_unsigned_angle_to_target(Vector3 target) const;
 
-	// プレイヤーを取得
-	bool player_exists() const;
-	// プレイヤーは前にいるか
-	bool player_in_forward() const;
-	// プレイヤーは攻撃距離内にいるか
-	bool player_in_range_distance() const;
-	// プレイヤーは攻撃できる角度にいるか
-	bool player_in_range_angle() const;
 	// プレイヤーを攻撃できるか
-	bool can_attack_player() const;
+	bool can_attack_player();
 
 	// 次の状態への移行準備
 	void ready_to_next_state(int min, int max);
@@ -139,6 +120,10 @@ private:
 
 	// 怯み耐性
 	const int		ToWince{ 5 };
+	// 索敵距離
+	const float		Range{ 12.0f };
+	// 索敵角度
+	const float		Angle{ 10.0f };
 };
 
 #endif // !GHOUL_H_
