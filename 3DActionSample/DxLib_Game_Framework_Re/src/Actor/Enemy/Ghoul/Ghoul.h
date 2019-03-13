@@ -71,7 +71,7 @@ private:
 	void next_destination();
 
 	// プレイヤーを攻撃できるか
-	bool can_attack_player();
+	virtual bool can_attack_player() override;
 
 	// 次の状態への移行準備
 	void ready_to_next_state(int min, int max);
@@ -92,10 +92,6 @@ private:
 	// 乱数生成器
 	Random			rand_;
 
-	// 現在の体力
-	int				current_hp_;
-	// 怯み累積値
-	int				current_wince_{ 0 };
 	// 攻撃判定を発生したのか
 	bool			attack_on_{ false };
 	// 次の目的地

@@ -133,7 +133,6 @@ void Player::handle_message(EventMessage message, void* param)
 		{
 			change_state(PlayerState::Damage, MOTION_IMPACT);
 		}
-		return;
 	}
 }
 

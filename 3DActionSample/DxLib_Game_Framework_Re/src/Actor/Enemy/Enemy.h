@@ -36,6 +36,9 @@ public:
 	// プレイヤーは攻撃できる角度にいるか
 	bool player_in_range_angle(float angle);
 
+	// プレイヤーを攻撃できるか
+	virtual bool can_attack_player() = 0;
+
 protected:
 	// 現在の体力
 	int				current_hp_;

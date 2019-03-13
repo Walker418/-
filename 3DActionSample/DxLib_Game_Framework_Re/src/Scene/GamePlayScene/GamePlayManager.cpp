@@ -2,7 +2,7 @@
 #include "../../World/IWorld.h"
 #include "../../Actor/ActorGroup.h"
 #include "../../Actor/Enemy/Ghoul/Ghoul.h"
-
+#include "../../Actor/Enemy/DragonBoar/DragonBoar.h"
 #include "../../ID/EventMessage.h"
 
 // クラス：ゲームプレイシーン管理
@@ -49,8 +49,13 @@ void GamePlayManager::handle_message(EventMessage message, void* param)
 // ゲーム開始処理
 void GamePlayManager::game_start()
 {
+	/*
 	// 雑魚敵3体を生成する
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 60.0f, 0.0f, -35.0f }, 160.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ -60.0f, 0.0f, -35.0f }, 200.0f));
+	*/
+
+	// ボス敵を生成する
+	world_->add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 90.0f));
 }
