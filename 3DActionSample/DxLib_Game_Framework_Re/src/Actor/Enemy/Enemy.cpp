@@ -7,7 +7,8 @@
 
 // コンストラクタ
 Enemy::Enemy(IWorld* world, const std::string& name, const Vector3& position, float angle, const IBodyPtr& body) :
-	Actor(world, name, position, body)
+	Actor(world, name, position, body),
+	interval_{ 0.0f }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 }
@@ -82,7 +83,7 @@ float Enemy::get_angle_to_target(Vector3 target) const
 
 	// 外積で目標への角度を計算し、角度の値を返す
 	float angle = (forward_cross_target.y >= 0.0f) ? Vector3::Angle(pose().Forward(), to_target) : -Vector3::Angle(pose().Forward(), to_target);
-	
+
 	return angle;
 }
 

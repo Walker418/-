@@ -4,7 +4,7 @@
 #include "../Enemy.h"
 #include "../../../Graphic/AnimatedMesh.h"
 #include "../../Body/IBodyPtr.h"
-#include "../../Body/BoundingCapsule.h"
+#include "../../Body/BoundingSphere.h"
 #include "../../../ID/SourceID.h"
 #include "../../../Math/Random.h"
 
@@ -18,8 +18,9 @@ private:
 	{
 		Idle,		// 静止待機
 		Roar,		// 咆哮
-		Normal,		// 通常移動
+		Normal,		// 通常
 		Bite,		// 噛みつく
+		Anger,		// 怒り
 		Wince,		// 怯む
 		Death,		// 死亡
 	};
@@ -31,14 +32,14 @@ private:
 		MOTION_ROAR = 2,	// 咆哮
 		MOTION_WALK = 6,	// 歩行
 		MOTION_BITE = 3,	// 噛みつく
-		MOTION_DASH = 5,	// ダッシュ
+		MOTION_DASH = 5,	// 突進
 		MOTION_WINCE = 1,	// 怯む
 		MOTION_DEATH = 0,	// 死亡
 	};
 
 public:
 	// コンストラクタ
-	DragonBoar(IWorld* world, const Vector3& position, float angle = 0.0f, const IBodyPtr& body = std::make_shared<BoundingCapsule>(Vector3(-12.0f, 14.0f, 0.0f), Matrix::CreateRotationX(90.0f), 20.5f, 10.0f));
+	DragonBoar(IWorld* world, const Vector3& position, float angle = 0.0f, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3(0.0f, 14.0f, 0.0f), 10.5f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画
@@ -56,6 +57,14 @@ private:
 
 	// 待機状態での更新
 	void idle(float delta_time);
+	// 咆哮中の更新
+	void roar(float delta_time);
+	// 通常状態での移動
+	void normal(float delta_time);
+	// 噛みつき中の更新
+	void bite(float delta_time);
+	// 怒り状態での移動
+	void anger(float delta_time);
 	// 怯み状態での更新
 	void wince(float delta_time);
 	// 死亡状態での更新
@@ -82,6 +91,8 @@ private:
 	bool				attack_on_{ false };
 	// 次の目的地
 	Vector3				next_destination_;
+	// 怒り状態タイマー
+	float				anger_timer_{ 0.0f };
 
 	// 最大体力
 	const int			HP{ 100 };

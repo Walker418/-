@@ -1,6 +1,7 @@
 #include "DragonBoar.h"
 #include "../../../World/IWorld.h"
 #include "../../../ID/EventMessage.h"
+#include "../../Damage.h"
 
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -12,7 +13,8 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, cons
 	motion_{ DragonBoarMotion::MOTION_IDLE },
 	state_{ DragonBoarState::Idle },
 	state_timer_{ 0.0f },
-	attack_on_{ false }
+	attack_on_{ false },
+	anger_timer_{ 0.0f }
 {
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
@@ -45,9 +47,8 @@ void DragonBoar::update(float delta_time)
 	// HPが0以下になると、死亡状態に移行
 	if (current_hp_ <= 0 && state_ != DragonBoarState::Death)
 	{
-		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
+		world_->send_message(EventMessage::BossDead);	// 死亡メッセージを送信
 		change_state(DragonBoarState::Death, MOTION_DEATH);
-
 		return;
 	}
 
@@ -95,6 +96,17 @@ void DragonBoar::handle_message(EventMessage message, void* param)
 {
 	// 死亡状態では反応しない
 	if (state_ == DragonBoarState::Death) return;
+
+	// プレイヤーからダメージを受ける
+	if (message == EventMessage::EnemyDamage)
+	{
+		// メッセージからプレイヤーの攻撃力と怯み値を取得し、ダメージ計算を行う
+		Damage* damage = (Damage*)param;
+		if (state_ != DragonBoarState::Death)
+			current_hp_ -= damage->power;
+		if (state_ != DragonBoarState::Wince)
+			current_wince_ += damage->impact;
+	}
 }
 
 // 状態の更新
@@ -105,6 +117,18 @@ void DragonBoar::update_state(float delta_time)
 	{
 	case(DragonBoarState::Idle):
 		idle(delta_time);
+		break;
+	case(DragonBoarState::Roar):
+		roar(delta_time);
+		break;
+	case(DragonBoarState::Normal):
+		normal(delta_time);
+		break;
+	case(DragonBoarState::Bite):
+		bite(delta_time);
+		break;
+	case(DragonBoarState::Anger):
+		anger(delta_time);
 		break;
 	case(DragonBoarState::Wince):
 		wince(delta_time);
@@ -134,6 +158,46 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 // 待機状態での更新
 void DragonBoar::idle(float delta_time)
 {
+	// 5秒後、移動開始
+	if (state_timer_ >= 300.0f)
+	{
+		(anger_timer_ > 0.0f) ?
+			change_state(DragonBoarState::Anger, DragonBoarMotion::MOTION_DASH) :	// 怒り移動へ移行
+			change_state(DragonBoarState::Normal, DragonBoarMotion::MOTION_WALK);	// 通常移動へ移行
+	}
+}
+
+// 咆哮中の更新
+void DragonBoar::roar(float delta_time)
+{
+	// モーション終了後、移動開始
+	if (state_timer_ >= 80.0f)
+	{
+		(anger_timer_ > 0.0f) ?
+			change_state(DragonBoarState::Anger, DragonBoarMotion::MOTION_DASH) :	// 怒り移動へ移行
+			change_state(DragonBoarState::Normal, DragonBoarMotion::MOTION_WALK);	// 通常移動へ移行
+	}
+}
+
+// 通常状態での移動
+void DragonBoar::normal(float delta_time)
+{
+	// ============================================================
+	// 以下は移動中の処理
+
+	float interval = 0.0f;						// 次の行動への移行タイミングの変数を宣言しておく
+	next_destination_ = get_player_position();	
+}
+
+// 噛みつき中の更新
+void DragonBoar::bite(float delta_time)
+{
+
+}
+
+// 怒り状態での移動
+void DragonBoar::anger(float delta_time)
+{
 
 }
 
@@ -146,7 +210,11 @@ void DragonBoar::wince(float delta_time)
 // 死亡状態での更新
 void DragonBoar::death(float delta_time)
 {
-
+	// モーションが終了すると、死亡判定を有効に
+	if (state_timer_ >= 40.0f)
+	{
+		die();
+	}
 }
 
 // プレイヤーを攻撃できるか

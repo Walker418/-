@@ -44,7 +44,8 @@ protected:
 	int				current_hp_;
 	// ‹¯‚İ—İÏ’l
 	int				current_wince_{ 0 };
-
+	// s“®‘Ò‹@ŠÔ
+	float			interval_{ 0.0f };
 
 };
 

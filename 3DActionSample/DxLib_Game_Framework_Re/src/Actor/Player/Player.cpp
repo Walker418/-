@@ -60,7 +60,6 @@ void Player::update(float delta_time)
 	if (current_hp_ <= 0 && state_ != PlayerState::Death)
 	{
 		change_state(PlayerState::Death, MOTION_DEATH);
-
 		return;
 	}
 
@@ -79,23 +78,6 @@ void Player::draw() const
 	unsigned int Cr;
 	Cr = GetColor(255, 0, 0);
 	DrawLine3D(position_, position_ + pose().Forward() * 10.0f, Cr);
-
-	// デバッグメッセージ
-	/*
-	Cr = GetColor(255, 255, 255);
-	if (is_guard_)
-	{
-		DrawString(0, 0, "ガード中", Cr);
-	}
-	else
-	{
-		DrawString(0, 0, "ガードしていない", Cr);
-	}
-	*/
-	/*
-	Cr = GetColor(255, 255, 255);
-	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", current_hp_);
-	*/
 }
 
 // 衝突リアクション
@@ -330,7 +312,6 @@ void Player::slash1(float delta_time)
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
-		
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
 

@@ -57,7 +57,6 @@ void Ghoul::update(float delta_time)
 	{
 		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
 		change_state(GhoulState::Death, MOTION_DEATH);
-
 		return;
 	}
 
@@ -85,12 +84,6 @@ void Ghoul::draw() const
 	unsigned int Cr;
 	Cr = GetColor(255, 0, 0);
 	DrawLine3D(position_, position_ + pose().Forward() * 25.0f, Cr);
-
-	// デバッグメッセージ
-	/*
-	Cr = GetColor(255, 255, 255);
-	DrawFormatString(0, 0, Cr, "攻撃間隔： %f", attack_interval_);
-	*/
 }
 
 // 衝突リアクション
@@ -156,6 +149,7 @@ void Ghoul::change_state(GhoulState state, int motion)
 	state_timer_ = 0.0f;
 
 	attack_on_ = false;
+	interval_ = 0.0f;
 }
 
 // 待機状態での更新
@@ -171,8 +165,6 @@ void Ghoul::move(float delta_time)
 {
 	// ============================================================
 	// 以下は移動中の処理
-
-	float interval = 0.0f;	// 次の行動への移行タイミングの変数を宣言しておく
 
 	// プレイヤーを追従していれば、常時目的地の座標を更新
 	if (is_following_player_)	next_destination_ = get_player_position();
@@ -220,7 +212,7 @@ void Ghoul::move(float delta_time)
 		// 目的地に着くと、移動完了
 		if (can_attack_player() || Vector3::Distance(position_, next_destination_) <= 12.0f)
 		{
-			interval = state_timer_ + 60.0f;	// 次の行動は1秒後に実行
+			interval_ = state_timer_ + 30.0f;	// 次の行動は0.5秒後に実行
 			is_moving_ = false;					// 移動完了
 		}
 
@@ -242,7 +234,7 @@ void Ghoul::move(float delta_time)
 	if (!is_moving_)
 	{
 		// 次の行動を実行
-		if (state_timer_ >= interval)
+		if (state_timer_ >= interval_)
 		{
 			// プレイヤーは近くにいる場合、攻撃行動に移行
 			if (can_attack_player())
@@ -274,23 +266,20 @@ void Ghoul::wince(float delta_time)
 // 攻撃状態での更新
 void Ghoul::attack(float delta_time)
 {
-	float interval = 0.0f;	// 次の行動への移行タイミングの変数を宣言しておく
-
 	// 攻撃判定を発生
-	if (state_timer_ >= mesh_.motion_end_time() && !attack_on_)
+	if (state_timer_ >= 9.0f && !attack_on_)
 	{
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 8.0f + Vector3(0.0f, 12.5f, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
-		interval = state_timer_ + 90.0f;
+		interval_ = state_timer_ + 40.0f;
 	}
 
 	// モーション終了後、次の行動を抽選
-	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	if (state_timer_ >= 26.0f)
 	{
 		motion_ = MOTION_IDLE;
-
-		if (state_timer_ >= interval)	next_move();
+		if (state_timer_ >= interval_)	next_move();
 	}
 }
 
