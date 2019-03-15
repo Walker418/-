@@ -1,4 +1,18 @@
-﻿  Ghoul.cpp
-  GamePlayManager.cpp
-  コードを生成中...
-  DxLib_Game_Framework_Re.vcxproj -> C:\Users\walker\Desktop\授業用フォルダ\L4_3年\3年後期\ゲームプログラミング実習4\就活用個人制作\3DActionSample\Debug\DxLib_Game_Framework_Re.exe
+﻿  DragonBoar.cpp
+c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1801): warning C4244: '引数': 'int' から 'float' への変換です。データが失われる可能性があります。
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1865): note: コンパイル対象の関数 テンプレート インスタンス化 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<IWorld*&,Vector3&,int&,int&>(IWorld *&,Vector3 &,int &,int &)' のリファレンスを確認してください
+          with
+          [
+              _Ty=EnemyAttack
+          ]
+  c:\program files (x86)\microsoft visual studio\2017\community\vc\tools\msvc\14.16.27023\include\memory(1866): note: コンパイル対象の関数 テンプレート インスタンス化 'std::_Ref_count_obj<_Ty>::_Ref_count_obj<IWorld*&,Vector3&,int&,int&>(IWorld *&,Vector3 &,int &,int &)' のリファレンスを確認してください
+          with
+          [
+              _Ty=EnemyAttack
+          ]
+  c:\users\walker\desktop\授業用フォルダ\l4_3年\3年後期\ゲームプログラミング実習4\就活用個人制作\3dactionsample\dxlib_game_framework_re\src\actor\actorptr.h(14): note: コンパイル対象の関数 テンプレート インスタンス化 'std::shared_ptr<T> std::make_shared<T,IWorld*&,Vector3&,int&,int&>(IWorld *&,Vector3 &,int &,int &)' のリファレンスを確認してください
+          with
+          [
+              T=EnemyAttack
+          ]
+  c:\users\walker\desktop\授業用フォルダ\l4_3年\3年後期\ゲームプログラミング実習4\就活用個人制作\3dactionsample\dxlib_game_framework_re\src\actor\enemy\dragonboar\dragonboar.cpp(279): note: コンパイル対象の関数 テンプレート インスタンス化 'ActorPtr new_actor<EnemyAttack,IWorld*&,Vector3&,int,int>(IWorld *&,Vector3 &,int &&,int &&)' のリファレンスを確認してください

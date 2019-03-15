@@ -66,7 +66,7 @@ private:
 	void death(float delta_time);
 
 	// Ÿ‚Ìs“®‚ğŒˆ’è
-	void next_move();
+	void next_action();
 	// Ÿ‚Ì–Ú“I’n‚ğŒˆ’è
 	void next_destination();
 

@@ -1,4 +1,6 @@
 #include "EnemyAttack.h"
+#include "../Body/IBodyPtr.h"
+#include "../Body/BoundingSphere.h"
 #include "../../ID/EventMessage.h"
 #include "../Damage.h"
 
@@ -6,8 +8,8 @@
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // コンストラクタ
-EnemyAttack::EnemyAttack(IWorld* world, const Vector3& position, int power, const IBodyPtr& body) :
-	Actor(world, "EnemyAttack", position, body),
+EnemyAttack::EnemyAttack(IWorld* world, const Vector3& position, int power, float radius) :
+	Actor(world, "EnemyAttack", position, std::make_shared<BoundingSphere>(Vector3::Zero, radius)),
 	destroy_counter_{ 0.0f }
 {
 	power_ = power;		// 威力を設定

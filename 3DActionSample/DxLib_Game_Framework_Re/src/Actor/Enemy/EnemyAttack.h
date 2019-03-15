@@ -2,8 +2,7 @@
 #define ENEMY_ATTACK_H_
 
 #include "../Actor.h"
-#include "../Body/IBodyPtr.h"
-#include "../Body/BoundingSphere.h"
+
 
 // クラス：敵の攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -11,7 +10,7 @@ class EnemyAttack : public Actor
 {
 public:
 	// コンストラクタ
-	EnemyAttack(IWorld* world, const Vector3& position, int power = 0, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3::Zero, 6.0f));
+	EnemyAttack(IWorld* world, const Vector3& position, int power = 0, float radius = 6.0f);
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画

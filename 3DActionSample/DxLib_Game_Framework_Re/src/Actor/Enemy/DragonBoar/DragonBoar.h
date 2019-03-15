@@ -70,6 +70,9 @@ private:
 	// 死亡状態での更新
 	void death(float delta_time);
 
+	// 次の行動を抽選
+	void next_action();
+
 	// プレイヤーを攻撃できるか
 	virtual bool can_attack_player() override;
 
@@ -91,8 +94,14 @@ private:
 	bool				attack_on_{ false };
 	// 次の目的地
 	Vector3				next_destination_;
+	// 移動中なのか
+	bool				is_moving_{ false };
+	// 怒り状態なのか
+	bool				is_anger_{ false };
 	// 怒り状態タイマー
 	float				anger_timer_{ 0.0f };
+	// 怒り突進の持続時間
+	float				dash_timer_{ 0.0f };
 
 	// 最大体力
 	const int			HP{ 100 };
@@ -104,9 +113,9 @@ private:
 	const float			Gravity{ 0.03f };
 
 	// 怯み耐性
-	const int			ToWince{ 5 };
+	const int			ToWince{ 15 };
 	// 索敵距離
-	const float			Range{ 12.0f };
+	const float			Range{ 45.0f };
 	// 索敵角度
 	const float			Angle{ 10.0f };
 };
