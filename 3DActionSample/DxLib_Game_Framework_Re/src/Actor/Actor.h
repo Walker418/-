@@ -52,6 +52,9 @@ public:
 	// 衝突判定データの取得
 	IBodyPtr body() const;
 
+	// 体力の取得
+	virtual int get_HP();
+
 	// コピー禁止
 	Actor(const Actor& other) = delete;
 	Actor& operator = (const Actor& other) = delete;

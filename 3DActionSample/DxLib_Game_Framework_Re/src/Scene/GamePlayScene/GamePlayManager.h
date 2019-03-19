@@ -26,19 +26,32 @@ public:
 	virtual void handle_message(EventMessage message, void* param = nullptr) override;
 
 private:
+	// プレイ状況の更新
+	void update_phase(float delta_time);
 	// ゲーム開始処理
 	void game_start();
+	// フェーズ移行
+	void change_phase();
+	// 第1段階の処理
+	void phase1(float delta_time);
+	// 第2段階の処理
+	void phase2(float delta_time);
 
 private:
 	// プレイ状況
 	GamePlayState	state_{ GamePlayState::Phase1 };
-	// 状態移行タイマー
-	float			state_change_timer_{ 0.0f };
+	// フェーズタイマー
+	float			state_timer_{ 0.0f };
+	// フェーズ移行タイマー
+	float			state_change_time_{ 0.0f };
 	// 倒された敵の数（状況移行判定用）
 	int				enemy_defeated_{ 0 };
-
-	// 生成する雑魚敵の数
-	const unsigned int EnemyQuantity{ 3 };
+	// 第1段階は終了したか
+	bool			phase1_end_{ false };
+	// ボスが倒されたか
+	bool			boss_defeated_{ false };
+	// 第2段階は終了したか
+	bool			phase2_end_{ false };
 };
 
 #endif // !GAME_PLAY_MANAGER_H_

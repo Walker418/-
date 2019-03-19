@@ -118,6 +118,12 @@ void Player::handle_message(EventMessage message, void* param)
 	}
 }
 
+// 体力の取得
+int Player::get_HP()
+{
+	return current_hp_;
+}
+
 // 状態の更新
 void Player::update_state(float delta_time)
 {
@@ -308,7 +314,7 @@ void Player::slash1(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_ >= 25.0f && !attack_on_)
 	{
-		
+
 		attack_on_ = true;
 		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
@@ -468,7 +474,6 @@ void Player::jump_attack1(float delta_time)
 	// モーション終了の前に、次の攻撃への移行
 	if (state_timer_ > 50.0f && state_timer_ < 65.0f && is_ground_)
 	{
-		// 攻撃入力されると、攻撃の3段階目に移行
 		if (PlayerInput::attack())
 		{
 			mesh_.change_speed(1.2f);
@@ -493,7 +498,7 @@ void Player::jump_attack1(float delta_time)
 			attack_to_evasion_pad();
 		}
 	}
-	
+
 	// モーション終了後、通常状態に戻る
 	if (state_timer_ >= 70.0f)
 	{

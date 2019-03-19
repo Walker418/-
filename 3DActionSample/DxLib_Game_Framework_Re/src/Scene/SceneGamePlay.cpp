@@ -102,19 +102,21 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 {
 	// 受け取ったメッセージの種類によって、処理を行う
 
-	// プレイヤーが死亡した場合
-	if (message == EventMessage::PlayerDead)
+	// ゲームオーバーの場合
+	if (message == EventMessage::GameOver)
 	{
 		// シーン終了（ゲームオーバーシーンへ移行）
+
 		is_end_ = true;
 		return;
 	}
 
-	// ボス敵が死亡した場合
-	if (message == EventMessage::BossDead)
+	// ゲームクリアの場合
+	if (message == EventMessage::StageClear)
 	{
 		// シーン終了（ゲームクリアシーンへ移行）
 
+		is_end_ = true;
 		return;
 	}
 }

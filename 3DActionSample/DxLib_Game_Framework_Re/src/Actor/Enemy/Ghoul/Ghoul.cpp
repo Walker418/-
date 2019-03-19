@@ -55,8 +55,8 @@ void Ghoul::update(float delta_time)
 	// HPが0以下になると、死亡状態に移行
 	if (current_hp_ <= 0 && state_ != GhoulState::Death)
 	{
-		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
 		change_state(GhoulState::Death, MOTION_DEATH);
+		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
 		return;
 	}
 

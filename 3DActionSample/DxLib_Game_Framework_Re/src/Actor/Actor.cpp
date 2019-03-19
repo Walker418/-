@@ -90,3 +90,9 @@ IBodyPtr Actor::body() const
 {
 	return body_->transform(pose());
 }
+
+// �̗͂̎擾
+int Actor::get_HP()
+{
+	return 0;
+}

@@ -75,6 +75,8 @@ public:
 	virtual void react(Actor& other) override;
 	// メッセージ処理
 	virtual void handle_message(EventMessage message, void* param = nullptr) override;
+	// 体力の取得
+	virtual int get_HP() override;
 
 private:
 	// 状態の更新

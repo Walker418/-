@@ -11,6 +11,8 @@ enum class EventMessage
 	BossDead,		// ボス敵死亡
 	PlayerDamage,	// プレイヤーがダメージを受ける
 	EnemyDamage,	// 敵がダメージを受ける
+	StageClear,		// ステージクリア
+	GameOver,		// ゲームオーバー
 };
 
 #endif // !EVENT_MESSAGE_H_

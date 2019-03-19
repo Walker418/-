@@ -53,8 +53,8 @@ void DragonBoar::update(float delta_time)
 	// HPが0以下になると、死亡状態に移行
 	if (current_hp_ <= 0 && state_ != DragonBoarState::Death)
 	{
-		world_->send_message(EventMessage::BossDead);	// 死亡メッセージを送信
 		change_state(DragonBoarState::Death, MOTION_DEATH);
+		world_->send_message(EventMessage::BossDead);	// 死亡メッセージを送信
 		return;
 	}
 
