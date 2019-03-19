@@ -4,6 +4,8 @@
 #include "../../Actor/Enemy/Ghoul/Ghoul.h"
 #include "../../Actor/Enemy/DragonBoar/DragonBoar.h"
 #include "../../ID/EventMessage.h"
+#include "../../Graphic/Graphics2D.h"
+#include "../../ID/SourceID.h"
 
 // クラス：ゲームプレイシーン管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -34,22 +36,13 @@ void GamePlayManager::update(float delta_time)
 // 描画
 void GamePlayManager::draw() const
 {
-	/*
-	// デバッグメッセージ
-	unsigned int Cr;
-	Cr = GetColor(255, 255, 255);
-	DrawFormatString(0, 15, Cr, "倒した敵の数： %i", enemy_defeated_);
-	*/
-
-	unsigned int Cr;
-	Cr = GetColor(230, 230, 230);
-
 	// プレイヤーキャラの体力を表示
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-	int player_hp = (player != nullptr) ? player->get_HP() : 0;
-	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", player_hp);
+	draw_HP_gauge(Vector2(10.0f, 10.0f));
 
 	// 進行状況に応じて、現在の目的を表示
+	unsigned int Cr;
+	Cr = GetColor(255, 255, 255);
+
 	switch (state_)
 	{
 	case (GamePlayState::Phase1):
@@ -66,13 +59,7 @@ void GamePlayManager::draw() const
 // メッセージ処理
 void GamePlayManager::handle_message(EventMessage message, void* param)
 {
-	/*
-	if (message == EventMessage::EnemyDead)
-	{
-		// 倒された敵の数を加算
-		++enemy_defeated_;
-	}
-	*/
+	// 受け取ったメッセージの種類によって、処理を行う
 
 	switch (message)
 	{
@@ -175,6 +162,28 @@ void GamePlayManager::phase2(float delta_time)
 		{
 			// ゲームクリアメッセージを送る
 			world_->send_message(EventMessage::StageClear);
+		}
+	}
+}
+
+// プレイヤーの体力ゲージを表示
+void GamePlayManager::draw_HP_gauge(Vector2 position) const
+{
+	Graphics2D::draw(TEXTURE_HPGAUGE, position);	// 体力ゲージを描画
+
+	// プレイヤーの体力を取得
+	auto player = world_->find_actor(ActorGroup::Player, "Player");
+	int player_hp = (player != nullptr) ? player->get_HP() : 0;
+
+	// ゲージの中身を描画
+	if (player_hp > 0)
+	{
+		Vector2 draw_pos = position + Vector2(70.0f, 24.0f);	// 最初の描画位置
+
+		for (int i = 0; i < player_hp; ++i)
+		{
+			
+			Graphics2D::draw(TEXTURE_HP, Vector2(draw_pos.x + 4 * i, draw_pos.y));
 		}
 	}
 }

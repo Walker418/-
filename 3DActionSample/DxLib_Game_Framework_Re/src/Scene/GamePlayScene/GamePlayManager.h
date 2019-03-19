@@ -2,6 +2,7 @@
 #define GAME_PLAY_MANAGER_H_
 
 #include "../../Actor/Actor.h"
+#include "../../Math/Vector2.h"
 
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
@@ -36,6 +37,8 @@ private:
 	void phase1(float delta_time);
 	// 第2段階の処理
 	void phase2(float delta_time);
+	// プレイヤーの体力ゲージを表示
+	void draw_HP_gauge(Vector2 position) const;
 
 private:
 	// プレイ状況

@@ -13,6 +13,10 @@ enum
 	MESH_PALADIN,		// プレイヤー
 	MESH_GHOUL,			// 雑魚敵
 	MESH_DRAGONBOAR,	// ボス敵
+
+	// テクスチャ
+	TEXTURE_HPGAUGE,	// 体力ゲージ
+	TEXTURE_HP,			// 体力表示
 };
 
 #endif // !SOURCE_ID_H_

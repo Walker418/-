@@ -1,6 +1,7 @@
 #include "Game.h"
 #include <DxLib.h>
 
+#include "../Graphic/Graphics2D.h"
 #include "../Graphic/Graphics3D.h"
 #include "../Graphic/SkeletalMesh.h"
 #include "../Math/Collision/CollisionMesh.h"
@@ -38,6 +39,7 @@ int Game::run()
 	SetDrawScreen(DX_SCREEN_BACK);
 
 	// èâä˙âª
+	Graphics2D::initialize();
 	Graphics3D::initialize();
 	SkeletalMesh::initialize();
 	CollisionMesh::initialize();
@@ -78,6 +80,7 @@ int Game::run()
 	SkeletalMesh::finalize();
 	CollisionMesh::finalize();
 	Skybox::finalize();
+	Graphics2D::finalize();
 	Graphics3D::finalize();
 	Sound::finalize();
 
