@@ -321,12 +321,12 @@ void DragonBoar::anger(float delta_time)
 		if (angle_to_target >= 0.5f)
 		{
 			motion_ = MOTION_WALK;
-			rotation_ *= Matrix::CreateRotationY(RotateSpeed * 2 * delta_time);
+			rotation_ *= Matrix::CreateRotationY(RotateSpeed * 1.5f * delta_time);
 		}
 		else if (angle_to_target <= -0.5f)
 		{
 			motion_ = MOTION_WALK;
-			rotation_ *= Matrix::CreateRotationY(-RotateSpeed * 2 * delta_time);
+			rotation_ *= Matrix::CreateRotationY(-RotateSpeed * 1.5f * delta_time);
 		}
 		rotation_ = Matrix::NormalizeRotationMatrix(rotation_);			// ‰ñ“]s—ñ‚ð‰Šú‰»
 		return;
