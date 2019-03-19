@@ -52,6 +52,10 @@ private:
 	bool			boss_defeated_{ false };
 	// 第2段階は終了したか
 	bool			phase2_end_{ false };
+	// プレイヤーが倒れたか
+	bool			player_dead_{ false };
+	// ゲーム終了フラグ
+	bool			game_end_{ false };
 };
 
 #endif // !GAME_PLAY_MANAGER_H_

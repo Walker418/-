@@ -7,7 +7,8 @@
 #include "../Graphic/Billboard.h"
 
 #include "../Scene/Scene.h"
-#include "../Scene/SceneLoadGamePlay.h"
+#include "../Scene/SceneLoading.h"
+#include "../Scene/SceneTitle.h"
 #include "../Scene/SceneGamePlay.h"
 
 // クラス：3Dアクションゲームサンプル（アプリケーションクラス）
@@ -24,11 +25,12 @@ void ActionSample::start()
 	// シーンクラスの初期化
 	scene_manager_.initialize();
 	// シーンを読み込む
-	scene_manager_.add(Scene::LoadGamePlay, new_scene<SceneLoadGamePlay>());	// ゲームプレイシーンの読み込み
-	scene_manager_.add(Scene::GamePlay, new_scene<SceneGamePlay>());			// ゲームプレイシーン
+	scene_manager_.add(Scene::Loading, new_scene<SceneLoading>());		// 読み込み
+	scene_manager_.add(Scene::Title, new_scene<SceneTitle>());			// タイトル
+	scene_manager_.add(Scene::GamePlay, new_scene<SceneGamePlay>());	// ゲームプレイシーン
 
 	// 最初のシーンへ移行
-	scene_manager_.change(Scene::LoadGamePlay);
+	scene_manager_.change(Scene::Loading);
 }
 
 // 更新

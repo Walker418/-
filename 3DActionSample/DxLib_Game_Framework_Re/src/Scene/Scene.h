@@ -6,8 +6,8 @@
 enum class Scene
 {
 	None,			// 空白のシーン
+	Loading,		// 読み込み
 	Title,			// タイトル
-	LoadGamePlay,	// ゲームプレイリソースの読み込み
 	GamePlay,		// ゲームプレイ
 	GameOver,		// ゲームオーバー
 };

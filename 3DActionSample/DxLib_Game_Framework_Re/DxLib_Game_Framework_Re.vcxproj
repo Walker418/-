@@ -120,6 +120,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Actor\Camera\TitleCamera.cpp" />
     <ClCompile Include="src\Actor\Enemy\Enemy.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Actor\Actor.cpp" />
@@ -167,13 +168,15 @@
     <ClCompile Include="src\Math\Vector3.cpp" />
     <ClCompile Include="src\Scene\GamePlayScene\GamePlayManager.cpp" />
     <ClCompile Include="src\Scene\SceneGamePlay.cpp" />
-    <ClCompile Include="src\Scene\SceneLoadGamePlay.cpp" />
+    <ClCompile Include="src\Scene\SceneLoading.cpp" />
     <ClCompile Include="src\Scene\SceneManager.cpp" />
     <ClCompile Include="src\Scene\SceneNull.cpp" />
+    <ClCompile Include="src\Scene\SceneTitle.cpp" />
     <ClCompile Include="src\Sound\Sound.cpp" />
     <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Actor\Camera\TitleCamera.h" />
     <ClInclude Include="src\Actor\Enemy\Enemy.h" />
     <ClInclude Include="src\Actor\Actor.h" />
     <ClInclude Include="src\Actor\ActorGroup.h" />
@@ -235,9 +238,10 @@
     <ClInclude Include="src\Scene\IScenePtr.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneGamePlay.h" />
-    <ClInclude Include="src\Scene\SceneLoadGamePlay.h" />
+    <ClInclude Include="src\Scene\SceneLoading.h" />
     <ClInclude Include="src\Scene\SceneManager.h" />
     <ClInclude Include="src\Scene\SceneNull.h" />
+    <ClInclude Include="src\Scene\SceneTitle.h" />
     <ClInclude Include="src\Sound\Sound.h" />
     <ClInclude Include="src\World\IWorld.h" />
     <ClInclude Include="src\World\World.h" />

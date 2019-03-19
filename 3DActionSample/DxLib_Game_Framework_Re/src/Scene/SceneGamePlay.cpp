@@ -1,5 +1,4 @@
 #include "SceneGamePlay.h"
-#include "Scene.h"
 #include "../ID/SourceID.h"
 
 #include "../Field/Field.h"
@@ -23,8 +22,7 @@ void SceneGamePlay::start()
 {
 	// 終了フラグをFalseにする
 	is_end_ = false;
-
-	// 初期化
+	// ワールドを初期化
 	world_.initialize();
 
 	// イベントメッセージリスナーを登録
@@ -52,20 +50,6 @@ void SceneGamePlay::update(float delta_time)
 void SceneGamePlay::draw() const
 {
 	world_.draw();
-
-	// デバッグメッセージ
-	/*
-	unsigned int Cr;
-	Cr = GetColor(255, 255, 255);
-
-	auto player = world_.find_actor(ActorGroup::Player, "Player");
-	if (!player) return;
-	auto player_pos = player->position();
-	DrawFormatString(0, 0, Cr, "プレイヤーの座標： %f、%f、%f", player_pos.x, player_pos.y, player_pos.z);
-	auto player_forward = player->pose().Forward();
-	float player_angle = Vector3::Angle(player_forward, Vector3::Forward);
-	DrawFormatString(0, 15, Cr, "プレイヤーの角度： %f", player_angle);
-	*/
 }
 
 // 終了しているか
@@ -78,23 +62,13 @@ bool SceneGamePlay::is_end() const
 // 次のシーンの取得
 Scene SceneGamePlay::next() const
 {
-	return Scene::LoadGamePlay;
+	return next_scene_;
 }
 
 // 終了
 void SceneGamePlay::end()
 {
-	// ワールドをクリア
-	world_.clear();
-
-	// 素材を破棄
-	SkeletalMesh::erase(MESH_PALADIN);
-	SkeletalMesh::erase(MESH_GHOUL);
-	SkeletalMesh::erase(MESH_DRAGONBOAR);
-
-	CollisionMesh::erase(MESH_STAGE_CASTLE);
-	Skybox::erase(MESH_SKYBOX);
-	Billboard::erase(0);
+	world_.clear();		// ワールドをクリア
 }
 
 // メッセージ処理
@@ -106,7 +80,6 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	if (message == EventMessage::GameOver)
 	{
 		// シーン終了（ゲームオーバーシーンへ移行）
-
 		is_end_ = true;
 		return;
 	}
@@ -115,7 +88,7 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	if (message == EventMessage::StageClear)
 	{
 		// シーン終了（ゲームクリアシーンへ移行）
-
+		
 		is_end_ = true;
 		return;
 	}

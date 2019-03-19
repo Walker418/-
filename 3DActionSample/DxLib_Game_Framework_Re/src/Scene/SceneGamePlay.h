@@ -3,6 +3,7 @@
 
 #include "IScene.h"
 #include "../World/World.h"
+#include "Scene.h"
 
 // クラス：ゲームプレイシーン
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -31,6 +32,10 @@ private:
 	World	world_;
 	// 終了フラグ
 	bool	is_end_{ false };
+	// 次のシーン（デフォルトはゲームオーバーシーン）
+	// Scene	next_scene_{ Scene::GameOver };
+	// Scene	next_scene_{ Scene::Title };
+	Scene	next_scene_{ Scene::GamePlay };
 };
 
 #endif // !SCENE_GAME_PLAY_H_

@@ -17,7 +17,9 @@ GamePlayManager::GamePlayManager(IWorld* world) :
 	enemy_defeated_{ 0 },
 	phase1_end_{ false },
 	boss_defeated_{ false },
-	phase2_end_{ false }
+	phase2_end_{ false },
+	player_dead_{ false },
+	game_end_{ false }
 {
 	// ゲーム開始処理を行う
 	game_start();
@@ -40,21 +42,21 @@ void GamePlayManager::draw() const
 	*/
 
 	unsigned int Cr;
-	Cr = GetColor(255, 255, 255);
+	Cr = GetColor(230, 230, 230);
 
 	// プレイヤーキャラの体力を表示
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
-	int player_hp = player->get_HP();
+	int player_hp = (player != nullptr) ? player->get_HP() : 0;
 	DrawFormatString(0, 0, Cr, "プレイヤーの体力： %i", player_hp);
 
 	// 進行状況に応じて、現在の目的を表示
 	switch (state_)
 	{
 	case (GamePlayState::Phase1):
-		DrawFormatString(700, 300, Cr, "グール3体を倒せ！！： %i / 3", enemy_defeated_);
+		DrawFormatString(750, 430, Cr, "グール3体を倒せ！！： %i / 3", enemy_defeated_);
 		break;
 	case (GamePlayState::Phase2):
-		DrawString(700, 300, "巨大モンスターを倒せ！！", Cr);
+		DrawString(750, 430, "巨大モンスターを倒せ！！", Cr);
 		break;
 	default:
 		break;
@@ -81,7 +83,7 @@ void GamePlayManager::handle_message(EventMessage message, void* param)
 		boss_defeated_ = true;
 		break;
 	case EventMessage::PlayerDead:	// プレイヤーが倒れた場合
-		world_->send_message(EventMessage::GameOver);	// ゲームオーバーメッセージを送る
+		player_dead_ = true;
 		break;
 	default:
 		break;
@@ -104,6 +106,21 @@ void GamePlayManager::update_phase(float delta_time)
 	}
 
 	state_timer_ += delta_time;
+
+	// プレイヤーが死亡すると、ゲーム終了フラグを立って、しばらくしてゲームオーバーメッセージを送る
+	if (player_dead_)
+	{
+		if (!game_end_)
+		{
+			state_change_time_ = state_timer_ + 60.0f;
+			game_end_ = true;
+		}
+
+		if (state_timer_ >= state_change_time_)
+		{
+			world_->send_message(EventMessage::GameOver);
+		}
+	}
 }
 
 // ゲーム開始処理
