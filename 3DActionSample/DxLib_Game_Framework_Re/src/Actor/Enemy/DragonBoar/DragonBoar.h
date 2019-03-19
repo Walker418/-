@@ -92,6 +92,8 @@ private:
 
 	// 攻撃判定を発生したのか
 	bool				attack_on_{ false };
+	// 突進攻撃の判定を発生したのか
+	bool				dash_attack_on_{ false };
 	// 次の目的地
 	Vector3				next_destination_;
 	// 移動中なのか
@@ -105,8 +107,10 @@ private:
 
 	// 最大体力
 	const int			HP{ 100 };
-	// 移動速度
+	// 歩行速度
 	const float			WalkSpeed{ 0.28f };
+	// 突進速度
+	const float			DashSpeed{ 0.5f };
 	// 回転速度
 	const float			RotateSpeed{ 1.0f };
 	// 重力

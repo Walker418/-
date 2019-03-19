@@ -16,6 +16,7 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, cons
 	state_{ DragonBoarState::Roar },
 	state_timer_{ 0.0f },
 	attack_on_{ false },
+	dash_attack_on_{ false },
 	is_moving_{ false },
 	is_anger_{ false },
 	anger_timer_{ 0.0f },
@@ -57,7 +58,6 @@ void DragonBoar::update(float delta_time)
 		return;
 	}
 
-	/*
 	// 体力が半分以下になったら、1回咆哮して怒り状態へ移行
 	if (current_hp_ <= HP / 2 && !is_anger_)
 	{
@@ -67,7 +67,7 @@ void DragonBoar::update(float delta_time)
 		change_state(DragonBoarState::Roar, MOTION_ROAR);
 		return;
 	}
-	*/
+
 
 	// 怯み累積値が一定量を越えたら、怯み状態に移行
 	if (current_wince_ >= ToWince && state_ != DragonBoarState::Wince)
@@ -108,14 +108,14 @@ void DragonBoar::react(Actor& other)
 	if (state_ == DragonBoarState::Death) return;
 
 	// 怒り突進中にプレイヤーを当たったら、ダメージを与える
-	if (state_ == DragonBoarState::Anger && attack_on_)
+	if (state_ == DragonBoarState::Anger && dash_attack_on_)
 	{
 		// プレイヤーへのダメージ構造体を生成
 		Damage damage = { position_, 25 };
 		// プレイヤーへダメージメッセージを送る
 		other.handle_message(EventMessage::PlayerDamage, &damage);
 		// 攻撃判定を無効化
-		attack_on_ = false;
+		dash_attack_on_ = false;
 		return;
 	}
 }
@@ -302,8 +302,8 @@ void DragonBoar::bite(float delta_time)
 	// 次の状態へ移行
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
-		next_action();
-		// change_state(DragonBoarState::Idle, DragonBoarMotion::MOTION_IDLE);
+		motion_ = MOTION_IDLE;
+		if (state_timer_ >= interval_)	next_action();
 	}
 }
 
@@ -333,7 +333,40 @@ void DragonBoar::anger(float delta_time)
 	}
 
 	// 目的地に向かって突進
-	
+	else
+	{
+		// 突進中の処理
+		if (is_moving_)
+		{
+			motion_ = MOTION_DASH;
+
+			// 攻撃判定を有効化
+			if (!attack_on_)
+			{
+				dash_attack_on_ = true;
+				attack_on_ = true;
+			}
+
+			// 移動処理
+			velocity_ = Vector3::Zero;						// 移動量をリセット
+			velocity_ += rotation_.Forward() * DashSpeed;	// 移動速度を加算
+			position_ += velocity_ * delta_time;			// 次の位置を計算
+
+			if (dash_timer_ <= 0.0f)
+			{
+				is_moving_ = false;
+				interval_ = state_timer_ + 60.0f;
+			}
+			dash_timer_ -= delta_time;
+		}
+		// 突進後の処理
+		else
+		{
+			dash_attack_on_ = false;						// 攻撃判定を無効化
+			motion_ = MOTION_IDLE;
+			if (state_timer_ >= interval_)	next_action();	// 次の行動を抽選
+		}
+	}
 }
 
 // 怯み状態での更新
