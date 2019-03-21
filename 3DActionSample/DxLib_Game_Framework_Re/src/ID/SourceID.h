@@ -17,6 +17,8 @@ enum
 	// テクスチャ
 	TEXTURE_HPGAUGE,	// 体力ゲージ
 	TEXTURE_HP,			// 体力表示
+	TEXTURE_P1MESSAGE,	// フェーズ1目標メッセージ
+	TEXTURE_P2MESSAGE,	// フェーズ2目標メッセージ
 };
 
 #endif // !SOURCE_ID_H_

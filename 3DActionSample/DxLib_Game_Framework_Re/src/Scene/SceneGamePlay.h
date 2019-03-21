@@ -35,7 +35,7 @@ private:
 	// 次のシーン（デフォルトはゲームオーバーシーン）
 	// Scene	next_scene_{ Scene::GameOver };
 	// Scene	next_scene_{ Scene::Title };
-	Scene	next_scene_{ Scene::GamePlay };
+	Scene	next_scene_{ Scene::Loading };
 };
 
 #endif // !SCENE_GAME_PLAY_H_

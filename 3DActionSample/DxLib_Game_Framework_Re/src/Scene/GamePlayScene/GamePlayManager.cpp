@@ -39,21 +39,8 @@ void GamePlayManager::draw() const
 	// プレイヤーキャラの体力を表示
 	draw_HP_gauge(Vector2(10.0f, 10.0f));
 
-	// 進行状況に応じて、現在の目的を表示
-	unsigned int Cr;
-	Cr = GetColor(255, 255, 255);
-
-	switch (state_)
-	{
-	case (GamePlayState::Phase1):
-		DrawFormatString(750, 430, Cr, "グール3体を倒せ！！： %i / 3", enemy_defeated_);
-		break;
-	case (GamePlayState::Phase2):
-		DrawString(750, 430, "巨大モンスターを倒せ！！", Cr);
-		break;
-	default:
-		break;
-	}
+	// 現在の目的を表示
+	draw_message(Vector2(750.0f, 430.0f));
 }
 
 // メッセージ処理
@@ -185,5 +172,22 @@ void GamePlayManager::draw_HP_gauge(Vector2 position) const
 			
 			Graphics2D::draw(TEXTURE_HP, Vector2(draw_pos.x + 4 * i, draw_pos.y));
 		}
+	}
+}
+
+// 現在の目的を表示
+void GamePlayManager::draw_message(Vector2 position) const
+{
+	// 進行状況に応じて、現在の目的を表示
+	switch (state_)
+	{
+	case (GamePlayState::Phase1):
+		Graphics2D::draw(TEXTURE_P1MESSAGE, position);
+		break;
+	case (GamePlayState::Phase2):
+		Graphics2D::draw(TEXTURE_P2MESSAGE, position);
+		break;
+	default:
+		break;
 	}
 }

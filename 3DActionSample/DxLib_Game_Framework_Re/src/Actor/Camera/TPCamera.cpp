@@ -21,7 +21,7 @@ void TPCamera::update(float delta_time)
 	if (!player) return;	// プレイヤーが存在しない場合、何もしない
 
 	target_ = player->position();
-	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + player->position();
+	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + target_;
 
 	// 移動、回転処理
 	move(delta_time);

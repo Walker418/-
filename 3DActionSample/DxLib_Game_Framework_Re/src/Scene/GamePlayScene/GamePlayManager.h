@@ -39,6 +39,8 @@ private:
 	void phase2(float delta_time);
 	// プレイヤーの体力ゲージを表示
 	void draw_HP_gauge(Vector2 position) const;
+	// 現在の目的を表示
+	void draw_message(Vector2 position) const;
 
 private:
 	// プレイ状況

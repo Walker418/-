@@ -88,7 +88,6 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	if (message == EventMessage::StageClear)
 	{
 		// シーン終了（ゲームクリアシーンへ移行）
-		
 		is_end_ = true;
 		return;
 	}

@@ -35,6 +35,8 @@ void SceneLoading::update(float delta_time)
 
 		Graphics2D::load(TEXTURE_HPGAUGE, "res/assets/textures/HPgauge.png");						// 体力ゲージ
 		Graphics2D::load(TEXTURE_HP, "res/assets/textures/HP.png");									// 体力表示
+		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/textures/P1message.png");					// フェーズ1目標メッセージ
+		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/textures/P2message.png");					// フェーズ2目標メッセージ
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;
@@ -67,7 +69,7 @@ bool SceneLoading::is_end() const
 // 次のシーンを返す
 Scene SceneLoading::next() const
 {
-	return Scene::GamePlay;
+	return Scene::Title;
 }
 
 // 終了
