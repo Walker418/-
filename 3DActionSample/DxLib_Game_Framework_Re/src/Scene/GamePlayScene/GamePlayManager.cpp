@@ -37,7 +37,7 @@ void GamePlayManager::update(float delta_time)
 void GamePlayManager::draw() const
 {
 	// プレイヤーキャラの体力を表示
-	draw_HP_gauge(Vector2(10.0f, 10.0f));
+	draw_HP_gauge(Vector2(20.0f, 15.0f));
 
 	// 現在の目的を表示
 	draw_message(Vector2(750.0f, 430.0f));

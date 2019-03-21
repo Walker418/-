@@ -122,5 +122,5 @@ void SceneTitle::draw_start() const
 {
 	if (!show_start_) return;
 
-	Graphics2D::draw(TEXTURE_START, Vector2(290.0f, 480.0f));
+	Graphics2D::draw(TEXTURE_START, Vector2(290.0f, 490.0f));
 }
