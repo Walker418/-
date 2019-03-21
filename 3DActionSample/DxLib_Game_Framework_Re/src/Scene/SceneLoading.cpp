@@ -33,6 +33,8 @@ void SceneLoading::update(float delta_time)
 		SkeletalMesh::load(MESH_GHOUL, "res/assets/Ghoul/ghoul.mv1");								// 雑魚敵モデル
 		SkeletalMesh::load(MESH_DRAGONBOAR, "res/assets/DragonBoar/DragonBoar.mv1");				// ボス敵モデル
 
+		Graphics2D::load(TEXTURE_TITLELOGO, "res/assets/textures/TitleLogo.png");					// タイトルロゴ
+		Graphics2D::load(TEXTURE_START, "res/assets/textures/Start.png");							// スタート表示
 		Graphics2D::load(TEXTURE_HPGAUGE, "res/assets/textures/HPgauge.png");						// 体力ゲージ
 		Graphics2D::load(TEXTURE_HP, "res/assets/textures/HP.png");									// 体力表示
 		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/textures/P1message.png");					// フェーズ1目標メッセージ

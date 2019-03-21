@@ -5,6 +5,17 @@
 // クラス：プレイヤー入力
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
+// ゲームスタート入力をしたか
+bool PlayerInput::game_start()
+{
+	// ゲームパッドのスタートボタンが押されると、Trueを返す
+	if (GamePad::getInstance().ButtonTriggerDown(PadButton::Start)) return true;
+	// キーボードのスペースキーが押されると、Trueを返す
+	if (Keyboard::getInstance().KeyTriggerDown(Keycode::Space)) return true;
+
+	return false;
+}
+
 // 攻撃入力をしたか
 bool PlayerInput::attack()
 {

@@ -9,6 +9,9 @@
 class PlayerInput
 {
 public:
+	// ゲームスタート入力をしたか
+	static bool game_start();
+
 	// 攻撃入力をしたか
 	static bool attack();
 	// ジャンプ攻撃入力をしたか

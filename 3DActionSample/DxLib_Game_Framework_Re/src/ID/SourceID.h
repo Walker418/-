@@ -15,6 +15,8 @@ enum
 	MESH_DRAGONBOAR,	// ボス敵
 
 	// テクスチャ
+	TEXTURE_TITLELOGO,	// タイトルロゴ
+	TEXTURE_START,		// スタート表示
 	TEXTURE_HPGAUGE,	// 体力ゲージ
 	TEXTURE_HP,			// 体力表示
 	TEXTURE_P1MESSAGE,	// フェーズ1目標メッセージ

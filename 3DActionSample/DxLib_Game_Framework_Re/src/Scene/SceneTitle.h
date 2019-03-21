@@ -28,10 +28,21 @@ public:
 	void handle_message(EventMessage message, void* param);
 
 private:
+	// タイトルロゴの描画
+	void draw_logo() const;
+	// スタートメッセージの描画
+	void draw_start() const;
+
+private:
 	// ワールドクラス
 	World	world_;
 	// 終了フラグ
 	bool	is_end_{ false };
+
+	bool is_started_{ false };			// スタートボタンが押されたか
+	bool show_start_{ true };			// スタートメッセージを表示するか
+	float show_start_timer_{ 0.0f };	// タイトル画面起動タイマー
+	float end_timer_{ 0.0f };			// シーン終了タイマー
 };
 
 #endif // !SCENE_TITLE_H_
