@@ -38,7 +38,7 @@ void Ghoul::update(float delta_time)
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
-	
+
 	intersect_ground();		// 地面との接触処理
 	intersect_wall();		// 壁との接触処理
 	clamp_position();		// 座標制限
@@ -339,6 +339,11 @@ void Ghoul::next_destination()
 
 	// プレイヤーの参照を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
+	// フィールドの参照を取得
+	auto& field = world_->field();
+	// フィールドの最大と最小座標を取得
+	auto max_pos = field.max_position();
+	auto min_pos = field.min_position();
 
 	// i = 0、またはプレイヤーは存在しない場合、ランダムで座標を生成する
 	if (i == 0 || player == nullptr)
@@ -347,9 +352,9 @@ void Ghoul::next_destination()
 		is_following_player_ = false;
 
 		// x軸の座標を生成;
-		float x = rand_.rand_float(-135, 136);
+		float x = rand_.rand_float(min_pos.x, max_pos.x);
 		// z軸の座標を生成
-		float z = rand_.rand_float(-135, 136);
+		float z = rand_.rand_float(min_pos.z, max_pos.z);
 		// 生成した座標を目的地にする
 		Vector3 new_dest = Vector3(x, 0.0f, z);
 		next_destination_ = new_dest;
