@@ -32,10 +32,8 @@ private:
 	World	world_;
 	// 終了フラグ
 	bool	is_end_{ false };
-	// 次のシーン（デフォルトはゲームオーバーシーン）
-	// Scene	next_scene_{ Scene::GameOver };
-	// Scene	next_scene_{ Scene::Title };
-	Scene	next_scene_{ Scene::Loading };
+	// 次のシーン（デフォルトはタイトルシーン）
+	Scene	next_scene_{ Scene::Title };
 };
 
 #endif // !SCENE_GAME_PLAY_H_

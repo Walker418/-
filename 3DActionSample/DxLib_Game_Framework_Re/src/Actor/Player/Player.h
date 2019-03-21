@@ -123,6 +123,8 @@ private:
 	void intersect_ground();
 	// •Ç‚Æ‚ÌÚGˆ—
 	void intersect_wall();
+	// À•W§ŒÀ
+	void clamp_position();
 	// ‰ñ”ğ€”õ
 	void ready_to_skip();
 

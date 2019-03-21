@@ -79,7 +79,6 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	// ゲームオーバーの場合
 	if (message == EventMessage::GameOver)
 	{
-		// シーン終了（ゲームオーバーシーンへ移行）
 		is_end_ = true;
 		return;
 	}
@@ -87,7 +86,6 @@ void SceneGamePlay::handle_message(EventMessage message, void* param)
 	// ゲームクリアの場合
 	if (message == EventMessage::StageClear)
 	{
-		// シーン終了（ゲームクリアシーンへ移行）
 		is_end_ = true;
 		return;
 	}

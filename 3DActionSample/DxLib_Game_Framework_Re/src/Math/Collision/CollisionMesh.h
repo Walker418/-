@@ -29,6 +29,12 @@ public:
 	// カプセルとの衝突判定
 	static bool collide_capsule(const Vector3& start, const Vector3& end, float radius, Vector3* result = nullptr);
 
+	// メッシュに含まれる頂点のローカル座標での最大値の取得
+	static Vector3 max_position();
+	// メッシュに含まれる頂点のローカル座標での最小値の取得
+	static Vector3 min_position();
+
+
 private:
 	// バインド中のモデル
 	static int			model_;

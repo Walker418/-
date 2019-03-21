@@ -49,3 +49,32 @@ bool Field::collide_capsule(const Vector3& start, const Vector3& end, float radi
 	return CollisionMesh::collide_capsule(start, end, radius, result);
 }
 
+// フィールドの最大座標の取得
+Vector3 Field::max_position() const
+{
+	return CollisionMesh::max_position();
+}
+
+// フィールドの最小座標の取得
+Vector3 Field::min_position() const
+{
+	return CollisionMesh::min_position();
+}
+
+// フィールド内判定
+bool Field::is_inside(const Vector3& position) const
+{
+	CollisionMesh::bind(stage_);
+
+	if (position.x < min_position().x || position.x > max_position().x) return false;
+	if (position.z < min_position().z || position.z > max_position().z) return false;
+
+	return true;
+}
+
+// フィールド外判定
+bool Field::is_outside(const Vector3& position) const
+{
+	return !is_inside(position);
+}
+

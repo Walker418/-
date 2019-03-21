@@ -4,6 +4,7 @@
 #include "../Body/Line.h"
 #include "../Body/BoundingSphere.h"
 #include "../ActorGroup.h"
+#include "../../Math/MathHelper.h"
 
 // コンストラクタ
 Enemy::Enemy(IWorld* world, const std::string& name, const Vector3& position, float angle, const IBodyPtr& body) :
@@ -52,6 +53,19 @@ void Enemy::intersect_wall()
 		position_.x = intersect.x;
 		position_.z = intersect.z;
 	}
+}
+
+// 座標の制限
+void Enemy::clamp_position()
+{
+	// フィールドを取得
+	auto& field = world_->field();
+	// フィールドの最大と最小座標を取得
+	auto max_pos = field.max_position();
+	auto min_pos = field.min_position();
+
+	position_.x = MathHelper::clamp(position_.x, min_pos.x, max_pos.x);
+	position_.z = MathHelper::clamp(position_.z, min_pos.z, max_pos.z);
 }
 
 // プレイヤーを取得

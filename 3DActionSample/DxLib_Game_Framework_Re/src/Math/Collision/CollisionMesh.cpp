@@ -201,3 +201,15 @@ bool CollisionMesh::collide_capsule(const Vector3& start, const Vector3& end, fl
 
 	return is_hit;
 }
+
+// メッシュに含まれる頂点のローカル座標での最大値の取得
+Vector3 CollisionMesh::max_position()
+{
+	return MV1GetMeshMaxPosition(model_, 0);
+}
+
+// メッシュに含まれる頂点のローカル座標での最小値の取得
+Vector3 CollisionMesh::min_position()
+{
+	return MV1GetMeshMinPosition(model_, 0);
+}

@@ -9,7 +9,6 @@ enum class Scene
 	Loading,		// 読み込み
 	Title,			// タイトル
 	GamePlay,		// ゲームプレイ
-	GameOver,		// ゲームオーバー
 };
 
 #endif // !SCENE_H_

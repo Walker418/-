@@ -17,6 +17,8 @@ public:
 	void intersect_ground();
 	// 壁との接触処理
 	void intersect_wall();
+	// 座標の制限
+	void clamp_position();
 
 	// プレイヤーを取得
 	ActorPtr get_player();

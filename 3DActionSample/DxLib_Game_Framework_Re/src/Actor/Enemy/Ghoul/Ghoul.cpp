@@ -38,10 +38,10 @@ void Ghoul::update(float delta_time)
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
-	// 地面との接触処理
-	intersect_ground();
-	// 壁との接触処理
-	intersect_wall();
+	
+	intersect_ground();		// 地面との接触処理
+	intersect_wall();		// 壁との接触処理
+	clamp_position();		// 座標制限
 
 	// 敵の状態を更新
 	update_state(delta_time);

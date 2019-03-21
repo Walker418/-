@@ -20,6 +20,16 @@ public:
 	// カプセルとの衝突判定
 	bool collide_capsule(const Vector3& start, const Vector3& end, float radius, Vector3* result = nullptr);
 
+	// フィールドの最大座標の取得
+	Vector3 max_position() const;
+	// フィールドの最小座標の取得
+	Vector3 min_position() const;
+
+	// フィールド内判定
+	bool is_inside(const Vector3& position) const;
+	// フィールド外判定
+	bool is_outside(const Vector3& position) const;
+
 	// コピー禁止
 	Field(const Field& other) = delete;
 	Field& operator = (const Field& other) = delete;

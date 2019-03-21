@@ -39,10 +39,10 @@ void Player::update(float delta_time)
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
-	// 地面との接触処理
-	intersect_ground();
-	// 壁との接触処理
-	intersect_wall();
+	
+	intersect_ground();		// 地面との接触処理
+	intersect_wall();		// 壁との接触処理
+	clamp_position();		// 座標制限
 
 	// ガード状態をリセット
 	is_guard_ = false;
@@ -864,6 +864,19 @@ void Player::intersect_wall()
 		position_.x = intersect.x;
 		position_.z = intersect.z;
 	}
+}
+
+// 座標制限
+void Player::clamp_position()
+{
+	// フィールドを取得
+	auto& field = world_->field();
+	// フィールドの最大と最小座標を取得
+	auto max_pos = field.max_position();
+	auto min_pos = field.min_position();
+
+	position_.x = MathHelper::clamp(position_.x, min_pos.x, max_pos.x);
+	position_.z = MathHelper::clamp(position_.z, min_pos.z, max_pos.z);
 }
 
 // 回避準備
