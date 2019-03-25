@@ -74,10 +74,6 @@ void Player::draw() const
 
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
-	// 線分で方向を示す（デバッグモードのみ）
-	unsigned int Cr;
-	Cr = GetColor(255, 0, 0);
-	DrawLine3D(position_, position_ + pose().Forward() * 10.0f, Cr);
 }
 
 // 衝突リアクション

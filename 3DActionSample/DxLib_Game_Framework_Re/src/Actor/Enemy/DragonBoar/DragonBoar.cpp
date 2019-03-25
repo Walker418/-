@@ -85,20 +85,6 @@ void DragonBoar::draw() const
 
 	// コライダーを描画（デバッグモードのみ、調整用）
 	body_->transform(pose())->draw();
-	// 線分で方向を示す（デバッグモードのみ）
-	unsigned int Cr;
-	Cr = GetColor(255, 0, 0);
-	DrawLine3D(position_, position_ + pose().Forward() * 50.0f, Cr);
-
-	// デバッグメッセージ
-	// Cr = GetColor(255, 255, 255);
-	// DrawFormatString(0, 0, Cr, "プレイヤーへの角度： %f", get_angle_to_player());
-	/*
-	if (player_in_front())
-		DrawString(0, 0, "プレイヤーは前にいる", Cr);
-	else
-		DrawString(0, 0, "プレイヤーは後にいる", Cr);
-		*/
 }
 
 // 衝突リアクション
