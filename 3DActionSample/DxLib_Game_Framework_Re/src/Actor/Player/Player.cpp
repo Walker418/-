@@ -39,7 +39,7 @@ void Player::update(float delta_time)
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
-	
+
 	intersect_ground();		// 地面との接触処理
 	intersect_wall();		// 壁との接触処理
 	clamp_position();		// 座標制限
@@ -244,32 +244,9 @@ void Player::normal(float delta_time)
 	// 移動は接地状態でしかできない
 	if (is_ground_)
 	{
-		// WASDによる移動
-		// 前後移動
-		if (PlayerInput::move_forward())		// 前
-		{
-			forward_speed = DashSpeed;
-		}
-		else if (PlayerInput::move_backward())	// 後
-		{
-			forward_speed = -DashSpeed;
-		}
-		// 左右移動
-		if (PlayerInput::move_left())			// 左
-		{
-			left_speed = DashSpeed;
-		}
-		else if (PlayerInput::move_right())		// 右
-		{
-			left_speed = -DashSpeed;
-		}
-
-		// 左スティックによる移動（WASD操作していなければ有効）
-		if (!PlayerInput::keyboard_move())
-		{
-			forward_speed = DashSpeed * PlayerInput::L_stick_move().y;	// 前後
-			left_speed = -DashSpeed * PlayerInput::L_stick_move().x;	// 左右
-		}
+		// 移動入力を取得
+		forward_speed = DashSpeed * PlayerInput::move_input().y;	// 前後
+		left_speed = -DashSpeed * PlayerInput::move_input().x;		// 左右
 	}
 	// 移動していれば、歩行モーションに変更
 	if (forward_speed != 0.0f || left_speed != 0.0f)
@@ -281,6 +258,7 @@ void Player::normal(float delta_time)
 	// 移動量を計算し、プレイヤーを移動させる
 	velocity_ += camera_forward * forward_speed;	// 前後速度を加算
 	velocity_ += camera.Left() * left_speed;		// 左右速度を加算
+	velocity_.Normalize();							// 移動速度を正規化
 	position_ += velocity_ * delta_time;			// 次の位置を計算
 
 	// プレイヤーを回転させる
@@ -331,16 +309,9 @@ void Player::slash1(float delta_time)
 	if (state_timer_ > 33.0f && state_timer_ < 53.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -379,16 +350,9 @@ void Player::slash2(float delta_time)
 	if (state_timer_ > 20.0f && state_timer_ < 45.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -427,16 +391,9 @@ void Player::slash3(float delta_time)
 	if (state_timer_ > 50.0f && state_timer_ <= mesh_.motion_end_time() + 70.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -480,16 +437,9 @@ void Player::jump_attack1(float delta_time)
 	if (state_timer_ > 46.0f && state_timer_ < mesh_.motion_end_time() + 70.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -528,16 +478,9 @@ void Player::jump_attack2(float delta_time)
 	if (state_timer_ > 20.0f && state_timer_ < 45.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -630,16 +573,9 @@ void Player::guard_attack(float delta_time)
 	if (state_timer_ > 45.0f && state_timer_ < 60.0f && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
-		// キーボード操作による入力
-		if (!PlayerInput::gamepad_move() && PlayerInput::evasion())
+		if (PlayerInput::evasion())
 		{
-			attack_to_evasion_keyboard();
-		}
-
-		// パッド操作による入力
-		if (!PlayerInput::keyboard_move() && PlayerInput::evasion())
-		{
-			attack_to_evasion_pad();
+			attack_to_evasion();
 		}
 	}
 
@@ -743,11 +679,11 @@ void Player::right_evasion(float delta_time)
 	skip_timer_ -= delta_time;
 }
 
-// 攻撃後の回避行動移行（ゲームパッド）
-void Player::attack_to_evasion_pad()
+// 攻撃後の回避行動移行
+void Player::attack_to_evasion()
 {
 	// プレイヤーの方向入力を取得
-	auto input = PlayerInput::L_stick_move();
+	auto input = PlayerInput::move_input();
 
 	// カメラを取得
 	auto camera = world_->camera()->pose();
@@ -774,32 +710,6 @@ void Player::attack_to_evasion_pad()
 	}
 	// 右回避
 	else if (Vector3::Angle(rotation_.Right(), direction) <= 45.0f)
-	{
-		ready_to_skip();
-		change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
-		return;
-	}
-	// 前回避
-	else
-	{
-		ready_to_skip();
-		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
-		return;
-	}
-}
-
-// 攻撃後の回避行動移行（キーボード）
-void Player::attack_to_evasion_keyboard()
-{
-	// 左回避
-	if (PlayerInput::move_left())
-	{
-		ready_to_skip();
-		change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
-		return;
-	}
-	// 右回避
-	else if (PlayerInput::move_right())
 	{
 		ready_to_skip();
 		change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);

@@ -114,10 +114,8 @@ private:
 	void left_evasion(float delta_time);
 	// 右回避状態での更新
 	void right_evasion(float delta_time);
-	// 攻撃後の回避行動移行（ゲームパッド）
-	void attack_to_evasion_pad();
-	// 攻撃後の回避行動移行（キーボード）
-	void attack_to_evasion_keyboard();
+	// 攻撃後の回避行動移行
+	void attack_to_evasion();
 
 	// 地面との接触処理
 	void intersect_ground();

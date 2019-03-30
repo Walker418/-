@@ -34,8 +34,8 @@ public:
 	// キーボードで移動しているか
 	static bool keyboard_move();
 
-	// 左スティックによる移動
-	static Vector2 L_stick_move();
+	// 移動方向の入力
+	static Vector2 move_input();
 	// 左スティックで移動しているか
 	static bool gamepad_move();
 

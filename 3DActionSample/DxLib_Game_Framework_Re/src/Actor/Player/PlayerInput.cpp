@@ -82,20 +82,34 @@ bool PlayerInput::keyboard_move()
 	return (move_forward() || move_backward() || move_left() || move_right());
 }
 
-// 左スティックによる移動
-Vector2 PlayerInput::L_stick_move()
+// 移動方向の入力
+Vector2 PlayerInput::move_input()
 {
+	/*
 	// キーボードで移動している場合は反応しない（Vector2::Zeroを返す）
 	if (keyboard_move())	return Vector2::Zero;
 
 	return (GamePad::getInstance().L_Stick());
+	*/
+
+	Vector2 input = Vector2::Zero;	// 入力情報を返す変数を宣言しておく
+
+	// キーボードの入力を取得
+	input.y = (move_forward()) ? 1.0f : (move_backward()) ? -1.0f : 0.0f;	// 前後
+	input.x = (move_left()) ? -1.0f : (move_right()) ? 1.0f : 0.0f;			// 左右
+
+	// キーボードの入力がなければ、ゲームパッドの入力を取得
+	if (!keyboard_move()) input = GamePad::getInstance().L_Stick();
+
+	// 正規化した方向入力を返す
+	return input.Normalize();
 }
 
 // 左スティックで移動しているか
 bool PlayerInput::gamepad_move()
 {
 	// 左スティックの入力は0でなければ、Trueを返す
-	return L_stick_move() != Vector2::Zero;
+	return move_input() != Vector2::Zero;
 }
 
 // カメラ左回転
