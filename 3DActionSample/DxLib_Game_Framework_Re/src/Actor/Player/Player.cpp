@@ -286,8 +286,6 @@ void Player::normal(float delta_time)
 	// プレイヤーを回転させる
 	if (velocity_.x != 0.0f || velocity_.z != 0.0f)		// 移動していれば
 	{
-		// rotation_ = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);
-
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
 		rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);	// 補間で方向を転換する
 	}

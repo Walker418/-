@@ -25,6 +25,8 @@ Game::Game(int width, int height, bool full_screen) :
 // 実行
 int Game::run()
 {
+	// ログを出力しないように
+	SetOutApplicationLogValidFlag(FALSE);
 	// ウィンドウサイズを設定
 	SetWindowSize(window_width_, window_height_);
 	// フルスクリーンモード時の解像度を設定

@@ -106,7 +106,7 @@ private:
 	float			attack_interval_{ 0.0f };
 
 	// Å‘å‘Ì—Í
-	const int		HP{ 40 };
+	const int		HP{ 15 };
 	// ˆÚ“®‘¬“x
 	const float		WalkSpeed{ 0.28f };
 	// ‰ñ“]‘¬“x

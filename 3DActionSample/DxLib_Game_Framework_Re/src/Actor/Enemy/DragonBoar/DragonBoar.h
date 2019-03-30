@@ -106,7 +106,7 @@ private:
 	float				dash_timer_{ 0.0f };
 
 	// 最大体力
-	const int			HP{ 150 };
+	const int			HP{ 100 };
 	// 歩行速度
 	const float			WalkSpeed{ 0.28f };
 	// 突進速度
