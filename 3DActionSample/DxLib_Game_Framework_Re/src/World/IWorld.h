@@ -31,6 +31,8 @@ public:
 	virtual Field& field() = 0;
 	// ƒJƒƒ‰‚Ìæ“¾
 	virtual ActorPtr camera() = 0;
+	// ƒ‰ƒCƒg‚Ìæ“¾
+	virtual ActorPtr light() = 0;
 };
 
 #endif // !IWORLD_H_

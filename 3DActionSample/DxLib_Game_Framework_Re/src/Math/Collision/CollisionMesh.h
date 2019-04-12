@@ -34,7 +34,6 @@ public:
 	// メッシュに含まれる頂点のローカル座標での最小値の取得
 	static Vector3 min_position();
 
-
 private:
 	// バインド中のモデル
 	static int			model_;

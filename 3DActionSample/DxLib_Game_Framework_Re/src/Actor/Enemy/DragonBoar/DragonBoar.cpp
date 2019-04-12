@@ -8,6 +8,17 @@
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
+//--------------------------------------------------
+
+const int	IdleTime = 5;				// 待機状態の持続時間（秒）
+const int	BitePower = 15;				// 噛み付く攻撃の威力
+const float	BiteRadius = 10.0f;			// 噛み付く攻撃判定の範囲半径
+const int	AngerTime = 2;				// 怒り状態の持続時間（分）
+const int	TraceTimeBeforeDash = 2;	// 怒り突進前、プレイヤーと軸合わせする時間（秒）
+const int	DashPower = 25;				// 突進攻撃の威力
+
+//--------------------------------------------------
+
 // コンストラクタ
 DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Enemy(world, "DragonBoar", position, angle, body),
@@ -61,9 +72,9 @@ void DragonBoar::update(float delta_time)
 	// 体力が半分以下になったら、1回咆哮して怒り状態へ移行
 	if (current_hp_ <= HP / 2 && !is_anger_)
 	{
-		current_wince_ /= 2;
+		current_wince_ /= 2;			// 累積怯み値を半分にする
 		is_anger_ = true;
-		anger_timer_ = 120.0f;
+		anger_timer_ = AngerTime * 60;	// 怒り状態の持続時間を設定（分 * 60フレーム）
 		change_state(DragonBoarState::Roar, MOTION_ROAR);
 		return;
 	}
@@ -97,7 +108,7 @@ void DragonBoar::react(Actor& other)
 	if (state_ == DragonBoarState::Anger && dash_attack_on_)
 	{
 		// プレイヤーへのダメージ構造体を生成
-		Damage damage = { position_, 25 };
+		Damage damage = { position_, DashPower };
 		// プレイヤーへダメージメッセージを送る
 		other.handle_message(EventMessage::PlayerDamage, &damage);
 		// 攻撃判定を無効化
@@ -175,27 +186,22 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 
 	if (state == DragonBoarState::Anger)
 	{
-		dash_timer_ = 60 * rand_.rand_int(2, 4);
+		const int min = 2, max = 4;		// 怒り突進の持続時間の最小値と最大値（秒）
+		dash_timer_ = 60.0f * rand_.rand_int(min, max);
 	}
 }
 
 // 待機状態での更新
 void DragonBoar::idle(float delta_time)
 {
-	// 5秒後、移動開始
-	if (state_timer_ >= 300.0f)
+	// 5秒後、移動開始（待機秒数 * 60フレーム/秒）
+	if (state_timer_ >= IdleTime * 60.0f)
 	{
+		// 怒り状態であるかどうかによって、移動方法を選択
 		(anger_timer_ > 0.0f) ?
 			change_state(DragonBoarState::Anger, DragonBoarMotion::MOTION_DASH) :	// 怒り移動へ移行
 			change_state(DragonBoarState::Normal, DragonBoarMotion::MOTION_WALK);	// 通常移動へ移行
 	}
-
-	/*
-	if (state_timer_ >= 120.0f)
-	{
-		change_state(DragonBoarState::Bite, DragonBoarMotion::MOTION_BITE);
-	}
-	*/
 }
 
 // 咆哮中の更新
@@ -204,6 +210,7 @@ void DragonBoar::roar(float delta_time)
 	// モーション終了後、移動開始
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
+		// 怒り状態であるかどうかによって、移動方法を選択
 		(anger_timer_ > 0.0f) ?
 			change_state(DragonBoarState::Anger, DragonBoarMotion::MOTION_DASH) :	// 怒り移動へ移行
 			change_state(DragonBoarState::Normal, DragonBoarMotion::MOTION_WALK);	// 通常移動へ移行
@@ -224,12 +231,13 @@ void DragonBoar::normal(float delta_time)
 	motion_ = MOTION_IDLE;
 	float angle_to_target = get_angle_to_target(next_destination_);
 
-	if (angle_to_target >= 0.5f)
+	const float AngleToRotate = 0.5f;		// 目的地への角度がこの数値より大きいなら、回転して目的地に向けるようにする
+	if (angle_to_target >= AngleToRotate)
 	{
 		motion_ = MOTION_WALK;
 		rotation_ *= Matrix::CreateRotationY(RotateSpeed * delta_time);
 	}
-	else if (angle_to_target <= -0.5f)
+	else if (angle_to_target <= -AngleToRotate)
 	{
 		motion_ = MOTION_WALK;
 		rotation_ *= Matrix::CreateRotationY(-RotateSpeed * delta_time);
@@ -237,7 +245,8 @@ void DragonBoar::normal(float delta_time)
 	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);		// 回転行列を初期化
 
 	// プレイヤーに向いてる場合、移動する
-	if (is_moving_ && get_unsigned_angle_to_target(next_destination_) <= 18.0f)
+	const float AngleToMove = 18.0f;		// 目的地への角度がこの数値より小さいなら、移動開始
+	if (is_moving_ && get_unsigned_angle_to_target(next_destination_) <= AngleToMove)
 	{
 		motion_ = MOTION_WALK;
 
@@ -252,7 +261,7 @@ void DragonBoar::normal(float delta_time)
 	{
 		if (can_attack_player())
 		{
-			interval_ = state_timer_ + 12.0f;	// 次の行動は0.2秒後に実行
+			interval_ = state_timer_ + 12.0f;	// 次の行動は0.2秒（12フレーム）後に実行
 			is_moving_ = false;					// 移動完了
 		}
 	}
@@ -280,9 +289,11 @@ void DragonBoar::bite(float delta_time)
 	if (state_timer_ >= 40.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 40.0f + Vector3(0.0f, 12.5f, 0.0f);
-		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 15, 10));
-		interval_ = state_timer_ + 40.0f;
+		float distance = 40.0f;				// 攻撃判定の発生距離（前方からどれぐらい）
+		float height = 12.5f;				// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, BitePower, BiteRadius));
+		interval_ = state_timer_ + 40.0f;	// 40フレーム後、次の行動へ移行
 	}
 
 	// 次の状態へ移行
@@ -298,18 +309,19 @@ void DragonBoar::anger(float delta_time)
 {
 	motion_ = MOTION_IDLE;
 
-	// 2秒間、プレイヤーと軸合わせ
-	if (state_timer_ <= 120.0f)
+	// 2秒間、プレイヤーと軸合わせ（軸合わせ秒数 * 60フレーム/秒）
+	if (state_timer_ <= TraceTimeBeforeDash * 60.0f)
 	{
 		next_destination_ = get_player_position();						// 目的地（プレイヤーの座標）を更新
 		float angle_to_target = get_angle_to_target(next_destination_);	// プレイヤー向きの角度を求める
 		// プレイヤーに向けて回転
-		if (angle_to_target >= 0.5f)
+		const float AngleToRotate = 0.5f;		// プレイヤーへの角度がこの数値より大きいなら、回転して目的地に向けるようにする
+		if (angle_to_target >= AngleToRotate)
 		{
 			motion_ = MOTION_WALK;
 			rotation_ *= Matrix::CreateRotationY(RotateSpeed * 1.5f * delta_time);
 		}
-		else if (angle_to_target <= -0.5f)
+		else if (angle_to_target <= -AngleToRotate)
 		{
 			motion_ = MOTION_WALK;
 			rotation_ *= Matrix::CreateRotationY(-RotateSpeed * 1.5f * delta_time);
@@ -341,7 +353,7 @@ void DragonBoar::anger(float delta_time)
 			if (dash_timer_ <= 0.0f)
 			{
 				is_moving_ = false;
-				interval_ = state_timer_ + 60.0f;
+				interval_ = state_timer_ + 60.0f;			// 60フレーム（1秒）後、次の行動へ移行
 			}
 			dash_timer_ -= delta_time;
 		}
@@ -378,7 +390,7 @@ void DragonBoar::death(float delta_time)
 // 次の行動を抽選
 void DragonBoar::next_action()
 {
-	// 乱数で次の行動を決定
+	// 乱数で次の行動を決定（最小値：0、最大値：3）
 	int i = rand_.rand_int(0, 3);
 
 	// 待機、移動への移行確率は1/4、3/4になっている

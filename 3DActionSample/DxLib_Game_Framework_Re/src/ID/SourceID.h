@@ -6,21 +6,33 @@
 enum
 {
 	// ステージ
-	MESH_STAGE_CASTLE,	// 城フィールド
-	MESH_SKYBOX,		// スカイボックス
+	MESH_STAGE_CASTLE,		// 城フィールド
+	MESH_SKYBOX,			// スカイボックス
 
 	// モデル
-	MESH_PALADIN,		// プレイヤー
-	MESH_GHOUL,			// 雑魚敵
-	MESH_DRAGONBOAR,	// ボス敵
+	MESH_PALADIN,			// プレイヤー
+	MESH_GHOUL,				// 雑魚敵
+	MESH_DRAGONBOAR,		// ボス敵
 
 	// テクスチャ
-	TEXTURE_TITLELOGO,	// タイトルロゴ
-	TEXTURE_START,		// スタート表示
-	TEXTURE_HPGAUGE,	// 体力ゲージ
-	TEXTURE_HP,			// 体力表示
-	TEXTURE_P1MESSAGE,	// フェーズ1目標メッセージ
-	TEXTURE_P2MESSAGE,	// フェーズ2目標メッセージ
+	TEXTURE_TITLELOGO,		// タイトルロゴ
+	TEXTURE_START,			// スタート表示
+	TEXTURE_HPGAUGE,		// 体力ゲージ
+	TEXTURE_HP,				// 体力表示
+	TEXTURE_P1MESSAGE,		// フェーズ1目標メッセージ
+	TEXTURE_P2MESSAGE,		// フェーズ2目標メッセージ
+
+	// シェーダー
+	SHADER_VERTEX_SHADER,			// 頂点シェーダー
+	SHADER_PIXEL_SHADER,			// ピクセルシェーダー
+	SHADER_SKYBOX_VERTEX_SHADER,	// スカイボックス用頂点シェーダー
+	SHADER_SKYBOX_PIXEL_SHADER,		// スカイボックス用ピクセルシェーダー
+
+	// キューブマップ
+	CUBEMAP_TEST_SPECULAR_HDR,
+	CUBEMAP_TEST_DIFFUSE_HDR,
+	CUBEMAP_TEST_BRDF,
+	CUBEMAP_TEST_ENV_HDR,
 };
 
 #endif // !SOURCE_ID_H_

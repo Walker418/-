@@ -7,7 +7,7 @@
 #include "../Math/Collision/CollisionMesh.h"
 #include "../Field/Skybox.h"
 #include "../Graphic/Billboard.h"
-
+#include "../Graphic/Shader/ShaderManager.h"
 #include "../Sound/Sound.h"
 #include "../Input/GamePad.h"
 #include "../Input/Keyboard.h"
@@ -39,6 +39,8 @@ int Game::run()
 	if (DxLib_Init() == -1) return -1;	// 初期化に失敗
 	// 描画先を裏画面にする
 	SetDrawScreen(DX_SCREEN_BACK);
+	// バイリニアフィルターを有効にする
+	SetDrawMode(DX_DRAWMODE_BILINEAR);
 
 	// 初期化
 	Graphics2D::initialize();
@@ -47,6 +49,7 @@ int Game::run()
 	CollisionMesh::initialize();
 	Skybox::initialize();
 	Billboard::initialize();
+	ShaderManager::initialize();
 	Sound::initialize();
 
 	// マウスカーソルを隠す
@@ -78,6 +81,7 @@ int Game::run()
 	end();
 
 	// 終了処理
+	ShaderManager::finalize();
 	Billboard::finalize();
 	SkeletalMesh::finalize();
 	CollisionMesh::finalize();

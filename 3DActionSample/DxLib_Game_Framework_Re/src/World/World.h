@@ -54,6 +54,8 @@ public:
 	virtual Field& field() override;
 	// カメラの取得
 	virtual ActorPtr camera() override;
+	// ライトの取得
+	virtual ActorPtr light() override;
 
 	// コピー禁止
 	World(const World& other) = delete;

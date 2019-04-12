@@ -10,6 +10,13 @@
 // クラス：グール
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
+//--------------------------------------------------
+
+const int Power = 8;					// 攻撃力
+const float AttackInterval = 120.0f;	// 攻撃間隔
+
+//--------------------------------------------------
+
 // コンストラクタ
 Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Enemy(world, "Ghoul", position, angle, body),
@@ -29,7 +36,8 @@ Ghoul::Ghoul(IWorld* world, const Vector3& position, float angle, const IBodyPtr
 	next_destination_ = Vector3::Zero;
 	rand_.randomize();
 
-	ready_to_next_state(1, 3);
+	const int min = 1, max = 3;	// 次の状態持続時間の最小値と最大値（秒）
+	ready_to_next_state(min, max);
 }
 
 // 更新
@@ -235,7 +243,7 @@ void Ghoul::move(float delta_time)
 			// プレイヤーは近くにいる場合、攻撃行動に移行
 			if (can_attack_player())
 			{
-				attack_interval_ = 120.0f;
+				attack_interval_ = AttackInterval;
 				change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
 			}
 			else
@@ -266,8 +274,11 @@ void Ghoul::attack(float delta_time)
 	if (state_timer_ >= 9.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 8.0f + Vector3(0.0f, 12.5f, 0.0f);
-		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, 8));
+
+		float distance = 8.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
+		float height = 12.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, Power));
 		interval_ = state_timer_ + 40.0f;
 	}
 
@@ -292,7 +303,7 @@ void Ghoul::death(float delta_time)
 // 次の行動を決定
 void Ghoul::next_action()
 {
-	// 乱数で次の行動を決定
+	// 乱数で次の行動を決定（最小値：0、最大値：6）
 	int i = rand_.rand_int(0, 6);
 
 	// 待機、移動、攻撃状態への移行確率は1/6、2/3、1/6になっている
@@ -305,7 +316,9 @@ void Ghoul::next_action()
 			next_action();
 			return;
 		}
-		ready_to_next_state(2, 4);
+
+		const int min = 2, max = 4;		// 次の状態持続時間の最小値と最大値（秒）
+		ready_to_next_state(min, max);
 		change_state(GhoulState::Idle, GhoulMotion::MOTION_IDLE);
 		return;
 	}
@@ -313,7 +326,10 @@ void Ghoul::next_action()
 	else if (i <= 5)
 	{
 		next_destination();			// 次の目的地を決定
-		ready_to_next_state(4, 8);	// 移動状態は4～8秒間維持
+		// 移動状態は4～8秒間維持
+		const int min = 4, max = 8;		// 次の状態持続時間の最小値と最大値（秒）
+		ready_to_next_state(min, max);	
+
 		move_timer_ = 0.0f;			// 移動状態タイマーをリセット
 		is_moving_ = true;
 		change_state(GhoulState::Move, GhoulMotion::MOTION_WALK);
@@ -322,7 +338,7 @@ void Ghoul::next_action()
 	// 攻撃状態への移行
 	else
 	{
-		attack_interval_ = 120.0f;
+		attack_interval_ = AttackInterval;
 		change_state(GhoulState::Attack, GhoulMotion::MOTION_ATTACK);
 		return;
 	}
@@ -386,7 +402,7 @@ bool Ghoul::can_attack_player()
 // 次の状態への移行準備
 void Ghoul::ready_to_next_state(int min, int max)
 {
-	// 乱数で次の状態維持時間を決める
+	// 乱数で次の状態持続時間を決める
 	int i = rand_.rand_int(min, max);
 	state_time_ = 60 * (float)i;
 }

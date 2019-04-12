@@ -85,13 +85,6 @@ bool PlayerInput::keyboard_move()
 // 移動方向の入力
 Vector2 PlayerInput::move_input()
 {
-	/*
-	// キーボードで移動している場合は反応しない（Vector2::Zeroを返す）
-	if (keyboard_move())	return Vector2::Zero;
-
-	return (GamePad::getInstance().L_Stick());
-	*/
-
 	Vector2 input = Vector2::Zero;	// 入力情報を返す変数を宣言しておく
 
 	// キーボードの入力を取得

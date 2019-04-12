@@ -141,3 +141,9 @@ ActorPtr World::camera()
 {
 	return camera_;
 }
+
+// ƒ‰ƒCƒg‚ÌŽæ“¾
+ActorPtr World::light()
+{
+	return light_;
+}

@@ -5,6 +5,7 @@
 #include "../Field/Skybox.h"
 #include "../Graphic/Billboard.h"
 #include "../Graphic/Graphics2D.h"
+#include "../Graphic/Shader/ShaderManager.h"
 #include "../ID/SourceID.h"
 
 // クラス：ローディングシーン
@@ -25,20 +26,31 @@ void SceneLoading::update(float delta_time)
 	if (!is_loaded_)
 	{
 		// データを読み込む
+		// ステージ
 		CollisionMesh::load(MESH_STAGE_CASTLE, "res/test_assets/castle/SampleStage_Castle.mv1");	// ステージモデル
-		Skybox::load(MESH_SKYBOX, "res/test_assets/skybox/skydome.mv1");							// スカイボックスモデル
+		Skybox::load(MESH_SKYBOX, "res/test_assets/skybox/skydome1.mv1");							// スカイボックスモデル
 		Billboard::load(0, "res/test_assets/Particle02.png");										// ビルボード
-
+		// キャラクター
 		SkeletalMesh::load(MESH_PALADIN, "res/assets/Paladin/Paladin.mv1");							// プレイヤーモデル
 		SkeletalMesh::load(MESH_GHOUL, "res/assets/Ghoul/ghoul.mv1");								// 雑魚敵モデル
 		SkeletalMesh::load(MESH_DRAGONBOAR, "res/assets/DragonBoar/DragonBoar.mv1");				// ボス敵モデル
-
-		Graphics2D::load(TEXTURE_TITLELOGO, "res/assets/textures/TitleLogo.png");					// タイトルロゴ
-		Graphics2D::load(TEXTURE_START, "res/assets/textures/Start.png");							// スタート表示
-		Graphics2D::load(TEXTURE_HPGAUGE, "res/assets/textures/HPgauge.png");						// 体力ゲージ
-		Graphics2D::load(TEXTURE_HP, "res/assets/textures/HP.png");									// 体力表示
-		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/textures/P1message.png");					// フェーズ1目標メッセージ
-		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/textures/P2message.png");					// フェーズ2目標メッセージ
+		// 2D画像
+		Graphics2D::load(TEXTURE_TITLELOGO, "res/assets/texture/TitleLogo.png");					// タイトルロゴ
+		Graphics2D::load(TEXTURE_START, "res/assets/texture/Start.png");							// スタート表示
+		Graphics2D::load(TEXTURE_HPGAUGE, "res/assets/texture/HPgauge.png");						// 体力ゲージ
+		Graphics2D::load(TEXTURE_HP, "res/assets/texture/HP.png");									// 体力表示
+		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/texture/P1message.png");					// フェーズ1目標メッセージ
+		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
+		// シェーダー
+		ShaderManager::load_vs(SHADER_VERTEX_SHADER, "VertexShader.cso");							// 頂点シェーダー
+		ShaderManager::load_ps(SHADER_PIXEL_SHADER, "PixelShader.cso");								// ピクセルシェーダー
+		ShaderManager::load_vs(SHADER_SKYBOX_VERTEX_SHADER, "SkyboxVertexShader.cso");				// スカイボックス用頂点シェーダー
+		ShaderManager::load_ps(SHADER_SKYBOX_PIXEL_SHADER, "SkyboxPixelShader.cso");				// スカイボックス用ピクセルシェーダー
+		// 環境マップ
+		ShaderManager::load_cubemap(CUBEMAP_TEST_SPECULAR_HDR, "res/assets/cubemap/TestSpecularHDR.dds");
+		ShaderManager::load_cubemap(CUBEMAP_TEST_DIFFUSE_HDR, "res/assets/cubemap/TestDiffuseHDR.dds");
+		ShaderManager::load_cubemap(CUBEMAP_TEST_BRDF, "res/assets/cubemap/TestBrdf.dds");
+		ShaderManager::load_cubemap(CUBEMAP_TEST_ENV_HDR, "res/assets/cubemap/TestEnvHDR.dds");
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;

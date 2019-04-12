@@ -14,6 +14,25 @@
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
+//--------------------------------------------------
+
+const int Power_Atk1 = 3;		// 攻撃1段目の威力
+const int Power_Atk2 = 2;		// 攻撃2段目の威力
+const int Power_Atk3 = 5;		// 攻撃3段目の威力
+const int Power_JumpAtk1 = 5;	// ジャンプ攻撃1段目の威力
+const int Power_JumpAtk2 = 2;	// ジャンプ攻撃2段目の威力
+const int Power_GuardAtk = 3;	// ガード攻撃の威力
+
+
+const int Wince_Atk1 = 1;		// 攻撃1段目の怯み値
+const int Wince_Atk2 = 1;		// 攻撃2段目の怯み値
+const int Wince_Atk3 = 3;		// 攻撃3段目の怯み値
+const int Wince_JumpAtk1 = 3;	// ジャンプ攻撃1段目の怯み値
+const int Wince_JumpAtk2 = 1;	// ジャンプ攻撃1段目の怯み値
+const int Wince_GuardAtk = 1;	// ガード攻撃の怯み値
+
+//--------------------------------------------------
+
 // コンストラクタ
 Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Actor(world, "Player", position, body),
@@ -286,10 +305,11 @@ void Player::slash1(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_ >= 25.0f && !attack_on_)
 	{
-
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
+		float distance = 12.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
+		float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk1, Wince_Atk1));
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
 
@@ -329,9 +349,12 @@ void Player::slash2(float delta_time)
 	if (state_timer_ >= 10.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
-		mesh_.reset_speed();	// 以降のモーション速度を少し遅くにする
+
+		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk2, Wince_Atk2));
+		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃への移行
@@ -383,8 +406,10 @@ void Player::slash3(float delta_time)
 	if (state_timer_ >= 43.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
+		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk3, Wince_Atk3));
 	}
 
 	// モーション終了の前に、回避への移行
@@ -418,8 +443,10 @@ void Player::jump_attack1(float delta_time)
 	if (state_timer_ >= 45.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 13.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 5, 3));
+		const float distance = 13.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk1, Wince_JumpAtk1));
 	}
 
 	// モーション終了の前に、次の攻撃への移行
@@ -457,8 +484,10 @@ void Player::jump_attack2(float delta_time)
 	if (state_timer_ >= 10.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 12.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 2, 1));
+		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk2, Wince_JumpAtk2));
 		mesh_.reset_speed();	// 以降のモーション速度を少し遅くにする
 	}
 
@@ -554,8 +583,10 @@ void Player::guard_attack(float delta_time)
 	if (state_timer_ >= 35.0f && !attack_on_)
 	{
 		attack_on_ = true;
-		Vector3 attack_position = position_ + pose().Forward() * 15.0f + Vector3(0.0f, 9.5f, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, 3, 1));
+		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;		// 攻撃判定の高さ
+		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_GuardAtk, Wince_GuardAtk));
 	}
 
 	// モーション終了の前に、次の攻撃への移行

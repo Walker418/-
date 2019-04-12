@@ -4,7 +4,7 @@
 
 // コンストラクタ
 TitleCamera::TitleCamera(IWorld* world, const Vector3& position) :
-	Actor(world, "TitleCamera", position)
+	Actor(world, "Camera", position)
 {
 	rotation_ = Matrix::Identity;
 }
