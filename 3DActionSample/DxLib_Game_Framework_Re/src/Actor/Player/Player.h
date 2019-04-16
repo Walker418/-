@@ -153,7 +153,7 @@ private:
 	// 無敵時間タイマー
 	float			invincible_timer_{ 0.0f };
 	// 回避タイマー
-	float			skip_timer_{ 0.0f };
+	float			evasion_timer_{ 0.0f };
 
 	// 現在の体力
 	int				current_hp_;
