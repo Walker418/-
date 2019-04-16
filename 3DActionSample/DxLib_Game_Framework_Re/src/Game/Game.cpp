@@ -42,16 +42,6 @@ int Game::run()
 	// バイリニアフィルターを有効にする
 	SetDrawMode(DX_DRAWMODE_BILINEAR);
 
-	// 初期化
-	Graphics2D::initialize();
-	Graphics3D::initialize();
-	SkeletalMesh::initialize();
-	CollisionMesh::initialize();
-	Skybox::initialize();
-	Billboard::initialize();
-	ShaderManager::initialize();
-	Sound::initialize();
-
 	// マウスカーソルを隠す
 	Mouse::getInstance().hide_cursor();
 

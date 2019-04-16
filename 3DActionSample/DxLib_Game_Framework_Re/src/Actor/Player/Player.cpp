@@ -14,24 +14,22 @@
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
-//--------------------------------------------------
 
-const int Power_Atk1 = 3;		// 攻撃1段目の威力
-const int Power_Atk2 = 2;		// 攻撃2段目の威力
-const int Power_Atk3 = 5;		// 攻撃3段目の威力
-const int Power_JumpAtk1 = 5;	// ジャンプ攻撃1段目の威力
-const int Power_JumpAtk2 = 2;	// ジャンプ攻撃2段目の威力
-const int Power_GuardAtk = 3;	// ガード攻撃の威力
+// ============================================================
+// 以下は各モーション処理関連のフレーム数
 
+const float Atk1_Active = 25.0f;		// 攻撃1段目の判定発生フレーム数
+const float Atk1_InputValid = 35.0f;	// 攻撃1段目の次の行動入力の開始フレーム数
+const float Atk1_InputInvalid = 45.0f;	// 攻撃1段目の次の行動入力の終了フレーム数
+const float Atk1_End = 60.0f;			// 攻撃1段目のモーション終了タイミング
 
-const int Wince_Atk1 = 1;		// 攻撃1段目の怯み値
-const int Wince_Atk2 = 1;		// 攻撃2段目の怯み値
-const int Wince_Atk3 = 3;		// 攻撃3段目の怯み値
-const int Wince_JumpAtk1 = 3;	// ジャンプ攻撃1段目の怯み値
-const int Wince_JumpAtk2 = 1;	// ジャンプ攻撃1段目の怯み値
-const int Wince_GuardAtk = 1;	// ガード攻撃の怯み値
+const float Atk2_Active = 10.0f;		// 攻撃2段目の判定発生フレーム数
+const float Atk2_InputValid = 31.0f;	// 攻撃2段目の次の行動入力の開始フレーム数
+const float Atk2_InputInvalid = 45.0f;	// 攻撃2段目の次の行動入力の終了フレーム数
+const float Atk2_End = 45.0f;			// 攻撃2段目のモーション終了タイミング
 
-//--------------------------------------------------
+// ============================================================
+
 
 // コンストラクタ
 Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
@@ -303,7 +301,7 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= 25.0f && !attack_on_)
+	if (state_timer_ >= Atk1_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		float distance = 12.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
@@ -313,22 +311,18 @@ void Player::slash1(float delta_time)
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
 
-	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > 35.0f && state_timer_ <= 45.0f && is_ground_)
+	// モーション終了の前に、次の攻撃や回避への移行
+	if (state_timer_ > Atk1_InputValid && state_timer_ <= Atk1_InputInvalid && is_ground_)
 	{
-		// 攻撃入力されると、攻撃の2段階目に移行
+		// 攻撃の2段階目への移行
 		if (PlayerInput::attack())
 		{
 			mesh_.change_speed(1.2f);
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
-	}
 
-	// モーション終了の前に、回避への移行
-	if (state_timer_ > 33.0f && state_timer_ < 53.0f && is_ground_)
-	{
-		// 方向+回避入力されると、回避状態に移行
+		// 回避への移行
 		if (PlayerInput::evasion())
 		{
 			attack_to_evasion();
@@ -346,7 +340,7 @@ void Player::slash1(float delta_time)
 void Player::slash2(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= 10.0f && !attack_on_)
+	if (state_timer_ >= Atk2_Active && !attack_on_)
 	{
 		attack_on_ = true;
 

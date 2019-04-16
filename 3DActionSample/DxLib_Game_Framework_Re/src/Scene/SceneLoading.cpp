@@ -5,7 +5,9 @@
 #include "../Field/Skybox.h"
 #include "../Graphic/Billboard.h"
 #include "../Graphic/Graphics2D.h"
+#include "../Graphic/Graphics3D.h"
 #include "../Graphic/Shader/ShaderManager.h"
+#include "../Sound/Sound.h"
 #include "../ID/SourceID.h"
 
 // クラス：ローディングシーン
@@ -25,6 +27,16 @@ void SceneLoading::update(float delta_time)
 	// データをまだ読み込んでいない場合、データを読み込む
 	if (!is_loaded_)
 	{
+		// 初期化
+		Graphics2D::initialize();
+		Graphics3D::initialize();
+		SkeletalMesh::initialize();
+		CollisionMesh::initialize();
+		Skybox::initialize();
+		Billboard::initialize();
+		ShaderManager::initialize();
+		Sound::initialize();
+
 		// データを読み込む
 		// ステージ
 		CollisionMesh::load(MESH_STAGE_CASTLE, "res/test_assets/castle/SampleStage_Castle.mv1");	// ステージモデル

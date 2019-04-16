@@ -158,16 +158,30 @@ private:
 	// 現在の体力
 	int				current_hp_;
 
-	// 最大体力
-	const int		HP{ 100 };
-	// 歩行速度
-	const float		WalkSpeed{ 0.3f };
-	// ダッシュ速度
-	const float		DashSpeed{ 0.8f };
-	// 回転速度
-	const float		RotateSpeed{ 0.3f };
-	// 重力
-	const float		Gravity{ 0.03f };
+	// ============================================================
+	// 以下はプレイヤーのパラメーター定数
+
+	const int	HP{ 100 };				// 最大体力
+	const float	WalkSpeed{ 0.3f };		// 歩行速度
+	const float	DashSpeed{ 0.8f };		// ダッシュ速度
+	const float	RotateSpeed{ 0.3f };	// 回転速度
+	const float	Gravity{ 0.03f };		// 落下速度
+
+	const int	Power_Atk1{ 3 };		// 攻撃1段目の威力
+	const int	Power_Atk2{ 2 };		// 攻撃2段目の威力
+	const int	Power_Atk3{ 5 };		// 攻撃3段目の威力
+	const int	Power_JumpAtk1{ 5 };	// ジャンプ攻撃1段目の威力
+	const int	Power_JumpAtk2{ 2 };	// ジャンプ攻撃2段目の威力
+	const int	Power_GuardAtk{ 3 };	// ガード攻撃の威力
+
+	const int	Wince_Atk1{ 1 };		// 攻撃1段目の怯み値
+	const int	Wince_Atk2{ 1 };		// 攻撃2段目の怯み値
+	const int	Wince_Atk3{ 3 };		// 攻撃3段目の怯み値
+	const int	Wince_JumpAtk1{ 3 };	// ジャンプ攻撃1段目の怯み値
+	const int	Wince_JumpAtk2{ 1 };	// ジャンプ攻撃1段目の怯み値
+	const int	Wince_GuardAtk{ 1 };	// ガード攻撃の怯み値
+
+	// ============================================================
 };
 
 #endif // !PLAYER_H_
