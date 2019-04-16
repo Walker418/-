@@ -28,6 +28,13 @@ const float Atk2_InputValid = 31.0f;	// 攻撃2段目の次の行動入力の開始フレーム数
 const float Atk2_InputInvalid = 45.0f;	// 攻撃2段目の次の行動入力の終了フレーム数
 const float Atk2_End = 45.0f;			// 攻撃2段目のモーション終了タイミング
 
+const float Atk3_MoveTime = 69.0f;		// 攻撃3段目の移動持続時間
+const float Atk3_MoveSpeed = 0.22f;		// 攻撃3段目の移動速度
+const float Atk3_Active = 43.0f;		// 攻撃3段目の判定発生フレーム数
+const float Atk3_InputValid = 50.0f;	// 攻撃3段目の次の行動入力の開始フレーム数
+const float Atk3_InputInvalid = 72.0f;	// 攻撃3段目の次の行動入力の終了フレーム数
+const float Atk3_End = 72.0f;			// 攻撃3段目のモーション終了タイミング
+
 // ============================================================
 
 
@@ -330,7 +337,7 @@ void Player::slash1(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= 60.0f)
+	if (state_timer_ >= Atk1_End)
 	{
 		normal(delta_time);
 	}
@@ -351,22 +358,18 @@ void Player::slash2(float delta_time)
 		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
 	}
 
-	// モーション終了の前に、次の攻撃への移行
-	if (state_timer_ > 31.0f && state_timer_ < 45.0f && is_ground_)
+	// モーション終了の前に、次の攻撃や回避への移行
+	if (state_timer_ > Atk2_InputValid && state_timer_ < Atk2_InputInvalid && is_ground_)
 	{
-		// 攻撃入力されると、攻撃の3段階目に移行
+		// 攻撃の3段階目への移行
 		if (PlayerInput::attack())
 		{
 			mesh_.change_speed(1.2f);
 			change_state(PlayerState::Slash3, MOTION_SLASH_3);
 			return;
 		}
-	}
 
-	// モーション終了の前に、回避への移行
-	if (state_timer_ > 20.0f && state_timer_ < 45.0f && is_ground_)
-	{
-		// 方向+回避入力されると、回避状態に移行
+		// 回避への移行
 		if (PlayerInput::evasion())
 		{
 			attack_to_evasion();
@@ -374,7 +377,7 @@ void Player::slash2(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= 45.0f)
+	if (state_timer_ >= Atk2_End)
 	{
 		normal(delta_time);
 	}
@@ -390,14 +393,14 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション再生の間、キャラクターを前進させる
-	if (state_timer_ <= 69.0f)
+	if (state_timer_ <= Atk3_MoveTime)
 	{
-		velocity_ = rotation_.Forward() * 0.22f;
+		velocity_ = rotation_.Forward() * Atk3_MoveSpeed;
 		position_ += velocity_ * delta_time;
 	}
 
 	// 攻撃判定を発生
-	if (state_timer_ >= 43.0f && !attack_on_)
+	if (state_timer_ >= Atk3_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
@@ -407,7 +410,7 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション終了の前に、回避への移行
-	if (state_timer_ > 50.0f && state_timer_ <= mesh_.motion_end_time() + 70.0f && is_ground_)
+	if (state_timer_ > Atk3_InputValid && state_timer_ < Atk3_InputInvalid && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
 		if (PlayerInput::evasion())
@@ -417,7 +420,7 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= 72.0f)
+	if (state_timer_ >= Atk3_End)
 	{
 		normal(delta_time);
 	}
