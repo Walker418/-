@@ -36,6 +36,7 @@ void World::update(float delta_time)
 	actors_.collide(ActorGroup::Player, ActorGroup::Enemy);
 	actors_.collide(ActorGroup::Player, ActorGroup::EnemyAttack);
 	actors_.collide(ActorGroup::PlayerAttack, ActorGroup::Enemy);
+	actors_.collide(ActorGroup::Enemy);
 	// 死亡したアクターを削除
 	actors_.remove();
 

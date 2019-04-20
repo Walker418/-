@@ -57,6 +57,8 @@ const float GuardAtk_InputValid = 45.0f;	// ガード攻撃の次の行動入力の開始フレー
 const float GuardAtk_InputInvalid = 60.0f;	// ガード攻撃の次の行動入力の終了フレーム数
 const float GuardAtk_End = 60.0f;			// ガード攻撃のモーション終了フレーム数
 
+const float Evasion_Speed = 1.2f;			// 回避時の移動速度
+
 // ============================================================
 
 
@@ -127,6 +129,8 @@ void Player::react(Actor& other)
 {
 	// 死亡状態では反応しない
 	if (state_ == PlayerState::Death) return;
+	// 無敵状態では反応しない
+	if (is_invincible()) return;
 }
 
 // メッセージ処理
@@ -655,7 +659,7 @@ void Player::forward_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Forward() * 1.2f;
+	velocity_ = rotation_.Forward() * Evasion_Speed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
@@ -679,7 +683,7 @@ void Player::left_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Left() * 1.2f;
+	velocity_ = rotation_.Left() * Evasion_Speed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
@@ -703,7 +707,7 @@ void Player::right_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Right() * 1.2f;
+	velocity_ = rotation_.Right() * Evasion_Speed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る

@@ -95,6 +95,8 @@ void Ghoul::react(Actor& other)
 {
 	// 死亡状態では反応しない
 	if (state_ == GhoulState::Death) return;
+
+	Enemy::react(other);
 }
 
 // メッセージ処理

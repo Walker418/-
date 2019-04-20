@@ -61,6 +61,12 @@ bool Actor::is_dead() const
 	return is_dead_;
 }
 
+// ŠO•”‚©‚ç‚ÌˆÚ“®Žw—ß
+void Actor::move_order(Vector3 vector)
+{
+	position_ += vector;
+}
+
 // –¼‘O‚ÌŽæ“¾
 const std::string& Actor::name() const
 {

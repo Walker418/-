@@ -69,6 +69,12 @@ void ActorGroupManager::collide(ActorGroup group1, ActorGroup group2)
 	actor_group_map_[group1].collide(actor_group_map_[group2]);
 }
 
+// “¯‚¶ƒOƒ‹[ƒv“à‚ÌÕ“Ë”»’è
+void ActorGroupManager::collide(ActorGroup group)
+{
+	actor_group_map_[group].collide();
+}
+
 // íœ
 void ActorGroupManager::remove()
 {

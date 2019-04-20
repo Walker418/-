@@ -115,6 +115,8 @@ void DragonBoar::react(Actor& other)
 		dash_attack_on_ = false;
 		return;
 	}
+
+	Enemy::react(other);
 }
 
 // メッセージ処理

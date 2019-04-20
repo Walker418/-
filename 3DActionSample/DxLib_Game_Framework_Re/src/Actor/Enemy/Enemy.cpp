@@ -14,6 +14,20 @@ Enemy::Enemy(IWorld* world, const std::string& name, const Vector3& position, fl
 	rotation_ = Matrix::CreateRotationY(angle);
 }
 
+// 衝突リアクション
+void Enemy::react(Actor& other)
+{
+	// 他のキャラクターに接触すると、相手を押し出す
+	Vector3 direction = other.position() - position_;	// 相手への方向ベクトルを取得
+	direction.Normalize();								// 方向ベクトルを正規化
+
+	// 押し出しの移動量
+	float move = 0.5f;
+	direction *= move;				// 方向ベクトルに移動量をかける
+
+	other.move_order(direction);	// 相手を移動させる
+}
+
 // 地面との接触処理
 void Enemy::intersect_ground()
 {

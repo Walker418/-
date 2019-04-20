@@ -13,6 +13,9 @@ public:
 	// コンストラクタ
 	Enemy(IWorld* world, const std::string& name, const Vector3& position, float angle = 0.0f, const IBodyPtr& body = std::shared_ptr<DummyBody>());
 
+	// 衝突リアクション
+	virtual void react(Actor& other) override;
+
 	// 地面との接触処理
 	void intersect_ground();
 	// 壁との接触処理

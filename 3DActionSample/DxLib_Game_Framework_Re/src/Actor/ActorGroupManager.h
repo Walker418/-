@@ -39,6 +39,8 @@ public:
 	void each(ActorGroup group, std::function<void(const ActorPtr&)> fn) const;
 	// 衝突判定
 	void collide(ActorGroup group1, ActorGroup group2);
+	// 同じグループ内の衝突判定
+	void collide(ActorGroup group);
 	// 削除
 	void remove();
 	// メッセージ処理

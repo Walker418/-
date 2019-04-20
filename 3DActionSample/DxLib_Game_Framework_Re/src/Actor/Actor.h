@@ -41,6 +41,9 @@ public:
 	// 死亡しているか
 	bool is_dead() const;
 
+	// 外部からの移動指令
+	void move_order(Vector3 vector);
+
 	// 名前の取得
 	const std::string& name() const;
 	// 座標の取得
