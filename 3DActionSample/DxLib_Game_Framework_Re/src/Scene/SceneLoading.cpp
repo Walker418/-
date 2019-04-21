@@ -53,16 +53,6 @@ void SceneLoading::update(float delta_time)
 		Graphics2D::load(TEXTURE_HP, "res/assets/texture/HP.png");									// 体力表示
 		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/texture/P1message.png");					// フェーズ1目標メッセージ
 		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
-		// シェーダー
-		ShaderManager::load_vs(SHADER_VERTEX_SHADER, "VertexShader.cso");							// 頂点シェーダー
-		ShaderManager::load_ps(SHADER_PIXEL_SHADER, "PixelShader.cso");								// ピクセルシェーダー
-		ShaderManager::load_vs(SHADER_SKYBOX_VERTEX_SHADER, "SkyboxVertexShader.cso");				// スカイボックス用頂点シェーダー
-		ShaderManager::load_ps(SHADER_SKYBOX_PIXEL_SHADER, "SkyboxPixelShader.cso");				// スカイボックス用ピクセルシェーダー
-		// 環境マップ
-		ShaderManager::load_cubemap(CUBEMAP_TEST_SPECULAR_HDR, "res/assets/cubemap/TestSpecularHDR.dds");
-		ShaderManager::load_cubemap(CUBEMAP_TEST_DIFFUSE_HDR, "res/assets/cubemap/TestDiffuseHDR.dds");
-		ShaderManager::load_cubemap(CUBEMAP_TEST_BRDF, "res/assets/cubemap/TestBrdf.dds");
-		ShaderManager::load_cubemap(CUBEMAP_TEST_ENV_HDR, "res/assets/cubemap/TestEnvHDR.dds");
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;

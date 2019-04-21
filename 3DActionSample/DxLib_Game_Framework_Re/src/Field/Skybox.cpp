@@ -1,7 +1,6 @@
 #include "Skybox.h"
 #include <DxLib.h>
 
-#include "../Graphic/Shader/ShaderManager.h"
 #include "../ID/SourceID.h"
 
 // クラス：スタティックメッシュ
@@ -61,28 +60,10 @@ void Skybox::draw()
 	SetCameraViewMatrix(skybox_matrix);
 	// ライティングを無効化
 	SetUseLighting(FALSE);
-
-	// オリジナルシェーダーを有効化
-	ShaderManager::shader_on();
-	// スカイボックス用頂点シェーダーを設定
-	ShaderManager::set_vs(SHADER_SKYBOX_VERTEX_SHADER);
-	// スカイボックス用ピクセルシェーダーを設定
-	ShaderManager::set_ps(SHADER_SKYBOX_PIXEL_SHADER);
-
 	// Zバッファに書き込みを行わない
 	MV1SetWriteZBuffer(model_, FALSE);
-
-	// 環境マップを設定
-	ShaderManager::set_cubemap(CUBEMAP_TEST_ENV_HDR, 11);
-
 	// モデルを表示
 	MV1DrawModel(model_);
-
-	// オリジナルシェーダーを無効化
-	ShaderManager::shader_off();
-	// テクスチャを解除
-	ShaderManager::off_cubemap(11);
-
 	// 視野変換行列を元に戻す
 	SetCameraViewMatrix(view_matrix);
 	// ライティングを有効化
