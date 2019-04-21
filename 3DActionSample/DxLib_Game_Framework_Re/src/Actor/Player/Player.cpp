@@ -15,10 +15,7 @@
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // ============================================================
-// 以下は各モーション処理関連のフレーム数、およびパラメーター
-
-const float Evasion_Time = 30.0f;			// 回避状態維持フレーム数
-const float Invincible_Time = 12.0f;		// 無敵状態維持フレーム数
+// 以下は各モーション処理関連のフレーム数
 
 const float Atk1_Active = 25.0f;			// 攻撃1段目の判定発生フレーム数
 const float Atk1_InputValid = 35.0f;		// 攻撃1段目の次の行動入力の開始フレーム数
@@ -56,8 +53,6 @@ const float GuardAtk_Active = 35.0f;		// ガード攻撃の判定発生フレーム数
 const float GuardAtk_InputValid = 45.0f;	// ガード攻撃の次の行動入力の開始フレーム数
 const float GuardAtk_InputInvalid = 60.0f;	// ガード攻撃の次の行動入力の終了フレーム数
 const float GuardAtk_End = 60.0f;			// ガード攻撃のモーション終了フレーム数
-
-const float Evasion_Speed = 1.2f;			// 回避時の移動速度
 
 // ============================================================
 
@@ -327,7 +322,7 @@ void Player::normal(float delta_time)
 	// 回避
 	if (PlayerInput::evasion() && is_ground_)
 	{
-		ready_to_skip();
+		ready_for_evasion();
 		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
 		return;
 	}
@@ -511,7 +506,7 @@ void Player::jump_attack2(float delta_time)
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk2, Wince_JumpAtk2));
-		mesh_.reset_speed();	// 以降のモーション速度を少し遅くにする
+		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -750,21 +745,21 @@ void Player::attack_to_evasion()
 	// 左回避
 	if (Vector3::Angle(rotation_.Left(), direction) <= angle)
 	{
-		ready_to_skip();
+		ready_for_evasion();
 		change_state(PlayerState::LeftEvasion, PlayerMotion::MOTION_STRAFE_LEFT);
 		return;
 	}
 	// 右回避
 	else if (Vector3::Angle(rotation_.Right(), direction) <= angle)
 	{
-		ready_to_skip();
+		ready_for_evasion();
 		change_state(PlayerState::RightEvasion, PlayerMotion::MOTION_STRAFE_RIGHT);
 		return;
 	}
 	// 前回避
 	else
 	{
-		ready_to_skip();
+		ready_for_evasion();
 		change_state(PlayerState::ForwardEvasion, PlayerMotion::MOTION_DASH);
 		return;
 	}
@@ -830,7 +825,7 @@ void Player::clamp_position()
 }
 
 // 回避準備
-void Player::ready_to_skip()
+void Player::ready_for_evasion()
 {
 	// モーションの再生速度を引き上げる
 	mesh_.change_speed(1.5f);

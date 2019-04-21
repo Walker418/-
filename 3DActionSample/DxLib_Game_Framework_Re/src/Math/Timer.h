@@ -9,7 +9,7 @@ class Timer
 public:
 	// デフォルトコンストラクタ（制限時間を設定しない）
 	Timer() = default;
-	// コンストラクタ（制限時間を設定する）
+	// コンストラクタ（制限時間を設定する、制限時間はフレーム数で入力）
 	Timer(float limit_time);
 	// 更新
 	void update(float delta_time);

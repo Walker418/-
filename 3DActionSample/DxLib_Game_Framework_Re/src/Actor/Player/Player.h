@@ -7,6 +7,7 @@
 #include "../Body/BoundingCapsule.h"
 #include "../../ID/SourceID.h"
 #include "../../Math/Timer.h"
+#include "../../Math/CountdownTimer.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -64,6 +65,35 @@ private:
 		MOTION_STRAFE_LEFT = 23,		// 左ダッシュ
 		MOTION_STRAFE_RIGHT = 24,		// 右ダッシュ
 	};
+
+	// ============================================================
+	// 以下はプレイヤーのパラメーター定数
+
+	const int	HP{ 100 };					// 最大体力
+	const float	WalkSpeed{ 0.3f };			// 歩行速度
+	const float	DashSpeed{ 0.8f };			// ダッシュ速度
+	const float	RotateSpeed{ 0.3f };		// 回転速度
+	const float	Gravity{ 0.03f };			// 落下速度
+
+	const int	Power_Atk1{ 3 };			// 攻撃1段目の威力
+	const int	Power_Atk2{ 2 };			// 攻撃2段目の威力
+	const int	Power_Atk3{ 5 };			// 攻撃3段目の威力
+	const int	Power_JumpAtk1{ 5 };		// ジャンプ攻撃1段目の威力
+	const int	Power_JumpAtk2{ 2 };		// ジャンプ攻撃2段目の威力
+	const int	Power_GuardAtk{ 3 };		// ガード攻撃の威力
+
+	const int	Wince_Atk1{ 1 };			// 攻撃1段目の怯み値
+	const int	Wince_Atk2{ 1 };			// 攻撃2段目の怯み値
+	const int	Wince_Atk3{ 3 };			// 攻撃3段目の怯み値
+	const int	Wince_JumpAtk1{ 3 };		// ジャンプ攻撃1段目の怯み値
+	const int	Wince_JumpAtk2{ 1 };		// ジャンプ攻撃1段目の怯み値
+	const int	Wince_GuardAtk{ 1 };		// ガード攻撃の怯み値
+
+	const float Evasion_Time{ 30.0f };		// 回避状態維持フレーム数
+	const float Invincible_Time{ 12.0f };	// 無敵状態維持フレーム数
+	const float Evasion_Speed = 1.2f;		// 回避時の移動速度
+
+	// ============================================================
 
 public:
 	// コンストラクタ
@@ -125,7 +155,7 @@ private:
 	// 座標制限
 	void clamp_position();
 	// 回避準備
-	void ready_to_skip();
+	void ready_for_evasion();
 
 	// ガードは成立するか
 	bool can_block(Vector3 atk_pos);
@@ -142,8 +172,12 @@ private:
 	// プレーヤーの状態
 	PlayerState		state_{ PlayerState::Normal };
 	// 状態タイマー
-	// float			state_timer_{ 0.0f };
 	Timer			state_timer_;
+	// 無敵時間タイマー
+	float			invincible_timer_{ 0.0f };
+	// Timer			invincible_timer_{ Invincible_Time };
+	// 回避タイマー
+	float			evasion_timer_{ 0.0f };
 	// 接地しているか
 	bool			is_ground_{ false };
 	// ガードしているか
@@ -152,38 +186,8 @@ private:
 	bool			attack_on_{ false };
 	// ジャンプ攻撃は開始したか
 	bool			jump_attack_started_{ false };
-	// 無敵時間タイマー
-	float			invincible_timer_{ 0.0f };
-	// 回避タイマー
-	float			evasion_timer_{ 0.0f };
-
 	// 現在の体力
 	int				current_hp_;
-
-	// ============================================================
-	// 以下はプレイヤーのパラメーター定数
-
-	const int	HP{ 100 };				// 最大体力
-	const float	WalkSpeed{ 0.3f };		// 歩行速度
-	const float	DashSpeed{ 0.8f };		// ダッシュ速度
-	const float	RotateSpeed{ 0.3f };	// 回転速度
-	const float	Gravity{ 0.03f };		// 落下速度
-
-	const int	Power_Atk1{ 3 };		// 攻撃1段目の威力
-	const int	Power_Atk2{ 2 };		// 攻撃2段目の威力
-	const int	Power_Atk3{ 5 };		// 攻撃3段目の威力
-	const int	Power_JumpAtk1{ 5 };	// ジャンプ攻撃1段目の威力
-	const int	Power_JumpAtk2{ 2 };	// ジャンプ攻撃2段目の威力
-	const int	Power_GuardAtk{ 3 };	// ガード攻撃の威力
-
-	const int	Wince_Atk1{ 1 };		// 攻撃1段目の怯み値
-	const int	Wince_Atk2{ 1 };		// 攻撃2段目の怯み値
-	const int	Wince_Atk3{ 3 };		// 攻撃3段目の怯み値
-	const int	Wince_JumpAtk1{ 3 };	// ジャンプ攻撃1段目の怯み値
-	const int	Wince_JumpAtk2{ 1 };	// ジャンプ攻撃1段目の怯み値
-	const int	Wince_GuardAtk{ 1 };	// ガード攻撃の怯み値
-
-	// ============================================================
 };
 
 #endif // !PLAYER_H_

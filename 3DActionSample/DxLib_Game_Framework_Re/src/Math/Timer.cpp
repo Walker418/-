@@ -1,10 +1,10 @@
 #include "Timer.h"
 #include <algorithm>
 
-// クラス：タイマー（DeltaTime式）
+// クラス：タイマー（加算、DeltaTime式）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
-// コンストラクタ（制限時間を設定する）
+// コンストラクタ（制限時間を設定する、制限時間はフレーム数で入力）
 Timer::Timer(float limit_time)
 {
 	time_limit_ = limit_time;

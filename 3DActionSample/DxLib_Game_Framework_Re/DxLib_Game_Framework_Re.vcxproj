@@ -171,6 +171,7 @@
     <ClCompile Include="src\Math\Collision\CollisionMesh.cpp" />
     <ClCompile Include="src\Math\Collision\CollisionTriangle.cpp" />
     <ClCompile Include="src\Math\Color.cpp" />
+    <ClCompile Include="src\Math\CountdownTimer.cpp" />
     <ClCompile Include="src\Math\MathHelper.cpp" />
     <ClCompile Include="src\Math\Matrix.cpp" />
     <ClCompile Include="src\Math\Quaternion.cpp" />
@@ -243,6 +244,7 @@
     <ClInclude Include="src\Math\Collision\CollisionMesh.h" />
     <ClInclude Include="src\Math\Collision\CollisionTriangle.h" />
     <ClInclude Include="src\Math\Color.h" />
+    <ClInclude Include="src\Math\CountdownTimer.h" />
     <ClInclude Include="src\Math\MathHelper.h" />
     <ClInclude Include="src\Math\Matrix.h" />
     <ClInclude Include="src\Math\Quaternion.h" />
