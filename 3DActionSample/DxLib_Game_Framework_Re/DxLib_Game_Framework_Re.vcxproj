@@ -175,6 +175,7 @@
     <ClCompile Include="src\Math\Matrix.cpp" />
     <ClCompile Include="src\Math\Quaternion.cpp" />
     <ClCompile Include="src\Math\Random.cpp" />
+    <ClCompile Include="src\Math\Timer.cpp" />
     <ClCompile Include="src\Math\Vector2.cpp" />
     <ClCompile Include="src\Math\Vector3.cpp" />
     <ClCompile Include="src\Scene\GamePlayScene\GamePlayManager.cpp" />
@@ -246,6 +247,7 @@
     <ClInclude Include="src\Math\Matrix.h" />
     <ClInclude Include="src\Math\Quaternion.h" />
     <ClInclude Include="src\Math\Random.h" />
+    <ClInclude Include="src\Math\Timer.h" />
     <ClInclude Include="src\Math\Vector2.h" />
     <ClInclude Include="src\Math\Vector3.h" />
     <ClInclude Include="src\Scene\GamePlayScene\GamePlayManager.h" />
