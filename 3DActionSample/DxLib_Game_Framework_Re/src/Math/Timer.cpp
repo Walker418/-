@@ -13,7 +13,9 @@ Timer::Timer(float limit_time)
 // 更新
 void Timer::update(float delta_time)
 {
-	time_current_ = std::min(time_current_ + delta_time, time_limit_);
+	// 制限時間を設定されていない場合、ずっとDeltaTimeを加算
+	// 制限時間を設定されている場合、制限時間に達するまでDeltaTimeを加算
+	(time_limit_ <= 0.0f) ? time_current_ += delta_time : time_current_ = std::min(time_current_ + delta_time, time_limit_);
 }
 
 // 現在の時間を取得

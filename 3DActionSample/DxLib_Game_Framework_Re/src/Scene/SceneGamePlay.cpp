@@ -37,7 +37,7 @@ void SceneGamePlay::start()
 
 	// アクターはここに追加
 	world_.add_actor(ActorGroup::Player, new_actor<Player>(&world_, Vector3{ 0.0f, 0.0f, 100.0f }));	// プレイヤー
-	world_.add_actor(ActorGroup::Effect, new_actor<GamePlayManager>(&world_));							// ゲームプレイ管理者
+	// world_.add_actor(ActorGroup::Effect, new_actor<GamePlayManager>(&world_));							// ゲームプレイ管理者
 }
 
 // 更新

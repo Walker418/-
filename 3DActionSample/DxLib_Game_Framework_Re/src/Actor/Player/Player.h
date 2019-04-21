@@ -6,6 +6,7 @@
 #include "../Body/IBodyPtr.h"
 #include "../Body/BoundingCapsule.h"
 #include "../../ID/SourceID.h"
+#include "../../Math/Timer.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -141,7 +142,8 @@ private:
 	// プレーヤーの状態
 	PlayerState		state_{ PlayerState::Normal };
 	// 状態タイマー
-	float			state_timer_{ 0.0f };
+	// float			state_timer_{ 0.0f };
+	Timer			state_timer_;
 	// 接地しているか
 	bool			is_ground_{ false };
 	// ガードしているか

@@ -68,7 +68,6 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	mesh_{ MESH_PALADIN, MOTION_IDLE },
 	motion_{ MOTION_IDLE },
 	state_{ PlayerState::Normal },
-	state_timer_{ 0.0f },
 	is_ground_{ false },
 	is_guard_{ false },
 	attack_on_{ false },
@@ -79,6 +78,8 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
+
+	state_timer_.reset();
 }
 
 // 更新
@@ -225,7 +226,8 @@ void Player::update_state(float delta_time)
 		break;
 	}
 
-	state_timer_ += delta_time;			// 状態タイマーを加算
+	// state_timer_ += delta_time;			// 状態タイマーを加算
+	state_timer_.update(delta_time);		// 状態タイマーを加算
 }
 
 // 状態の変更
@@ -233,7 +235,8 @@ void Player::change_state(PlayerState state, int motion)
 {
 	motion_ = motion;
 	state_ = state;
-	state_timer_ = 0.0f;
+	// state_timer_ = 0.0f;
+	state_timer_.reset();
 
 	attack_on_ = false;
 	jump_attack_started_ = false;
@@ -334,7 +337,7 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= Atk1_Active && !attack_on_)
+	if (state_timer_.get_time() >= Atk1_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		float distance = 12.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
@@ -345,7 +348,7 @@ void Player::slash1(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > Atk1_InputValid && state_timer_ <= Atk1_InputInvalid && is_ground_)
+	if (state_timer_.get_time() > Atk1_InputValid && state_timer_.get_time() <= Atk1_InputInvalid && is_ground_)
 	{
 		// 攻撃の2段階目への移行
 		if (PlayerInput::attack())
@@ -363,7 +366,7 @@ void Player::slash1(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= Atk1_End)
+	if (state_timer_.get_time() >= Atk1_End)
 	{
 		normal(delta_time);
 	}
@@ -373,7 +376,7 @@ void Player::slash1(float delta_time)
 void Player::slash2(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= Atk2_Active && !attack_on_)
+	if (state_timer_.get_time() >= Atk2_Active && !attack_on_)
 	{
 		attack_on_ = true;
 
@@ -385,7 +388,7 @@ void Player::slash2(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > Atk2_InputValid && state_timer_ < Atk2_InputInvalid && is_ground_)
+	if (state_timer_.get_time() > Atk2_InputValid && state_timer_.get_time() < Atk2_InputInvalid && is_ground_)
 	{
 		// 攻撃の3段階目への移行
 		if (PlayerInput::attack())
@@ -403,7 +406,7 @@ void Player::slash2(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= Atk2_End)
+	if (state_timer_.get_time() >= Atk2_End)
 	{
 		normal(delta_time);
 	}
@@ -419,14 +422,14 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション再生の間、キャラクターを前進させる
-	if (state_timer_ <= Atk3_MoveTime)
+	if (state_timer_.get_time() <= Atk3_MoveTime)
 	{
 		velocity_ = rotation_.Forward() * Atk3_MoveSpeed;
 		position_ += velocity_ * delta_time;
 	}
 
 	// 攻撃判定を発生
-	if (state_timer_ >= Atk3_Active && !attack_on_)
+	if (state_timer_.get_time() >= Atk3_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
@@ -436,7 +439,7 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション終了の前に、回避への移行
-	if (state_timer_ > Atk3_InputValid && state_timer_ < Atk3_InputInvalid && is_ground_)
+	if (state_timer_.get_time() > Atk3_InputValid && state_timer_.get_time() < Atk3_InputInvalid && is_ground_)
 	{
 		// 方向+回避入力されると、回避状態に移行
 		if (PlayerInput::evasion())
@@ -446,7 +449,7 @@ void Player::slash3(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= Atk3_End)
+	if (state_timer_.get_time() >= Atk3_End)
 	{
 		normal(delta_time);
 	}
@@ -456,14 +459,14 @@ void Player::slash3(float delta_time)
 void Player::jump_attack1(float delta_time)
 {
 	// モーション再生の間、キャラクターを前進させる
-	if (state_timer_ < JumpAtk1_MoveTime)
+	if (state_timer_.get_time() < JumpAtk1_MoveTime)
 	{
 		velocity_ = rotation_.Forward() * JumpAtk1_MoveSpeed;
 		position_ += velocity_ * delta_time;
 	}
 
 	// 攻撃判定を発生
-	if (state_timer_ >= JumpAtk1_Active && !attack_on_)
+	if (state_timer_.get_time() >= JumpAtk1_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		const float distance = 13.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
@@ -473,7 +476,7 @@ void Player::jump_attack1(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > JumpAtk1_InputValid && state_timer_ < JumpAtk1_InputInvalid && is_ground_)
+	if (state_timer_.get_time() > JumpAtk1_InputValid && state_timer_.get_time() < JumpAtk1_InputInvalid && is_ground_)
 	{
 		// ジャンプ攻撃の2段階への移行
 		if (PlayerInput::attack())
@@ -491,7 +494,7 @@ void Player::jump_attack1(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= JumpAtk1_End)
+	if (state_timer_.get_time() >= JumpAtk1_End)
 	{
 		normal(delta_time);
 	}
@@ -501,7 +504,7 @@ void Player::jump_attack1(float delta_time)
 void Player::jump_attack2(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= JumpAtk2_Active && !attack_on_)
+	if (state_timer_.get_time() >= JumpAtk2_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
@@ -512,7 +515,7 @@ void Player::jump_attack2(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > JumpAtk2_InputValid && state_timer_ < JumpAtk2_InputInvalid && is_ground_)
+	if (state_timer_.get_time() > JumpAtk2_InputValid && state_timer_.get_time() < JumpAtk2_InputInvalid && is_ground_)
 	{
 		// 通常攻撃の1段階目への移行
 		if (PlayerInput::attack())
@@ -530,7 +533,7 @@ void Player::jump_attack2(float delta_time)
 	}
 
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= JumpAtk2_End)
+	if (state_timer_.get_time() >= JumpAtk2_End)
 	{
 		normal(delta_time);
 	}
@@ -540,7 +543,7 @@ void Player::jump_attack2(float delta_time)
 void Player::damage(float delta_time)
 {
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= Damage_End)
+	if (state_timer_.get_time() >= Damage_End)
 	{
 		normal(delta_time);
 	}
@@ -561,7 +564,7 @@ void Player::guard(float delta_time)
 	}
 
 	// ガード開始のモーション終了後、ガード待機モーションに移行
-	if (state_timer_ >= mesh_.motion_end_time())
+	if (state_timer_.get_time() >= mesh_.motion_end_time())
 	{
 		mesh_.reset_speed();
 		motion_ = MOTION_GUARD_IDLE;
@@ -581,7 +584,7 @@ void Player::blocking(float delta_time)
 	is_guard_ = true;				// ガード状態を有効化
 
 	// モーション終了後、ガード状態に戻る
-	if (state_timer_ >= Block_End)
+	if (state_timer_.get_time() >= Block_End)
 	{
 
 		state_ = PlayerState::Guard;
@@ -593,7 +596,7 @@ void Player::blocking(float delta_time)
 void Player::guard_attack(float delta_time)
 {
 	// 攻撃判定を発生
-	if (state_timer_ >= GuardAtk_Active && !attack_on_)
+	if (state_timer_.get_time() >= GuardAtk_Active && !attack_on_)
 	{
 		attack_on_ = true;
 		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
@@ -603,7 +606,7 @@ void Player::guard_attack(float delta_time)
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
-	if (state_timer_ > GuardAtk_InputValid && state_timer_ < GuardAtk_InputInvalid)
+	if (state_timer_.get_time() > GuardAtk_InputValid && state_timer_.get_time() < GuardAtk_InputInvalid)
 	{
 		// 通常攻撃の1段階目への移行
 		if (PlayerInput::attack())
@@ -621,7 +624,7 @@ void Player::guard_attack(float delta_time)
 	}
 
 	// 通常状態への移行
-	if (state_timer_ >= GuardAtk_End)
+	if (state_timer_.get_time() >= GuardAtk_End)
 	{
 		normal(delta_time);
 	}
@@ -631,7 +634,7 @@ void Player::guard_attack(float delta_time)
 void Player::guard_end(float delta_time)
 {
 	// モーション終了後、通常状態に戻る
-	if (state_timer_ >= mesh_.motion_end_time() + 4.0f)
+	if (state_timer_.get_time() >= mesh_.motion_end_time() + 4.0f)
 	{
 		normal(delta_time);
 	}
@@ -641,7 +644,7 @@ void Player::guard_end(float delta_time)
 void Player::death(float delta_time)
 {
 	// モーションが終了すると、死亡判定を有効に
-	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
+	if (state_timer_.get_time() >= mesh_.motion_end_time() * 2.0f)
 	{
 		world_->send_message(EventMessage::PlayerDead);
 		die();
