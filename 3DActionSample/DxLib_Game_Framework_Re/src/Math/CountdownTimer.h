@@ -13,6 +13,8 @@ public:
 	void update(float delta_time);
 	// リセット
 	void reset();
+	// 強制終了
+	void shut();
 	// タイムアウトか
 	bool is_time_out() const;
 

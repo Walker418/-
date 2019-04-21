@@ -67,7 +67,6 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	is_guard_{ false },
 	attack_on_{ false },
 	jump_attack_started_{ false },
-	invincible_timer_{ 0.0f },
 	evasion_timer_{ 0.0f }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
@@ -75,6 +74,7 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	current_hp_ = HP;
 
 	state_timer_.reset();
+	invincible_timer_.reset();
 }
 
 // 更新
@@ -108,7 +108,7 @@ void Player::update(float delta_time)
 	}
 
 	// 無敵時間タイマーを更新
-	if (invincible_timer_ > 0.0f)	invincible_timer_ -= delta_time;
+	invincible_timer_.update(delta_time);
 }
 
 // 描画
@@ -221,7 +221,6 @@ void Player::update_state(float delta_time)
 		break;
 	}
 
-	// state_timer_ += delta_time;			// 状態タイマーを加算
 	state_timer_.update(delta_time);		// 状態タイマーを加算
 }
 
@@ -652,7 +651,7 @@ void Player::forward_evasion(float delta_time)
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
 	{
-		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
+		invincible_timer_.shut();	// 無敵時間を強制終了
 		normal(delta_time);
 	}
 
@@ -676,7 +675,7 @@ void Player::left_evasion(float delta_time)
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
 	{
-		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
+		invincible_timer_.shut();	// 無敵時間を強制終了
 		normal(delta_time);
 	}
 
@@ -700,7 +699,7 @@ void Player::right_evasion(float delta_time)
 	// 地面に離れたら、通常状態に戻る
 	if (!is_ground_)
 	{
-		invincible_timer_ = 0.0f;	// 無敵時間を強制終了
+		invincible_timer_.shut();	// 無敵時間を強制終了
 		normal(delta_time);
 	}
 
@@ -831,11 +830,11 @@ void Player::ready_for_evasion()
 	mesh_.change_speed(1.5f);
 	// 回避時間と無敵時間を設定
 	evasion_timer_ = Evasion_Time;
-	invincible_timer_ = Invincible_Time;
+	invincible_timer_.reset();
 }
 
 // ガードは成立するか
-bool Player::can_block(Vector3 atk_pos)
+bool Player::can_block(Vector3 atk_pos) const
 {
 	// 内積で攻撃判定のある方向を判定
 	Vector3 to_attack = atk_pos - position_;									// 攻撃判定方向のベクトル
@@ -846,13 +845,13 @@ bool Player::can_block(Vector3 atk_pos)
 }
 
 // 無敵時間内であるか
-bool Player::is_invincible()
+bool Player::is_invincible() const
 {
-	return (invincible_timer_ > 0.0f || state_ == PlayerState::Damage);
+	return (!invincible_timer_.is_time_out() || state_ == PlayerState::Damage);
 }
 
 // スーパーアーマー状態であるか
-bool Player::is_super_armor()
+bool Player::is_super_armor() const
 {
 	return state_ == PlayerState::Slash3;
 }

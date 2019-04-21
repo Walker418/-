@@ -158,11 +158,11 @@ private:
 	void ready_for_evasion();
 
 	// ガードは成立するか
-	bool can_block(Vector3 atk_pos);
+	bool can_block(Vector3 atk_pos) const;
 	// 無敵時間内であるか
-	bool is_invincible();
+	bool is_invincible() const;
 	// スーパーアーマー状態であるか
-	bool is_super_armor();
+	bool is_super_armor() const;
 
 private:
 	// アニメーションメッシュ
@@ -174,8 +174,8 @@ private:
 	// 状態タイマー
 	Timer			state_timer_;
 	// 無敵時間タイマー
-	float			invincible_timer_{ 0.0f };
-	// Timer			invincible_timer_{ Invincible_Time };
+	// float			invincible_timer_{ 0.0f };
+	CountdownTimer	invincible_timer_{ Invincible_Time };
 	// 回避タイマー
 	float			evasion_timer_{ 0.0f };
 	// 接地しているか

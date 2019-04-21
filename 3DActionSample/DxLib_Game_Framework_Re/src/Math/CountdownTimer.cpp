@@ -8,7 +8,6 @@
 CountdownTimer::CountdownTimer(float time)
 {
 	time_set_ = time;
-	time_current_ = time_set_;
 }
 
 // 更新
@@ -22,6 +21,12 @@ void CountdownTimer::update(float delta_time)
 void CountdownTimer::reset()
 {
 	time_current_ = time_set_;
+}
+
+// 強制終了
+void CountdownTimer::shut()
+{
+	time_current_ = 0.0f;
 }
 
 // タイムアウトか
