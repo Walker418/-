@@ -1,5 +1,6 @@
 #include "GamePlayManager.h"
 #include "../../World/IWorld.h"
+#include "../../Field/Field.h"
 #include "../../Actor/ActorGroup.h"
 #include "../../Actor/Enemy/Ghoul/Ghoul.h"
 #include "../../Actor/Enemy/DragonBoar/DragonBoar.h"
@@ -13,11 +14,8 @@
 // コンストラクタ
 GamePlayManager::GamePlayManager(IWorld* world) :
 	Actor(world, "GamePlayManager"),
-	state_{ GamePlayState::Phase1 },
-	state_timer_{ 0.0f },
-	state_change_time_{ 0.0f },
+	phase_{ GamePlayPhase::Phase1 },
 	enemy_defeated_{ 0 },
-	phase1_end_{ false },
 	boss_defeated_{ false },
 	phase2_end_{ false },
 	player_dead_{ false },
@@ -67,30 +65,24 @@ void GamePlayManager::handle_message(EventMessage message, void* param)
 // プレイ状況の更新
 void GamePlayManager::update_phase(float delta_time)
 {
-	switch (state_)
+	switch (phase_)
 	{
-	case (GamePlayState::Phase1):
+	case (GamePlayPhase::Phase1):
 		phase1(delta_time);
 		break;
-	case (GamePlayState::Phase2):
+	case (GamePlayPhase::Phase2):
 		phase2(delta_time);
 		break;
 	default:
 		break;
 	}
 
-	state_timer_ += delta_time;
-
-	// プレイヤーが死亡すると、ゲーム終了フラグを立って、しばらくしてゲームオーバーメッセージを送る
+	// プレイヤーが死亡すると、しばらくしてゲームオーバーメッセージを送る（ゲームオーバー処理を行う）
 	if (player_dead_)
 	{
-		if (!game_end_)
-		{
-			state_change_time_ = state_timer_ + 60.0f;
-			game_end_ = true;
-		}
+		gameover_scene_timer_.update(delta_time);
 
-		if (state_timer_ >= state_change_time_)
+		if (gameover_scene_timer_.is_time_out())
 		{
 			world_->send_message(EventMessage::GameOver);
 		}
@@ -100,6 +92,11 @@ void GamePlayManager::update_phase(float delta_time)
 // ゲーム開始処理
 void GamePlayManager::game_start()
 {
+	// 各種タイマーをリセット
+	phase_change_timer_.reset();
+	gameover_scene_timer_.reset();
+	gameclear_scene_timer_.reset();
+
 	// 雑魚敵3体を生成する
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 60.0f, 0.0f, -35.0f }, 160.0f));
@@ -111,26 +108,22 @@ void GamePlayManager::change_phase()
 {
 	// ボスを生成し、ボス戦に移行する
 	world_->add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
-	state_ = GamePlayState::Phase2;
-	state_timer_ = 0.0f;
+	phase_ = GamePlayPhase::Phase2;
 }
 
 // 第1段階の処理
 void GamePlayManager::phase1(float delta_time)
 {
 	// 3秒後、ボス戦に移行
-	if (enemy_defeated_ >= 3)
+	if (phase1_end())
 	{
-		if (!phase1_end_)
-		{
-			state_change_time_ = state_timer_ + 180.0f;
-			phase1_end_ = true;
-		}
-
-		if (state_timer_ >= state_change_time_)
+		if (phase_change_timer_.is_time_out())
 		{
 			change_phase();
+			return;
 		}
+
+		phase_change_timer_.update(delta_time);
 	}
 }
 
@@ -139,17 +132,14 @@ void GamePlayManager::phase2(float delta_time)
 {
 	if (boss_defeated_)
 	{
-		if (!phase2_end_)
+		if (gameclear_scene_timer_.is_time_out())
 		{
-			state_change_time_ = state_timer_ + 180.0f;
-			phase2_end_ = true;
+			// ゲームクリアメッセージを送る（ゲームクリア処理を行う）
+			world_->send_message(EventMessage::StageClear);
+			return;
 		}
 
-		if (state_timer_ >= state_change_time_)
-		{
-			// ゲームクリアメッセージを送る
-			world_->send_message(EventMessage::StageClear);
-		}
+		gameclear_scene_timer_.update(delta_time);
 	}
 }
 
@@ -179,15 +169,22 @@ void GamePlayManager::draw_HP_gauge(Vector2 position) const
 void GamePlayManager::draw_message(Vector2 position) const
 {
 	// 進行状況に応じて、現在の目的を表示
-	switch (state_)
+	switch (phase_)
 	{
-	case (GamePlayState::Phase1):
+	case (GamePlayPhase::Phase1):
 		Graphics2D::draw(TEXTURE_P1MESSAGE, position);
 		break;
-	case (GamePlayState::Phase2):
+	case (GamePlayPhase::Phase2):
 		Graphics2D::draw(TEXTURE_P2MESSAGE, position);
 		break;
 	default:
 		break;
 	}
+}
+
+// 第1段階は終了しているか
+bool GamePlayManager::phase1_end() const
+{
+	// 雑魚敵が全部倒されたら、Trueを返す
+	return enemy_defeated_ >= EnemyPopNo;
 }

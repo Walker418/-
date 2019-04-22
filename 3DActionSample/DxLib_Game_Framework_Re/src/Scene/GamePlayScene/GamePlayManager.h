@@ -3,11 +3,12 @@
 
 #include "../../Actor/Actor.h"
 #include "../../Math/Vector2.h"
+#include "../../Math/CountdownTimer.h"
 
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // プレイ状況
-enum GamePlayState
+enum GamePlayPhase
 {
 	Phase1,		// 第1段階（雑魚戦）
 	Phase2,		// 第2段階（ボス戦）
@@ -16,6 +17,13 @@ enum GamePlayState
 // クラス：ゲームプレイシーン管理
 class GamePlayManager : public Actor
 {
+private:
+	const float PhaseChangeTime{ 180.0f };				// 第1段階終了後、第2段階に移行するまでのフレーム数
+	const float SceneChangeTime_GameOver{ 60.0f };		// ゲームオーバー後、次のシーンに移行するまでのフレーム数
+	const float SceneChangeTime_GameClear{ 180.0f };	// ゲームクリア後、次のシーンに移行するまでのフレーム数
+
+	const int	EnemyPopNo{ 3 };						// 生成する雑魚敵の数
+
 public:
 	// コンストラクタ
 	explicit GamePlayManager(IWorld* world);
@@ -42,17 +50,20 @@ private:
 	// 現在の目的を表示
 	void draw_message(Vector2 position) const;
 
+	// 第1段階は終了しているか
+	bool phase1_end() const;
+
 private:
 	// プレイ状況
-	GamePlayState	state_{ GamePlayState::Phase1 };
-	// フェーズタイマー
-	float			state_timer_{ 0.0f };
+	GamePlayPhase	phase_{ GamePlayPhase::Phase1 };
 	// フェーズ移行タイマー
-	float			state_change_time_{ 0.0f };
+	CountdownTimer	phase_change_timer_{ PhaseChangeTime };
+	// ゲームオーバー後シーン移行タイマー
+	CountdownTimer	gameover_scene_timer_{ SceneChangeTime_GameOver };
+	// ゲームクリア後シーン移行タイマー
+	CountdownTimer	gameclear_scene_timer_{ SceneChangeTime_GameClear };
 	// 倒された敵の数（状況移行判定用）
 	int				enemy_defeated_{ 0 };
-	// 第1段階は終了したか
-	bool			phase1_end_{ false };
 	// ボスが倒されたか
 	bool			boss_defeated_{ false };
 	// 第2段階は終了したか
