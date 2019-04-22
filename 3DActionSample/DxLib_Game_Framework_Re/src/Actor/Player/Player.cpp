@@ -56,7 +56,6 @@ const float GuardAtk_End = 60.0f;			// ガード攻撃のモーション終了フレーム数
 
 // ============================================================
 
-
 // コンストラクタ
 Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyPtr& body) :
 	Actor(world, "Player", position, body),
@@ -66,15 +65,15 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	is_ground_{ false },
 	is_guard_{ false },
 	attack_on_{ false },
-	jump_attack_started_{ false },
-	evasion_timer_{ 0.0f }
+	jump_attack_started_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
 	current_hp_ = HP;
 
 	state_timer_.reset();
-	invincible_timer_.reset();
+	invincible_timer_.shut();
+	evasion_timer_.shut();
 }
 
 // 更新
@@ -656,17 +655,18 @@ void Player::forward_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Forward() * Evasion_Speed;
+	velocity_ = rotation_.Forward() * EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
-	if (evasion_timer_ <= 0.0f)
+	if (evasion_timer_.is_time_out())
 	{
 		normal(delta_time);
+		return;
 	}
 
-	// 回避タイマーの更新
-	evasion_timer_ -= delta_time;
+	// 回避タイマーを更新
+	evasion_timer_.update(delta_time);
 }
 
 // 左回避状態での更新
@@ -680,17 +680,18 @@ void Player::left_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Left() * Evasion_Speed;
+	velocity_ = rotation_.Left() * EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
-	if (evasion_timer_ <= 0.0f)
+	if (evasion_timer_.is_time_out())
 	{
 		normal(delta_time);
+		return;
 	}
 
-	// 回避タイマーの更新
-	evasion_timer_ -= delta_time;
+	// 回避タイマーを更新
+	evasion_timer_.update(delta_time);
 }
 
 // 右回避状態での更新
@@ -704,17 +705,18 @@ void Player::right_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Right() * Evasion_Speed;
+	velocity_ = rotation_.Right() * EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
-	if (evasion_timer_ <= 0.0f)
+	if (evasion_timer_.is_time_out())
 	{
 		normal(delta_time);
+		return;
 	}
 
-	// 回避タイマーの更新
-	evasion_timer_ -= delta_time;
+	// 回避タイマーを更新
+	evasion_timer_.update(delta_time);
 }
 
 // 攻撃後の回避行動移行
@@ -828,8 +830,8 @@ void Player::ready_for_evasion()
 {
 	// モーションの再生速度を引き上げる
 	mesh_.change_speed(1.5f);
-	// 回避時間と無敵時間を設定
-	evasion_timer_ = Evasion_Time;
+	// 回避時間と無敵時間をリセット
+	evasion_timer_.reset();
 	invincible_timer_.reset();
 }
 

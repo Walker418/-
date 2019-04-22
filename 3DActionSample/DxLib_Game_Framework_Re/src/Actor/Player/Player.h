@@ -89,9 +89,9 @@ private:
 	const int	Wince_JumpAtk2{ 1 };		// ジャンプ攻撃1段目の怯み値
 	const int	Wince_GuardAtk{ 1 };		// ガード攻撃の怯み値
 
-	const float Evasion_Time{ 30.0f };		// 回避状態維持フレーム数
-	const float Invincible_Time{ 12.0f };	// 無敵状態維持フレーム数
-	const float Evasion_Speed = 1.2f;		// 回避時の移動速度
+	const float EvasionTime{ 30.0f };		// 回避状態維持フレーム数
+	const float InvincibleTime{ 12.0f };	// 無敵状態維持フレーム数
+	const float EvasionSpeed{ 1.2f };		// 回避時の移動速度
 
 	// ============================================================
 
@@ -174,10 +174,9 @@ private:
 	// 状態タイマー
 	Timer			state_timer_;
 	// 無敵時間タイマー
-	// float			invincible_timer_{ 0.0f };
-	CountdownTimer	invincible_timer_{ Invincible_Time };
+	CountdownTimer	invincible_timer_{ InvincibleTime };
 	// 回避タイマー
-	float			evasion_timer_{ 0.0f };
+	CountdownTimer	evasion_timer_{ EvasionTime };
 	// 接地しているか
 	bool			is_ground_{ false };
 	// ガードしているか
