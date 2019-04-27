@@ -23,6 +23,13 @@ void CountdownTimer::reset()
 	time_current_ = time_set_;
 }
 
+// リセット（時間の再設定を含め）
+void CountdownTimer::reset_time(float time)
+{
+	time_set_ = time;
+	reset();
+}
+
 // 強制終了
 void CountdownTimer::shut()
 {

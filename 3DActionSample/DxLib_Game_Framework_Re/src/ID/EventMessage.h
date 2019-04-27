@@ -13,6 +13,7 @@ enum class EventMessage
 	EnemyDamage,	// 敵がダメージを受ける
 	StageClear,		// ステージクリア
 	GameOver,		// ゲームオーバー
+	HitStop,		// ヒットストップ
 };
 
 #endif // !EVENT_MESSAGE_H_

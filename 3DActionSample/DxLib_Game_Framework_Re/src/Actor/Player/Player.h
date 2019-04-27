@@ -89,6 +89,10 @@ private:
 	const int	Wince_JumpAtk2{ 1 };		// ジャンプ攻撃1段目の怯み値
 	const int	Wince_GuardAtk{ 1 };		// ガード攻撃の怯み値
 
+	// ヒットストップ
+	const float HitStop_Short{ 6.0f };		// 短い
+	const float HitStop_Long{ 10.0f };		// 長い
+
 	const float EvasionTime{ 30.0f };		// 回避状態維持フレーム数
 	const float InvincibleTime{ 12.0f };	// 無敵状態維持フレーム数
 	const float EvasionSpeed{ 1.2f };		// 回避時の移動速度
@@ -156,6 +160,8 @@ private:
 	void clamp_position();
 	// 回避準備
 	void ready_for_evasion();
+	// ヒットストップタイマーのリセット
+	void reset_hit_stop(float time);
 
 	// ガードは成立するか
 	bool can_block(Vector3 atk_pos) const;
@@ -163,6 +169,8 @@ private:
 	bool is_invincible() const;
 	// スーパーアーマー状態であるか
 	bool is_super_armor() const;
+	// ヒットストップ中なのか
+	bool is_hit_stop() const;
 
 private:
 	// アニメーションメッシュ
@@ -177,6 +185,8 @@ private:
 	CountdownTimer	invincible_timer_{ InvincibleTime };
 	// 回避タイマー
 	CountdownTimer	evasion_timer_{ EvasionTime };
+	// ヒットストップタイマー
+	CountdownTimer	hit_stop_timer_{ 0.0f };
 	// 接地しているか
 	bool			is_ground_{ false };
 	// ガードしているか

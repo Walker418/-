@@ -1,17 +1,19 @@
 #include "PlayerAttack.h"
 #include "../../ID/EventMessage.h"
 #include "../Damage.h"
+#include "../../World/IWorld.h"
 
 // クラス：プレイヤーの攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // コンストラクタ
-PlayerAttack::PlayerAttack(IWorld* world, const Vector3& position, int power, int impact, const IBodyPtr& body) :
+PlayerAttack::PlayerAttack(IWorld* world, const Vector3& position, int power, int impact, float hit_stop, const IBodyPtr& body) :
 	Actor(world, "PlayerAttack", position, body),
 	destroy_counter_{ 0.0f }
 {
-	power_ = power;		// 威力を設定
-	impact_ = impact;	// 怯み値を設定
+	power_ = power;			// 威力を設定
+	impact_ = impact;		// 怯み値を設定
+	hit_stop_ = hit_stop;	// ヒットストップを設定
 }
 
 // 更新
@@ -39,6 +41,8 @@ void PlayerAttack::react(Actor& other)
 	Damage damage{ position_, power_, impact_ };
 	// 敵へダメージメッセージを送る
 	other.handle_message(EventMessage::EnemyDamage, &damage);
+	// プレイヤーにヒットストップメッセージを送る
+	world_->send_message(EventMessage::HitStop, &hit_stop_);
 	// 敵に当たると消滅
 	die();
 }

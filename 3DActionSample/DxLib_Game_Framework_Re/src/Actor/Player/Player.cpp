@@ -17,6 +17,8 @@
 // ============================================================
 // 以下は各モーション処理関連のフレーム数
 
+const float FrameInOneSecond = 60.0f;		// 1秒 = 60フレーム
+
 const float Atk1_Active = 25.0f;			// 攻撃1段目の判定発生フレーム数
 const float Atk1_InputValid = 35.0f;		// 攻撃1段目の次の行動入力の開始フレーム数
 const float Atk1_InputInvalid = 45.0f;		// 攻撃1段目の次の行動入力の終了フレーム数
@@ -74,11 +76,32 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	state_timer_.reset();
 	invincible_timer_.shut();
 	evasion_timer_.shut();
+	hit_stop_timer_.shut();
 }
 
 // 更新
 void Player::update(float delta_time)
 {
+	// HPが0以下になると、死亡状態に移行
+	if (current_hp_ <= 0 && state_ != PlayerState::Death)
+	{
+		change_state(PlayerState::Death, MOTION_DEATH);
+		return;
+	}
+
+	// 無敵時間タイマーを更新
+	invincible_timer_.update(delta_time);
+
+	// ヒットストップタイマーを更新
+	/*
+	hitstop_timer_short_.update(delta_time);
+	hitstop_timer_middle_.update(delta_time);
+	hitstop_timer_long_.update(delta_time);
+	*/
+	hit_stop_timer_.update(delta_time);
+	// ヒットストップしていれば、以降の更新はしない
+	if (is_hit_stop()) return;
+
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
@@ -98,16 +121,6 @@ void Player::update(float delta_time)
 	mesh_.update(delta_time);
 	// 行列を計算
 	mesh_.transform(pose());
-
-	// HPが0以下になると、死亡状態に移行
-	if (current_hp_ <= 0 && state_ != PlayerState::Death)
-	{
-		change_state(PlayerState::Death, MOTION_DEATH);
-		return;
-	}
-
-	// 無敵時間タイマーを更新
-	invincible_timer_.update(delta_time);
 }
 
 // 描画
@@ -156,6 +169,13 @@ void Player::handle_message(EventMessage message, void* param)
 		{
 			change_state(PlayerState::Damage, MOTION_IMPACT);
 		}
+	}
+
+	// ヒットストップ発生
+	if (message == EventMessage::HitStop)
+	{
+		float* hit_stop_time = (float*)param;
+		reset_hit_stop(*hit_stop_time);
 	}
 }
 
@@ -336,7 +356,7 @@ void Player::slash1(float delta_time)
 		float distance = 12.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
 		float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk1, Wince_Atk1));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk1, Wince_Atk1, HitStop_Short));
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
 
@@ -376,7 +396,7 @@ void Player::slash2(float delta_time)
 		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk2, Wince_Atk2));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk2, Wince_Atk2, HitStop_Short));
 		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
 	}
 
@@ -428,7 +448,7 @@ void Player::slash3(float delta_time)
 		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk3, Wince_Atk3));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk3, Wince_Atk3, HitStop_Long));
 	}
 
 	// モーション終了の前に、回避への移行
@@ -465,7 +485,7 @@ void Player::jump_attack1(float delta_time)
 		const float distance = 13.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk1, Wince_JumpAtk1));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk1, Wince_JumpAtk1, HitStop_Long));
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -503,7 +523,7 @@ void Player::jump_attack2(float delta_time)
 		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk2, Wince_JumpAtk2));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk2, Wince_JumpAtk2, HitStop_Short));
 		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
 	}
 
@@ -595,7 +615,7 @@ void Player::guard_attack(float delta_time)
 		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
 		const float height = 9.5f;		// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_GuardAtk, Wince_GuardAtk));
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_GuardAtk, Wince_GuardAtk, HitStop_Short));
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -835,6 +855,11 @@ void Player::ready_for_evasion()
 	invincible_timer_.reset();
 }
 
+void Player::reset_hit_stop(float time)
+{
+	hit_stop_timer_.reset_time(time);
+}
+
 // ガードは成立するか
 bool Player::can_block(Vector3 atk_pos) const
 {
@@ -856,4 +881,10 @@ bool Player::is_invincible() const
 bool Player::is_super_armor() const
 {
 	return state_ == PlayerState::Slash3;
+}
+
+// ヒットストップ中なのか
+bool Player::is_hit_stop() const
+{
+	return !hit_stop_timer_.is_time_out();
 }

@@ -13,6 +13,8 @@ public:
 	void update(float delta_time);
 	// リセット
 	void reset();
+	// リセット（時間の再設定を含め）
+	void reset_time(float time);
 	// 強制終了
 	void shut();
 	// タイムアウトか

@@ -10,7 +10,7 @@ struct Damage
 {
 	Vector3 position{ Vector3::Zero };	// 攻撃判定の位置
 	int power{ 0 };						// 攻撃力
-	int impact{ 0 };					// 怯み値（敵に対して有効）
+	int impact{ 0 };					// 怯み値（敵にのみ使う）
 };
 
 #endif // !DAMAGE_H_
