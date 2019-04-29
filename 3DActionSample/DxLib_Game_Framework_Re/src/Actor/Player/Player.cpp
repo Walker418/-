@@ -93,11 +93,6 @@ void Player::update(float delta_time)
 	invincible_timer_.update(delta_time);
 
 	// ヒットストップタイマーを更新
-	/*
-	hitstop_timer_short_.update(delta_time);
-	hitstop_timer_middle_.update(delta_time);
-	hitstop_timer_long_.update(delta_time);
-	*/
 	hit_stop_timer_.update(delta_time);
 	// ヒットストップしていれば、以降の更新はしない
 	if (is_hit_stop()) return;

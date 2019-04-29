@@ -5,7 +5,7 @@
 #include <string>
 #include <functional>
 
-// インターフェース：ワールド
+// 抽象インターフェース：ワールド
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 enum class ActorGroup;
