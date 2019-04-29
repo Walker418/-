@@ -17,7 +17,7 @@ PlayerAttack::PlayerAttack(IWorld* world, const Vector3& position, int power, in
 }
 
 // コンストラクタ（攻撃パラメータ構造体を使用）
-PlayerAttack::PlayerAttack(IWorld* world, PlayerAtkParameter parameter, const IBodyPtr& body) :
+PlayerAttack::PlayerAttack(IWorld* world, AttackParameter parameter, const IBodyPtr& body) :
 	Actor(world, "PlayerAttack", parameter.position, body),
 	destroy_counter_{ 0.0f }
 {

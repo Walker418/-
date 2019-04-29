@@ -8,6 +8,7 @@
 #include "../Body/BoundingSphere.h"
 #include "../ActorGroup.h"
 #include "PlayerAttack.h"
+#include "../AttackParameter.h"
 #include "../Damage.h"
 #include "PlayerInput.h"
 
@@ -354,7 +355,7 @@ void Player::slash1(float delta_time)
 		int		power = PlayerParameter::Power_Atk1;		// 威力
 		int		wince = PlayerParameter::Wince_Atk1;		// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 
@@ -401,7 +402,7 @@ void Player::slash2(float delta_time)
 		int		power = PlayerParameter::Power_Atk2;		// 威力
 		int		wince = PlayerParameter::Wince_Atk2;		// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 
@@ -461,7 +462,7 @@ void Player::slash3(float delta_time)
 		int		power = PlayerParameter::Power_Atk3;		// 威力
 		int		wince = PlayerParameter::Wince_Atk3;		// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Long;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}
@@ -505,7 +506,7 @@ void Player::jump_attack1(float delta_time)
 		int		power = PlayerParameter::Power_JumpAtk1;	// 威力
 		int		wince = PlayerParameter::Wince_JumpAtk1;	// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Long;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}
@@ -550,7 +551,7 @@ void Player::jump_attack2(float delta_time)
 		int		power = PlayerParameter::Power_JumpAtk2;	// 威力
 		int		wince = PlayerParameter::Wince_JumpAtk2;	// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 
@@ -650,7 +651,7 @@ void Player::guard_attack(float delta_time)
 		int		power = PlayerParameter::Power_GuardAtk;	// 威力
 		int		wince = PlayerParameter::Wince_GuardAtk;	// 怯み値
 		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
-		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}

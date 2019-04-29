@@ -10,7 +10,7 @@
 
 using ActorWeak = std::weak_ptr<Actor>;		// ポインタでプレイヤーの参照を取得
 
-// クラス：プレイヤー状態基底
+// クラス：プレイヤー状態管理
 class PlayerStateManager
 {
 public:
@@ -28,7 +28,7 @@ public:
 
 protected:
 	IWorld*		world_{ nullptr };	// ワールドの参照
-	ActorWeak	player_;			// プレイヤーの参照
+	ActorWeak	player_;			// プレイヤーの参照6
 };
 
 #endif // !PLAYER_STATE_H_

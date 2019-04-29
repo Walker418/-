@@ -189,6 +189,7 @@
     <ClCompile Include="src\World\World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Actor\AttackParameter.h" />
     <ClInclude Include="src\Actor\Camera\TitleCamera.h" />
     <ClInclude Include="src\Actor\Enemy\Enemy.h" />
     <ClInclude Include="src\Actor\Actor.h" />

@@ -428,6 +428,9 @@
     <ClInclude Include="src\Actor\Player\PlayerParameter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\Actor\AttackParameter.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="res\assets\shader\SkyboxVertexShader.hlsl" />
