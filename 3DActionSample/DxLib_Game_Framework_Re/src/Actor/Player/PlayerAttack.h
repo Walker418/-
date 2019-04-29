@@ -5,13 +5,25 @@
 #include "../Body/IBodyPtr.h"
 #include "../Body/BoundingSphere.h"
 
-// クラス：プレイヤーの攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
+
+// 構造体：プレイヤー攻撃パラメータ
+struct PlayerAtkParameter
+{
+	Vector3	position{ Vector3::Zero };	// コライダーの位置
+	int		power{ 0 };					// 攻撃力
+	int		impact{ 0 };				// 怯み値
+	float	hit_stop{ 0.0f };			// ヒットストップ（フレーム）
+};
+
+// クラス：プレイヤーの攻撃の当たり判定
 class PlayerAttack : public Actor
 {
 public:
 	// コンストラクタ
 	PlayerAttack(IWorld* world, const Vector3& position, int power = 0, int impact = 0, float hit_stop = 0.0f, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3::Zero, 9.0f));
+	// コンストラクタ（攻撃パラメータ構造体を使用）
+	PlayerAttack(IWorld* world, PlayerAtkParameter parameter, const IBodyPtr& body = std::make_shared<BoundingSphere>(Vector3::Zero, 9.0f));
 	// 更新
 	virtual void update(float delta_time) override;
 	// 描画

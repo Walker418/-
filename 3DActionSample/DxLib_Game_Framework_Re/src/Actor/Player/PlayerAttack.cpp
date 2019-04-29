@@ -16,6 +16,16 @@ PlayerAttack::PlayerAttack(IWorld* world, const Vector3& position, int power, in
 	hit_stop_ = hit_stop;	// ヒットストップを設定
 }
 
+// コンストラクタ（攻撃パラメータ構造体を使用）
+PlayerAttack::PlayerAttack(IWorld* world, PlayerAtkParameter parameter, const IBodyPtr& body) :
+	Actor(world, "PlayerAttack", parameter.position, body),
+	destroy_counter_{ 0.0f }
+{
+	power_ = parameter.power;		// 威力を設定
+	impact_ = parameter.impact;		// 怯み値を設定
+	hit_stop_ = parameter.hit_stop;	// ヒットストップを設定
+}
+
 // 更新
 void PlayerAttack::update(float delta_time)
 {

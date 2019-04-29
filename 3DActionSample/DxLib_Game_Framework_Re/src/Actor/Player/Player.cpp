@@ -71,7 +71,7 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
-	current_hp_ = HP;
+	current_hp_ = PlayerParameter::HP;
 
 	state_timer_.reset();
 	invincible_timer_.shut();
@@ -98,8 +98,8 @@ void Player::update(float delta_time)
 	if (is_hit_stop()) return;
 
 	// 落下処理
-	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
-	position_.y += velocity_.y * delta_time;	// y軸座標を計算
+	velocity_ += Vector3::Down * PlayerParameter::Gravity;	// 重力加速度を計算
+	position_.y += velocity_.y * delta_time;				// y軸座標を計算
 
 	intersect_ground();		// 地面との接触処理
 	intersect_wall();		// 壁との接触処理
@@ -187,6 +187,7 @@ void Player::update_state(float delta_time)
 	switch (state_)
 	{
 	case PlayerState::Normal:
+		mesh_.reset_speed();
 		normal(delta_time);
 		break;
 	case PlayerState::Slash1:
@@ -243,13 +244,10 @@ void Player::change_state(PlayerState state, int motion)
 {
 	motion_ = motion;
 	state_ = state;
-	// state_timer_ = 0.0f;
 	state_timer_.reset();
 
 	attack_on_ = false;
 	jump_attack_started_ = false;
-
-	if (state == PlayerState::Normal)	mesh_.reset_speed();	// 通常状態に戻るとき、必ずモーション速度をリセット
 }
 
 // 通常状態での更新
@@ -306,8 +304,8 @@ void Player::normal(float delta_time)
 	if (is_ground_)
 	{
 		// 移動入力を取得
-		forward_speed = DashSpeed * PlayerInput::move_input().y;	// 前後
-		left_speed = -DashSpeed * PlayerInput::move_input().x;		// 左右
+		forward_speed = PlayerParameter::DashSpeed * PlayerInput::move_input().y;	// 前後
+		left_speed = -PlayerParameter::DashSpeed * PlayerInput::move_input().x;		// 左右
 	}
 	// 移動していれば、歩行モーションに変更
 	if (forward_speed != 0.0f || left_speed != 0.0f)
@@ -326,7 +324,7 @@ void Player::normal(float delta_time)
 	if (velocity_.x != 0.0f || velocity_.z != 0.0f)		// 移動していれば
 	{
 		Matrix new_rotation = Matrix::CreateWorld(Vector3::Zero, Vector3(velocity_.x, 0.0f, velocity_.z).Normalize(), Vector3::Up);	// 新しい方向を設定
-		rotation_ = Matrix::Lerp(rotation_, new_rotation, RotateSpeed);	// 補間で方向を転換する
+		rotation_ = Matrix::Lerp(rotation_, new_rotation, PlayerParameter::RotateSpeed);	// 補間で方向を転換する
 	}
 
 	// 移動処理終了
@@ -347,11 +345,19 @@ void Player::slash1(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= Atk1_Active && !attack_on_)
 	{
-		attack_on_ = true;
-		float distance = 12.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
-		float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk1, Wince_Atk1, HitStop_Short));
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
+
+		// 攻撃パラメータ構造体を生成
+		const float distance = 12.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_Atk1;		// 威力
+		int		wince = PlayerParameter::Wince_Atk1;		// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
 
@@ -386,13 +392,20 @@ void Player::slash2(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= Atk2_Active && !attack_on_)
 	{
-		attack_on_ = true;
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
 
-		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
-		const float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk2, Wince_Atk2, HitStop_Short));
-		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
+		// 攻撃パラメータ構造体を生成
+		const float distance = 12.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_Atk2;		// 威力
+		int		wince = PlayerParameter::Wince_Atk2;		// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+
+		mesh_.reset_speed();		// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -439,11 +452,18 @@ void Player::slash3(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= Atk3_Active && !attack_on_)
 	{
-		attack_on_ = true;
-		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
-		const float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_Atk3, Wince_Atk3, HitStop_Long));
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
+
+		// 攻撃パラメータ構造体を生成
+		const float distance = 15.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_Atk3;		// 威力
+		int		wince = PlayerParameter::Wince_Atk3;		// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Long;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}
 
 	// モーション終了の前に、回避への移行
@@ -476,11 +496,18 @@ void Player::jump_attack1(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= JumpAtk1_Active && !attack_on_)
 	{
-		attack_on_ = true;
-		const float distance = 13.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
-		const float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk1, Wince_JumpAtk1, HitStop_Long));
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
+
+		// 攻撃パラメータ構造体を生成
+		const float distance = 13.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_JumpAtk1;	// 威力
+		int		wince = PlayerParameter::Wince_JumpAtk1;	// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Long;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -514,12 +541,20 @@ void Player::jump_attack2(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= JumpAtk2_Active && !attack_on_)
 	{
-		attack_on_ = true;
-		const float distance = 12.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
-		const float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_JumpAtk2, Wince_JumpAtk2, HitStop_Short));
-		mesh_.reset_speed();			// 以降のモーション速度を少し遅くにする
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
+
+		// 攻撃パラメータ構造体を生成
+		const float distance = 12.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_JumpAtk2;	// 威力
+		int		wince = PlayerParameter::Wince_JumpAtk2;	// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+
+		mesh_.reset_speed();		// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -606,11 +641,18 @@ void Player::guard_attack(float delta_time)
 	// 攻撃判定を発生
 	if (state_timer_.get_time() >= GuardAtk_Active && !attack_on_)
 	{
-		attack_on_ = true;
-		const float distance = 15.0f;	// 攻撃判定の発生距離（前方からどれぐらい）
-		const float height = 9.5f;		// 攻撃判定の高さ
-		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
-		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, attack_position, Power_GuardAtk, Wince_GuardAtk, HitStop_Short));
+		attack_on_ = true;	// 攻撃判定は1回しか発生しない
+
+		// 攻撃パラメータ構造体を生成
+		const float distance = 15.0f;						// 攻撃判定の発生距離（前方からどれぐらい）
+		const float height = 9.5f;							// 攻撃判定の高さ
+		Vector3 atk_pos = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);	// 攻撃判定の位置
+		int		power = PlayerParameter::Power_GuardAtk;	// 威力
+		int		wince = PlayerParameter::Wince_GuardAtk;	// 怯み値
+		float	hit_stop = PlayerParameter::HitStop_Short;	// ヒットストップ
+		PlayerAtkParameter atk_para{ atk_pos, power, wince, hit_stop };
+		// 攻撃判定を生成
+		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -670,7 +712,7 @@ void Player::forward_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Forward() * EvasionSpeed;
+	velocity_ = rotation_.Forward() * PlayerParameter::EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
@@ -695,7 +737,7 @@ void Player::left_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Left() * EvasionSpeed;
+	velocity_ = rotation_.Left() * PlayerParameter::EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
@@ -720,7 +762,7 @@ void Player::right_evasion(float delta_time)
 	}
 
 	// プレイヤーの座標を移動
-	velocity_ = rotation_.Right() * EvasionSpeed;
+	velocity_ = rotation_.Right() * PlayerParameter::EvasionSpeed;
 	position_ += velocity_ * delta_time;
 
 	// 回避終了後、通常状態に戻る
