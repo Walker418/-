@@ -419,12 +419,6 @@
     <ClInclude Include="src\Math\CountdownTimer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="src\Actor\Player\PlayerState\PlayerStateManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Actor\Player\PlayerState\PlayerState.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="src\Actor\Player\PlayerParameter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

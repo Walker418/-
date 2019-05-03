@@ -20,6 +20,8 @@ private:
 private:
 	// カメラの移動、回転処理
 	void move(float delta_time);
+	// 壁との接触処理
+	void intersect_wall();
 
 private:
 	Vector3 target_;						// 注視点（プレイヤー）

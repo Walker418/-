@@ -216,8 +216,6 @@
     <ClInclude Include="src\Actor\Player\PlayerAttack.h" />
     <ClInclude Include="src\Actor\Player\PlayerInput.h" />
     <ClInclude Include="src\Actor\Player\PlayerParameter.h" />
-    <ClInclude Include="src\Actor\Player\PlayerState\PlayerState.h" />
-    <ClInclude Include="src\Actor\Player\PlayerState\PlayerStateManager.h" />
     <ClInclude Include="src\Field\Field.h" />
     <ClInclude Include="src\Field\FieldPtr.h" />
     <ClInclude Include="src\Field\Skybox.h" />

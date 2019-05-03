@@ -4,6 +4,8 @@
 #include "../../Graphic/Graphics3D.h"
 #include "../../Math/MathHelper.h"
 #include "../Player/PlayerInput.h"
+#include "../Body/Line.h"
+#include "../../Field/Field.h"
 
 TPCamera::TPCamera(IWorld* world) :
 	Actor(world, "Camera", Vector3::Zero)
@@ -23,8 +25,8 @@ void TPCamera::update(float delta_time)
 	target_ = player->position();
 	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + target_;
 
-	// 移動、回転処理
-	move(delta_time);
+	move(delta_time);	// 移動、回転処理
+	intersect_wall();	// 壁との接触処理
 }
 
 // 描画
@@ -42,7 +44,7 @@ void TPCamera::draw() const
 void TPCamera::move(float delta_time)
 {
 	// カメラの基本座標と回転角度を設定
-	auto position = Vector3{ 0.0f, 0.0f, CameraDistance } * (Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));
+	auto position = Vector3{ 0.0f, 0.0f, CameraDistance } *(Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));
 
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
 	if (!player) return;	// プレイヤーが存在しない場合、何もしない
@@ -81,4 +83,22 @@ void TPCamera::move(float delta_time)
 
 	// 回転操作終了
 	// ============================================================
+}
+
+// 壁との接触処理
+void TPCamera::intersect_wall()
+{
+	// 注視点（プレイヤー）とカメラの間に壁があるかどうかを検知
+	auto view_point = target_ + Vector3(0.0f, CameraHeight, 0.0f);						// 注視点
+	auto pos = Vector3{ 0.0f, 0.0f, CameraDistance } 
+		*(Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));	// カメラの基本位置
+	auto pos_height = pos + target_ + Vector3(0.0f, CameraHeight, 0.0f);				// 高さ込みのカメラ位置
+	
+	auto& field = world_->field();				// フィールドを取得
+	Vector3 intersect;							// 壁との接触点
+	Line line = Line(view_point, pos_height);	// 接触判定用線分
+
+	// 壁があった場合、カメラの座標を補正
+	if (field.collide_line(line.start, line.end, &intersect))
+		position_ = intersect;
 }
