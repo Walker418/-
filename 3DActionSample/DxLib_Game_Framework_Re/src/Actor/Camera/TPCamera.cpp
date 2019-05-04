@@ -6,6 +6,7 @@
 #include "../Player/PlayerInput.h"
 #include "../Body/Line.h"
 #include "../../Field/Field.h"
+#include "../../ID/EventMessage.h"
 
 TPCamera::TPCamera(IWorld* world) :
 	Actor(world, "Camera", Vector3::Zero)
@@ -13,6 +14,21 @@ TPCamera::TPCamera(IWorld* world) :
 	velocity_ = Vector3::Zero;
 	yaw_angle_ = 0.0f;
 	pitch_angle_ = 0.0f;
+
+	vibration_timer_.shut();
+	min_pos_y_ = 0.0f;
+	max_pos_y_ = 0.0f;
+	rand_.randomize();
+}
+
+// メッセージ処理
+void TPCamera::handle_message(EventMessage message, void * param)
+{
+	// カメラを振動させる
+	if (message == EventMessage::Camera_Vibration)
+	{
+		start_vibration();
+	}
 }
 
 // 更新
@@ -25,8 +41,9 @@ void TPCamera::update(float delta_time)
 	target_ = player->position();
 	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + target_;
 
-	move(delta_time);	// 移動、回転処理
-	intersect_wall();	// 壁との接触処理
+	move(delta_time);				// 移動、回転処理
+	camera_vibration_V(delta_time);	// 上下振動処理
+	intersect_wall();				// 壁との接触処理
 }
 
 // 描画
@@ -101,4 +118,42 @@ void TPCamera::intersect_wall()
 	// 壁があった場合、カメラの座標を補正
 	if (field.collide_line(line.start, line.end, &intersect))
 		position_ = intersect;
+}
+
+// カメラの上下振動
+void TPCamera::camera_vibration_V(float delta_time)
+{
+	// 振動タイマーが0以下の場合は振動しない
+	if (vibration_timer_.is_time_out()) return;
+
+	// ============================================================
+	// 以下はカメラの振動処理
+
+	auto original_pos = position_;	// カメラの本来の位置
+
+	// カメラのブレ度合いを取得し、振動させる
+	float val_y = rand_.rand_float(min_pos_y_, max_pos_y_);
+	Vector3 vib_pos = Vector3{ 0.0f, val_y, 0.0f };
+	position_ += vib_pos;
+
+	// 振動力は時間につれ減少する
+	min_pos_y_ *= 0.9f;
+	max_pos_y_ *= 0.9f;
+
+	// ============================================================
+
+	// 振動タイマーを更新
+	vibration_timer_.update(delta_time);
+}
+
+// 振動開始
+void TPCamera::start_vibration()
+{
+	// 振動力およびカメラの座標ブレ上限を設定
+	current_power_ = VibrationPower;
+	min_pos_y_ = -current_power_;
+	max_pos_y_ = current_power_;
+	
+	// 振動タイマーをリセット
+	vibration_timer_.reset();
 }

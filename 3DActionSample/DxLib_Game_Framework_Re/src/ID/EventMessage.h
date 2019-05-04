@@ -5,15 +5,16 @@
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 enum class EventMessage
 {
-	None,			// ダミー
-	PlayerDead,		// プレイヤー死亡
-	EnemyDead,		// 敵死亡
-	BossDead,		// ボス敵死亡
-	PlayerDamage,	// プレイヤーがダメージを受ける
-	EnemyDamage,	// 敵がダメージを受ける
-	StageClear,		// ステージクリア
-	GameOver,		// ゲームオーバー
-	HitStop,		// ヒットストップ
+	None,				// ダミー
+	PlayerDead,			// プレイヤー死亡
+	EnemyDead,			// 敵死亡
+	BossDead,			// ボス敵死亡
+	PlayerDamage,		// プレイヤーがダメージを受ける
+	EnemyDamage,		// 敵がダメージを受ける
+	StageClear,			// ステージクリア
+	GameOver,			// ゲームオーバー
+	HitStop,			// ヒットストップ
+	Camera_Vibration,	// カメラ振動
 };
 
 #endif // !EVENT_MESSAGE_H_

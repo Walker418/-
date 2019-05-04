@@ -146,6 +146,9 @@ void Player::handle_message(EventMessage message, void* param)
 	// “G‚©‚çƒ_ƒ[ƒW‚ðŽó‚¯‚é
 	if (message == EventMessage::PlayerDamage)
 	{
+		// ƒJƒƒ‰‚ðU“®‚³‚¹‚é
+		world_->send_message(EventMessage::Camera_Vibration);
+
 		// ƒƒbƒZ[ƒW‚©‚ç“G‚ÌUŒ‚‚ðŽæ“¾
 		Damage* damage = (Damage*)param;
 		Vector3 atk_pos = damage->position;
