@@ -105,7 +105,7 @@ void TPCamera::move(float delta_time)
 // 壁との接触処理
 void TPCamera::intersect_wall()
 {
-	// 注視点（プレイヤー）とカメラの間に壁があるかどうかを検知
+	// 線分で注視点（プレイヤー）とカメラの間に壁があるかどうかを検知
 	auto view_point = target_ + Vector3(0.0f, CameraHeight, 0.0f);						// 注視点
 	auto pos = Vector3{ 0.0f, 0.0f, CameraDistance } 
 		*(Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));	// カメラの基本位置

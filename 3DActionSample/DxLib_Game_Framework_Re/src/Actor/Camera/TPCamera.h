@@ -47,8 +47,8 @@ private:
 
 	CountdownTimer	vibration_timer_{ VibrationTime };	// カメラ振動タイマー
 	float			current_power_{ VibrationPower };	// 現在の振動力
-	float			min_pos_y_{ 0.0f };					// 振動時のz軸最小座標
-	float			max_pos_y_{ 0.0f };					// 振動時のz軸最大座標
+	float			min_pos_y_{ 0.0f };					// 振動時のy軸最小座標
+	float			max_pos_y_{ 0.0f };					// 振動時のy軸最大座標
 	Random			rand_;								// 乱数生成器
 };
 

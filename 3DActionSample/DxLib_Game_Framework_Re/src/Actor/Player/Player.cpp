@@ -896,6 +896,7 @@ void Player::ready_for_evasion()
 	invincible_timer_.reset();
 }
 
+// ヒットストップタイマーのリセット
 void Player::reset_hit_stop(float time)
 {
 	hit_stop_timer_.reset_time(time);
