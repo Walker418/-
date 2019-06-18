@@ -2,6 +2,10 @@
 #include "../Field/Field.h"
 #include "../Actor/ActorGroup.h"
 #include "../Actor/Actor.h"
+#include "../Graphic/Shader/BloomCB.h"
+#include "../Graphic/Shader/ShaderID.h"
+#include "../Graphic/Graphics3D.h"
+#include "../Graphic/Shader/ShaderManager.h"
 
 // クラス：ワールド
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -25,6 +29,10 @@ void World::initialize()
 	actors_.add_group(ActorGroup::Enemy);			// 敵
 	actors_.add_group(ActorGroup::EnemyAttack);		// 敵の攻撃
 	actors_.add_group(ActorGroup::Effect);			// エフェクト
+	actors_.add_group(ActorGroup::UI);				// UI
+
+	// シェーダー用定数バッファを生成
+	cb_bloom_ = CreateShaderConstantBuffer(sizeof(BloomCB));
 }
 
 // 更新
@@ -49,10 +57,105 @@ void World::update(float delta_time)
 // 描画
 void World::draw() const
 {
-	camera_->draw();
+	// ブルームシェーダー用のパラメータを設定
+	BloomCB bloom_param;						// ブルームシェーダー用定数バッファを宣言
+	bloom_param.g_BrightPassThreshold = 0.5f;	// 抽出する輝度の最小値
+	bloom_param.g_BloomIntensity = 0.75f;		// ブルームテクスチャの輝度
+	bloom_param.g_BloomSaturation = 0.75f;		// ブルームテクスチャの彩度
+	bloom_param.g_BaseIntensity = 0.8f;			// 元テクスチャの輝度
+	bloom_param.g_BaseSaturation = 0.8f;		// 元テクスチャの彩度
+
+	// ピクセルシェーダー用の定数バッファのアドレスを取得
+	auto cb = (BloomCB*)GetBufferShaderConstantBuffer(cb_bloom_);
+	// 定数バッファの値を設定
+	*cb = bloom_param;
+	// ピクセルシェーダー用の定数バッファを更新して、内容を反映させる
+	UpdateShaderConstantBuffer(cb_bloom_);
+	// ピクセルシェーダーの定数バッファを4番目のスロットに指定
+	SetShaderConstantBuffer(cb_bloom_, DX_SHADERTYPE_PIXEL, 4);
+
+	// --------------------------------------------------
+	// 元画像にレンダリング
+	// --------------------------------------------------
+	rt_source_.begin();		// 元画像のレンダーターゲットを起動
+	Graphics3D::clear();	// 画面をクリア
+
+	// ここでシェーダーを適用するアクターを描画
+	camera_->draw();		// カメラを設定
 	light_->draw();
 	field_->draw();
-	actors_.draw();
+	actors_.draw(ActorGroup::Player);
+	actors_.draw(ActorGroup::Enemy);
+	actors_.draw(ActorGroup::PlayerAttack);
+	actors_.draw(ActorGroup::EnemyAttack);
+
+	rt_source_.end();		// 元画像のレンダーターゲットを終了
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// 輝度を抽出
+	// --------------------------------------------------
+	rt_bright_.begin();										// 輝度のレンダーターゲットを起動
+	ShaderManager::set_ps((int)ShaderID::PS_BrightPass);	// 輝度抽出シェーダーを指定
+	SetUseTextureToShader(0, rt_source_.texture());			// 元画像にシェーダーをかける
+	rt_bright_.draw();										// 輝度のレンダーターゲットを描画
+	rt_bright_.end();										// 輝度のレンダーターゲットを終了
+
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// 水平方向ブラーをかける
+	// --------------------------------------------------
+
+	rt_bluer_h_.begin();									// 水平方向ブラーのレンダーターゲットを起動
+	ShaderManager::set_ps((int)ShaderID::PS_GaussianBlurH);	// 水平方向ブラーシェーダーを指定
+	SetUseTextureToShader(0, rt_bright_.texture());			// 輝度抽出した画像にシェーダーをかける
+	rt_bluer_h_.draw();										// 水平方向ブラーのレンダーターゲットを描画
+	rt_bluer_h_.end();										// 水平方向ブラーのレンダーターゲットを終了
+
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// 垂直方向ブラーをかける
+	// --------------------------------------------------
+
+	rt_bluer_v_.begin();									// 垂直方向ブラーのレンダーターゲットを起動
+	ShaderManager::set_ps((int)ShaderID::PS_GaussianBlurV);	// 垂直方向ブラーシェーダーを指定
+	SetUseTextureToShader(0, rt_bluer_h_.texture());		// 水平方向ブラーと合成した画像にシェーダーをかける
+	rt_bluer_v_.draw();										// 垂直方向ブラーのレンダーターゲットを描画
+	rt_bluer_v_.end();										// 垂直方向ブラーのレンダーターゲットを終了
+
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// 元画像とブラー画像を合成
+	// --------------------------------------------------
+
+	rt_bloom_combine_.begin();								// ブルーム合成用のレンダーターゲットを起動
+	ShaderManager::set_ps((int)ShaderID::PS_BloomCombine);	// ブルーム合成シェーダーを指定
+	// 元画像とブラー画像を合成
+	SetUseTextureToShader(0, rt_source_.texture());
+	SetUseTextureToShader(1, rt_bluer_v_.texture());
+	rt_bloom_combine_.draw();								// ブルーム合成用のレンダーターゲットを描画
+	rt_bloom_combine_.end();								// ブルーム合成用のレンダーターゲットを終了
+
+	// --------------------------------------------------
+
+	// --------------------------------------------------
+	// 再度元画像にレンダリングして、シェーダーを適用しない画面と適用する画面を合成
+	// --------------------------------------------------
+
+	rt_source_.begin();									// 元画像のレンダーターゲットを起動
+	DrawGraph(0, 0, rt_bloom_combine_.texture(), TRUE);	// シェーダー合成した映像を描画
+	// ここでシェーダーを適用しないアクターを描画
+	camera_->draw();				// カメラを設定
+	actors_.draw(ActorGroup::UI);	// アクターを描画
+	rt_source_.end();									// 元画像のレンダーターゲットを終了
+
+	// --------------------------------------------------
+
+	// 最終画像を描画
+	DrawGraph(0, 0, rt_source_.texture(), FALSE);
 }
 
 // メッセージ処理

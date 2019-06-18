@@ -7,6 +7,7 @@
 #include "../Graphic/Graphics2D.h"
 #include "../Graphic/Graphics3D.h"
 #include "../Graphic/Shader/ShaderManager.h"
+#include "../Graphic/Shader/ShaderID.h"
 #include "../Sound/Sound.h"
 #include "../ID/SourceID.h"
 
@@ -27,17 +28,10 @@ void SceneLoading::update(float delta_time)
 	// データをまだ読み込んでいない場合、データを読み込む
 	if (!is_loaded_)
 	{
-		// 初期化
-		Graphics2D::initialize();
-		Graphics3D::initialize();
-		SkeletalMesh::initialize();
-		CollisionMesh::initialize();
-		Skybox::initialize();
-		Billboard::initialize();
-		ShaderManager::initialize();
-		Sound::initialize();
+		//------------------------------------------------------------
+		// ここで読み込む素材を入力
+		//------------------------------------------------------------
 
-		// データを読み込む
 		// ステージ
 		CollisionMesh::load(MESH_STAGE_CASTLE, "res/test_assets/castle/SampleStage_Castle.mv1");	// ステージモデル
 		Skybox::load(MESH_SKYBOX, "res/test_assets/skybox/skydome1.mv1");							// スカイボックスモデル
@@ -53,6 +47,13 @@ void SceneLoading::update(float delta_time)
 		Graphics2D::load(TEXTURE_HP, "res/assets/texture/HP.png");									// 体力表示
 		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/texture/P1message.png");					// フェーズ1目標メッセージ
 		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
+		// シェーダー
+		ShaderManager::load_ps((int)ShaderID::PS_BrightPass, "res/shader/BrightPass.cso");			// 輝度抽出シェーダー
+		ShaderManager::load_ps((int)ShaderID::PS_GaussianBlurH, "res/shader/GaussianBlurH.cso");	// 水平方向ブラーシェーダー
+		ShaderManager::load_ps((int)ShaderID::PS_GaussianBlurV, "res/shader/GaussianBlurV.cso");	// 垂直方向ブラーシェーダー
+		ShaderManager::load_ps((int)ShaderID::PS_BloomCombine, "res/shader/BloomCombine.cso");		// ブルーム合成シェーダー
+
+		//------------------------------------------------------------
 
 		// 読み込む判定をTrueにする（読み込み終了）
 		is_loaded_ = true;
@@ -60,13 +61,12 @@ void SceneLoading::update(float delta_time)
 	// データを読み込んだ場合、終了タイマーを作動し、2秒後にプレイシーンへ移行
 	else
 	{
-		// 60フレーム = 1秒
-		if (end_timer_ >= 120.0f)
+		if (end_timer_.is_time_out())
 		{
 			is_end_ = true;
 		}
 
-		end_timer_ += delta_time;
+		end_timer_.update(delta_time);
 	}
 }
 

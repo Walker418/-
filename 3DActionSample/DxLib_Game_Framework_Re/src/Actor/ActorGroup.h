@@ -11,6 +11,7 @@ enum class ActorGroup
 	Enemy,			// 敵
 	EnemyAttack,	// 敵の攻撃
 	Effect,			// エフェクト
+	UI,				// UI
 };
 
 #endif // !ACTOR_GROUP_H_

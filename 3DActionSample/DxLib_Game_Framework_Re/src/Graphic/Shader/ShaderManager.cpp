@@ -2,8 +2,6 @@
 #include <DxLib.h>
 
 #include "PixelShaderCB.h"
-#include "../../Actor/ActorManager.h"
-#include "../../Actor/ActorGroup.h"
 
 // クラス：シェーダー管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -92,26 +90,6 @@ void ShaderManager::set_cubemap(int id, int stage)
 void ShaderManager::off_cubemap(int stage)
 {
 	SetUseTextureToShader(11, -1);
-}
-
-// 更新
-void ShaderManager::update(IWorld *world, float delta_time)
-{
-	// カメラの参照を取得しておく
-	auto camera = world->camera();
-	// ライトの参照を取得しておく
-	auto light = world->light();
-
-	// ピクセルシェーダー用の定数バッファのアドレスを取得
-	auto cb = (PixelShaderCB*)GetBufferShaderConstantBuffer(pscbhandle_);
-	// カメラの座標を設定
-	cb->ViewPosition = camera->position();
-	// ライトの座標を設定
-	cb->LightPosition = light->position();
-	// ライトのカラーを設定
-	cb->LightColor = { 1.0f, 1.0f, 1.0f };
-	// 定数バッファの内容を更新
-	UpdateShaderConstantBuffer(pscbhandle_);
 }
 
 // シェーダーの有効化

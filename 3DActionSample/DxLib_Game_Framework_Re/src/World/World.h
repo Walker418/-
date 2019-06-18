@@ -5,6 +5,8 @@
 #include "../Actor/ActorGroupManager.h"
 #include "../Actor/ActorPtr.h"
 #include "../Field/FieldPtr.h"
+#include "../Game/WindowSetting.h"
+#include "../Graphic/Shader/RenderTarget.h"
 #include <functional>
 
 // クラス：ワールド
@@ -72,6 +74,16 @@ private:
 	ActorPtr				light_;
 	// メッセージリスナー
 	EventMessageListener	listener_{ [](EventMessage, void*) {} };
+
+	// シェーダー処理用レンダーターゲット
+	mutable RenderTarget rt_source_{ WindowSetting::WindowWidth , WindowSetting::WindowHeight };
+	mutable RenderTarget rt_bright_{ WindowSetting::WindowWidth / 4 , WindowSetting::WindowHeight / 4 };
+	mutable RenderTarget rt_bluer_h_{ WindowSetting::WindowWidth / 4 , WindowSetting::WindowHeight / 4 };
+	mutable RenderTarget rt_bluer_v_{ WindowSetting::WindowWidth / 4 , WindowSetting::WindowHeight / 4 };
+	mutable RenderTarget rt_bloom_combine_{ WindowSetting::WindowWidth , WindowSetting::WindowHeight };
+
+	// ピクセルシェーダー用の定数バッファ
+	int cb_bloom_;	// ブルーム用
 };
 
 #endif // !WORLD_H_

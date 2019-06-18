@@ -192,6 +192,9 @@
     <ClCompile Include="src\Math\CountdownTimer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="src\Graphic\Shader\RenderTarget.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Actor\Actor.h">
@@ -425,11 +428,32 @@
     <ClInclude Include="src\Actor\AttackParameter.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="src\Graphic\Shader\BloomCB.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphic\Shader\RadialCB.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphic\Shader\RenderTarget.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Graphic\Shader\ShaderID.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\WindowSetting.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="res\assets\shader\SkyboxVertexShader.hlsl" />
     <FxCompile Include="res\assets\shader\VertexShader.hlsl" />
     <FxCompile Include="res\assets\shader\PixelShader.hlsl" />
     <FxCompile Include="res\assets\shader\SkyboxPixelShader.hlsl" />
+    <FxCompile Include="res\shader\BloomCombine.hlsl" />
+    <FxCompile Include="res\shader\BrightPass.hlsl" />
+    <FxCompile Include="res\shader\GaussianBlurH.hlsl" />
+    <FxCompile Include="res\shader\GaussianBlurV.hlsl" />
+    <FxCompile Include="res\shader\PostEffectShader.hlsl" />
+    <FxCompile Include="res\shader\RadiationBlurShader.hlsl" />
   </ItemGroup>
 </Project>

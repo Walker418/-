@@ -6,7 +6,6 @@
 
 #include "Shader.h"
 #include "CubeMap.h"
-#include "../../World/IWorld.h"
 
 // クラス：シェーダー管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -37,8 +36,6 @@ public:
 	static void set_cubemap(int id, int stage);
 	// キューブマップの解除
 	static void off_cubemap(int stage);
-	// 更新
-	static void update(IWorld *world, float delta_time);
 
 	// シェーダーの有効化
 	static void shader_on();

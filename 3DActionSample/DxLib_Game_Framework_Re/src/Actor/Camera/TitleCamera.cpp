@@ -21,9 +21,6 @@ void TitleCamera::update(float delta_time)
 // •`‰æ
 void TitleCamera::draw() const
 {
-	// ‰æ–Ê‚ğƒNƒŠƒA
-	Graphics3D::clear();
-
 	// ƒJƒƒ‰‚ğİ’è
 	Graphics3D::set_view_matrix(Matrix::CreateLookAt(pose().Translation(), pose().Translation() + rotation_.Forward(), rotation_.Up()));
 	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, 640.0f / 480.0f, 0.3f, 1000.0f));

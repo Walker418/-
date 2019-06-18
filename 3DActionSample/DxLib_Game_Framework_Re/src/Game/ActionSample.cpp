@@ -11,12 +11,14 @@
 #include "../Scene/SceneTitle.h"
 #include "../Scene/SceneGamePlay.h"
 
+#include "WindowSetting.h"
+
 // クラス：3Dアクションゲームサンプル（アプリケーションクラス）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 
 // コンストラクタ
 ActionSample::ActionSample() :
-	Game{ 1024, 768, false }
+	Game{ WindowSetting::WindowWidth, WindowSetting::WindowHeight, false }
 { }
 
 // 開始
