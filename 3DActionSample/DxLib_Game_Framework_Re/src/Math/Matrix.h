@@ -119,7 +119,7 @@ struct Matrix
 	// ƒ[ƒs—ñ‚Ì’è”
 	static const Matrix Zero;
 
-#ifdef  __DXLIB
+#ifdef  DX_LIB_H
 	// Dxlib—p•ÏŠ·ŠÖ”
 	Matrix(const DxLib::MATRIX& mat)
 	{

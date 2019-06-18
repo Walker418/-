@@ -28,7 +28,7 @@ int Game::run()
 	// ログを出力しないように
 	SetOutApplicationLogValidFlag(FALSE);
 	// ウィンドウ名称を設定
-	SetMainWindowText("MonsterColiseum");
+	SetMainWindowText("モンスターコロシアム");
 	// ウィンドウサイズを設定
 	SetWindowSize(window_width_, window_height_);
 	// フルスクリーンモード時の解像度を設定

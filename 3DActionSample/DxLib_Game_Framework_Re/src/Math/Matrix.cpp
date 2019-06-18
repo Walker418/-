@@ -153,7 +153,7 @@ Matrix Matrix::CreateWorld(const Vector3& scale, const Matrix& rotation, const V
 	return CreateScale(scale) * rotation * CreateTranslation(translation);
 }
 
-#ifdef __DXLIB
+#ifdef DX_LIB_H
 // ワールド変換行列を作成
 Matrix Matrix::CreateWorld(const Vector3& position, const Vector3& forward, const Vector3& up)
 {
@@ -362,7 +362,7 @@ Matrix& Matrix::NormalizeRotationMatrix()
 	return *this;
 }
 
-#ifdef __DXLIB
+#ifdef DX_LIB_H
 // 前方ベクトルを取得
 Vector3 Matrix::Forward() const
 {
@@ -391,7 +391,7 @@ Matrix& Matrix::Forward(const Vector3& forward)
 	return *this;
 }
 
-#endif // __DXLIB
+#endif // DX_LIB_H
 
 // 後方ベクトルを取得
 Vector3 Matrix::Backward() const

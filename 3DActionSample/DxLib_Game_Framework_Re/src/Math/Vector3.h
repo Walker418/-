@@ -70,7 +70,7 @@ struct Vector3
 	static const Vector3 One;       // Vector3( 1,  1,  1)
 	static const Vector3 Zero;      // Vector3( 0,  0,  0)
 
-#ifdef __DXLIB
+#ifdef DX_LIB_H
 	// Dxlib用変換関数
 	Vector3(const DxLib::VECTOR& v) : x(v.x), y(v.y), z(v.z) { }
 	// DxLibのベクトルに変換
