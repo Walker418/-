@@ -79,7 +79,7 @@ int Game::run()
 	// メインループ
 	//------------------------------------------------------------
 
-	while (ProcessMessage() == 0 && is_running())
+	while (ProcessMessage() == 0 && fps_.update() && is_running())
 	{
 		// ゲームパッドの状態を更新
 		GamePad::getInstance().update();
@@ -92,6 +92,7 @@ int Game::run()
 		ClearDrawScreen();	// 画面をクリア
 		draw();				// 画面を描画
 		ScreenFlip();		// 裏画面の内容を表画面に反映
+		fps_.wait();
 	}
 
 	//------------------------------------------------------------

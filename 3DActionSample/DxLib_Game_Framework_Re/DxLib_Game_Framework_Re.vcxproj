@@ -162,6 +162,7 @@
     <ClCompile Include="src\Field\Field.cpp" />
     <ClCompile Include="src\Field\Skybox.cpp" />
     <ClCompile Include="src\Game\ActionSample.cpp" />
+    <ClCompile Include="src\Game\fpsController.cpp" />
     <ClCompile Include="src\Game\Game.cpp" />
     <ClCompile Include="src\Game\MyGame.cpp" />
     <ClCompile Include="src\Graphic\AnimatedMesh.cpp" />
@@ -235,6 +236,7 @@
     <ClInclude Include="src\Field\FieldPtr.h" />
     <ClInclude Include="src\Field\Skybox.h" />
     <ClInclude Include="src\Game\ActionSample.h" />
+    <ClInclude Include="src\Game\fpsController.h" />
     <ClInclude Include="src\Game\Game.h" />
     <ClInclude Include="src\Game\MyGame.h" />
     <ClInclude Include="src\Game\WindowSetting.h" />

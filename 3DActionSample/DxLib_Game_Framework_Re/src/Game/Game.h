@@ -4,6 +4,8 @@
 // main関数をエントリーポイントにする
 #pragma comment(linker, "/entry:mainCRTStartup")
 
+#include "fpsController.h"
+
 // クラス：ゲームアプリケーション
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
 class Game
@@ -39,6 +41,9 @@ private:
 	int window_height_{ 480 };
 	// フルスクリーンモード
 	bool is_full_screen_{ false };
+
+	// fps制御
+	fpsController fps_;
 };
 
 #endif // !GAME_H_
