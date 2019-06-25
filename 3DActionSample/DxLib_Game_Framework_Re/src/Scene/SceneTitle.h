@@ -44,7 +44,7 @@ private:
 	float show_start_timer_{ 0.0f };	// タイトル画面起動タイマー
 	float end_timer_{ 0.0f };			// シーン終了タイマー
 
-	int fade_counter_{ 0 };				// フェイド効果用カウンター
+	int fade_counter_{ 0 };				// フェードイン/フェードアウト用カウンター
 };
 
 #endif // !SCENE_TITLE_H_

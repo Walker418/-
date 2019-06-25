@@ -32,7 +32,7 @@ void GamePlayManager::update(float delta_time)
 {
 	update_phase(delta_time);	// プレイ状況を更新
 
-	// フェイド効果用カウンターの値を制限
+	// フェイドイン/フェイドアウト用カウンターの値を制限
 	fade_counter_ = (int)MathHelper::clamp((float)fade_counter_, 0.0f, 255.0f);
 }
 

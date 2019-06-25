@@ -35,7 +35,7 @@ void SceneTitle::update(float delta_time)
 {
 	world_.update(delta_time);
 
-	// フェイド効果用カウンターの値を制限
+	// フェイドイン/フェイドアウト用カウンターの値を制限
 	fade_counter_ = (int)MathHelper::clamp((float)fade_counter_, 0.0f, 255.0f);
 
 	// フェードイン完了まで、操作を受け付けない
@@ -93,7 +93,7 @@ void SceneTitle::update(float delta_time)
 // 描画
 void SceneTitle::draw() const
 {
-	// 描画輝度をセットし、フェイドイン/フェイドアウト演出をする
+	// 描画輝度をセットし、フェードイン/フェードアウト演出をする
 	SetDrawBright(fade_counter_, fade_counter_, fade_counter_);
 
 	world_.draw();	// 背景を描画
