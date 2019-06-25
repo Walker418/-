@@ -29,7 +29,6 @@ public:
 
 private:
 	bool			is_loaded_{ false };			// 読み込む判定
-	// float	end_timer_{ 0.0f };		
 	CountdownTimer	end_timer_{ SceneChangeTime };	// 終了タイマー
 	bool			is_end_{ false };				// 終了フラグ
 };

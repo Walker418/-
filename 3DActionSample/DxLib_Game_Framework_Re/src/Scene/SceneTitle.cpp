@@ -8,19 +8,19 @@
 #include "../Graphic/Light.h"
 #include "../Actor/Player/PlayerInput.h"
 #include "../Graphic/Graphics2D.h"
+#include "../Math/MathHelper.h"
 
 // 開始
 void SceneTitle::start()
 {
-	// 終了フラグをFalseにする
-	is_end_ = false;
-	// ワールドを初期化
-	world_.initialize();
-	// スタートボタンの状況を初期化
-	is_started_ = false;
-	show_start_ = true;
+	is_end_ = false;			// 終了フラグをFalseにする
+	world_.initialize();		// ワールドを初期化
+
+	is_started_ = false;		// スタートボタンの状況を初期化
+	show_start_ = false;
 	show_start_timer_ = 0.0f;
 	end_timer_ = 0.0f;
+	fade_counter_ = 0;
 
 	// フィールドを追加
 	world_.add_field(new_field<Field>(MESH_STAGE_CASTLE, MESH_SKYBOX));
@@ -35,16 +35,29 @@ void SceneTitle::update(float delta_time)
 {
 	world_.update(delta_time);
 
+	// フェイド効果用カウンターの値を制限
+	fade_counter_ = (int)MathHelper::clamp((float)fade_counter_, 0.0f, 255.0f);
+
+	// フェードイン完了まで、操作を受け付けない
+	if (fade_counter_ < 255 && !is_started_)
+	{
+		fade_counter_ += 2;
+		return;
+	}
+
 	// ゲーム開始
 	if (PlayerInput::game_start())
 	{
 		is_started_ = true;
 	}
 
-	// スペースキーが押されてから3秒後、ゲームプレイシーンに移行
+	// スタートボタンが押されたら、画面が暗転し、プレイシーンに移行する
 	if (is_started_)
 	{
-		if (end_timer_ >= 180.0f)
+		// フェードアウト
+		if (fade_counter_ > 0) fade_counter_ -= 2;
+
+		if (end_timer_ >= 180.0f && fade_counter_ <= 0)
 		{
 			is_end_ = true;
 		}
@@ -80,6 +93,9 @@ void SceneTitle::update(float delta_time)
 // 描画
 void SceneTitle::draw() const
 {
+	// 描画輝度をセットし、フェイドイン/フェイドアウト演出をする
+	SetDrawBright(fade_counter_, fade_counter_, fade_counter_);
+
 	world_.draw();	// 背景を描画
 
 	draw_logo();	// タイトルロゴを描画

@@ -7,6 +7,7 @@
 #include "../../ID/EventMessage.h"
 #include "../../Graphic/Graphics2D.h"
 #include "../../ID/SourceID.h"
+#include "../../Math/MathHelper.h"
 
 // クラス：ゲームプレイシーン管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -19,7 +20,8 @@ GamePlayManager::GamePlayManager(IWorld* world) :
 	boss_defeated_{ false },
 	phase2_end_{ false },
 	player_dead_{ false },
-	game_end_{ false }
+	game_end_{ false },
+	fade_counter_{ 0 }
 {
 	// ゲーム開始処理を行う
 	game_start();
@@ -29,11 +31,17 @@ GamePlayManager::GamePlayManager(IWorld* world) :
 void GamePlayManager::update(float delta_time)
 {
 	update_phase(delta_time);	// プレイ状況を更新
+
+	// フェイド効果用カウンターの値を制限
+	fade_counter_ = (int)MathHelper::clamp((float)fade_counter_, 0.0f, 255.0f);
 }
 
 // 描画
 void GamePlayManager::draw() const
 {
+	// 描画輝度をセットし、フェイドイン/フェイドアウト演出をする
+	SetDrawBright(fade_counter_, fade_counter_, fade_counter_);
+
 	// プレイヤーキャラの体力を表示
 	draw_HP_gauge(Vector2(20.0f, 15.0f));
 
@@ -114,7 +122,10 @@ void GamePlayManager::change_phase()
 // 第1段階の処理
 void GamePlayManager::phase1(float delta_time)
 {
-	// 3秒後、ボス戦に移行
+	// ゲーム開始時のフェードイン
+	if (fade_counter_ < 255) fade_counter_ += 4;
+
+	// 雑魚敵が全部倒れたの3秒後、ボス戦に移行
 	if (phase1_end())
 	{
 		if (phase_change_timer_.is_time_out())
@@ -159,7 +170,7 @@ void GamePlayManager::draw_HP_gauge(Vector2 position) const
 
 		for (int i = 0; i < player_hp; ++i)
 		{
-			
+
 			Graphics2D::draw(TEXTURE_HP, Vector2(draw_pos.x + 4 * i, draw_pos.y));
 		}
 	}

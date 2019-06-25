@@ -72,6 +72,8 @@ private:
 	bool			player_dead_{ false };
 	// ゲーム終了フラグ
 	bool			game_end_{ false };
+
+	int fade_counter_{ 0 };		// フェイド効果用カウンター
 };
 
 #endif // !GAME_PLAY_MANAGER_H_

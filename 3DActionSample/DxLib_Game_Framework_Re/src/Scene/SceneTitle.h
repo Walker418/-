@@ -40,9 +40,11 @@ private:
 	bool	is_end_{ false };
 
 	bool is_started_{ false };			// スタートボタンが押されたか
-	bool show_start_{ true };			// スタートメッセージを表示するか
+	bool show_start_{ false };			// スタートメッセージを表示するか
 	float show_start_timer_{ 0.0f };	// タイトル画面起動タイマー
 	float end_timer_{ 0.0f };			// シーン終了タイマー
+
+	int fade_counter_{ 0 };				// フェイド効果用カウンター
 };
 
 #endif // !SCENE_TITLE_H_
