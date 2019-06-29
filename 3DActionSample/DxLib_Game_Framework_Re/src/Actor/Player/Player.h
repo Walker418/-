@@ -165,6 +165,8 @@ private:
 	bool			jump_attack_started_{ false };
 	// 現在の体力
 	int				current_hp_;
+	// プレイヤーは倒れたか（死亡=消滅とは別判定）
+	bool			is_defeated_{ false };
 };
 
 #endif // !PLAYER_H_

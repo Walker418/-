@@ -22,6 +22,13 @@ enum
 	TEXTURE_P1MESSAGE,		// フェーズ1目標メッセージ
 	TEXTURE_P2MESSAGE,		// フェーズ2目標メッセージ
 
+	// BGM
+	BGM_TITLE,				// タイトル画面BGM
+	BGM_STAGE,				// ステージBGM
+
+	// SE
+
+
 	// シェーダー
 	SHADER_VERTEX_SHADER,			// 頂点シェーダー
 	SHADER_PIXEL_SHADER,			// ピクセルシェーダー

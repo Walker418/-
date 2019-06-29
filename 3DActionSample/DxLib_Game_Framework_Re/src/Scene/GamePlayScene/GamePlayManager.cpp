@@ -8,6 +8,7 @@
 #include "../../Graphic/Graphics2D.h"
 #include "../../ID/SourceID.h"
 #include "../../Math/MathHelper.h"
+#include "../../Sound/Sound.h"
 
 // クラス：ゲームプレイシーン管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -88,12 +89,15 @@ void GamePlayManager::update_phase(float delta_time)
 	// プレイヤーが死亡すると、しばらくしてゲームオーバーメッセージを送る（ゲームオーバー処理を行う）
 	if (player_dead_)
 	{
-		gameover_scene_timer_.update(delta_time);
-
+		// BGM再生中止
+		Sound::stop_bgm();
+		// ゲームオーバーメッセージを送る（ゲームオーバー処理を行う）
 		if (gameover_scene_timer_.is_time_out())
 		{
 			world_->send_message(EventMessage::GameOver);
 		}
+
+		gameover_scene_timer_.update(delta_time);
 	}
 }
 
@@ -109,6 +113,9 @@ void GamePlayManager::game_start()
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 60.0f, 0.0f, -35.0f }, 160.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ -60.0f, 0.0f, -35.0f }, 200.0f));
+
+	// BGM再生開始
+	Sound::play_bgm(BGM_STAGE);
 }
 
 // フェーズ移行
@@ -143,6 +150,8 @@ void GamePlayManager::phase2(float delta_time)
 {
 	if (boss_defeated_)
 	{
+		// BGM再生中止
+		Sound::stop_bgm();
 		if (gameclear_scene_timer_.is_time_out())
 		{
 			// ゲームクリアメッセージを送る（ゲームクリア処理を行う）

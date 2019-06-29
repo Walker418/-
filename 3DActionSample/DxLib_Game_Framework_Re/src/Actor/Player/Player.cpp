@@ -68,7 +68,8 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	is_ground_{ false },
 	is_guard_{ false },
 	attack_on_{ false },
-	jump_attack_started_{ false }
+	jump_attack_started_{ false },
+	is_defeated_{ false }
 {
 	rotation_ = Matrix::CreateRotationY(angle);
 	velocity_ = Vector3::Zero;
@@ -697,10 +698,16 @@ void Player::guard_end(float delta_time)
 // 死亡状態での更新
 void Player::death(float delta_time)
 {
+	// プレイヤー死亡メッセージを送る（1回だけ）
+	if (!is_defeated_)
+	{
+		world_->send_message(EventMessage::PlayerDead);
+		is_defeated_ = true;
+	}
+
 	// モーションが終了すると、死亡判定を有効に
 	if (state_timer_.get_time() >= mesh_.motion_end_time() * 2.0f)
 	{
-		world_->send_message(EventMessage::PlayerDead);
 		die();
 	}
 }

@@ -69,6 +69,7 @@ int Game::run()
 	Skybox::initialize();
 	Billboard::initialize();
 	ShaderManager::initialize();
+	Sound::initialize();
 
 	//------------------------------------------------------------
 

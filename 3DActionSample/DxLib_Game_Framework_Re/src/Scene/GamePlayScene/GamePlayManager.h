@@ -19,7 +19,7 @@ class GamePlayManager : public Actor
 {
 private:
 	const float PhaseChangeTime{ 180.0f };				// 第1段階終了後、第2段階に移行するまでのフレーム数
-	const float SceneChangeTime_GameOver{ 60.0f };		// ゲームオーバー後、次のシーンに移行するまでのフレーム数
+	const float SceneChangeTime_GameOver{ 120.0f };		// ゲームオーバー後、次のシーンに移行するまでのフレーム数
 	const float SceneChangeTime_GameClear{ 180.0f };	// ゲームクリア後、次のシーンに移行するまでのフレーム数
 
 	const int	EnemyPopNo{ 3 };						// 生成する雑魚敵の数

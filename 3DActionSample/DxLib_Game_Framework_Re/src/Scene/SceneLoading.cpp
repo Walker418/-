@@ -47,6 +47,11 @@ void SceneLoading::update(float delta_time)
 		Graphics2D::load(TEXTURE_HP, "res/assets/texture/HP.png");									// 体力表示
 		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/texture/P1message.png");					// フェーズ1目標メッセージ
 		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
+		// BGM
+		Sound::load_bgm(BGM_TITLE, "res/assets/BGM/title.wav");										// タイトル画面BGM
+		Sound::load_bgm(BGM_STAGE, "res/assets/BGM/stage.wav");										// ステージBGM
+		// SE
+
 		// シェーダー
 		ShaderManager::load_ps((int)ShaderID::PS_BrightPass, "res/shader/BrightPass.cso");			// 輝度抽出シェーダー
 		ShaderManager::load_ps((int)ShaderID::PS_GaussianBlurH, "res/shader/GaussianBlurH.cso");	// 水平方向ブラーシェーダー

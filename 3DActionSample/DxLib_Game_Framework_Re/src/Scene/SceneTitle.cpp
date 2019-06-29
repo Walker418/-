@@ -9,6 +9,7 @@
 #include "../Actor/Player/PlayerInput.h"
 #include "../Graphic/Graphics2D.h"
 #include "../Math/MathHelper.h"
+#include "../Sound/Sound.h"
 
 // 開始
 void SceneTitle::start()
@@ -28,6 +29,9 @@ void SceneTitle::start()
 	world_.add_camera(new_actor<TitleCamera>(&world_, Vector3::Zero));
 	// ライトを追加
 	world_.add_light(new_actor<Light>(&world_, Vector3{ 0.0f, 30.0f, -20.0f }));
+
+	// BGM再生開始
+	Sound::play_bgm(BGM_TITLE);
 }
 
 // 更新
@@ -118,7 +122,8 @@ Scene SceneTitle::next() const
 // 終了
 void SceneTitle::end()
 {
-
+	// BGM再生終了
+	Sound::stop_bgm();
 }
 
 // メッセージ処理

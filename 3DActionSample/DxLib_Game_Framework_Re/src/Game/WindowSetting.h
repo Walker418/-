@@ -3,9 +3,9 @@
 
 // ウィンドウの設定
 namespace WindowSetting
-{	
-	const int WindowWidth{ 1024 };	// ウィンドウの幅
-	const int WindowHeight{ 768 };	// ウィンドウの高さ
+{
+	const int WindowWidth{ 1024 };						// ウィンドウの幅
+	const int WindowHeight{ 768 };						// ウィンドウの高さ
 };
 
 #endif // !WINDOW_SETTING_H_
