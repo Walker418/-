@@ -2,6 +2,8 @@
 #include "../../ID/EventMessage.h"
 #include "../Damage.h"
 #include "../../World/IWorld.h"
+#include "../../Sound/Sound.h"
+#include "../../ID/SourceID.h"
 
 // クラス：プレイヤーの攻撃の当たり判定
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -47,6 +49,8 @@ void PlayerAttack::draw() const
 // 衝突リアクション
 void PlayerAttack::react(Actor& other)
 {
+	// SEを再生
+	Sound::play_se(SE_PLAYER_ATK_HIT);
 	// 敵へのダメージ構造体を生成
 	Damage damage{ position_, power_, impact_ };
 	// 敵へダメージメッセージを送る

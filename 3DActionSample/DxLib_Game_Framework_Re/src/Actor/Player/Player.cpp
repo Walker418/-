@@ -11,6 +11,7 @@
 #include "../AttackParameter.h"
 #include "../Damage.h"
 #include "PlayerInput.h"
+#include "../../Sound/Sound.h"
 
 // クラス：プレイヤー
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -158,12 +159,13 @@ void Player::handle_message(EventMessage message, void* param)
 		if (is_guard_ && can_block(atk_pos))
 		{
 			// 攻撃判定の位置がプレイヤーより前の場合、ガードが成立する
+			Sound::play_se(SE_BLOCK);	// SEを鳴らす
 			change_state(PlayerState::Blocking, MOTION_GUARD_BLOCK);
 			return;
 		}
 
 		// ガードが成立しない場合、ダメージを計算する
-		current_hp_ -= damage->power;						// ダメージ計算
+		current_hp_ -= damage->power;	// ダメージ計算
 		// スーパーアーマー状態でなければ、怯み状態へ移行
 		if (!is_super_armor())
 		{
@@ -362,6 +364,7 @@ void Player::slash1(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 
 		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
 	}
@@ -409,6 +412,7 @@ void Player::slash2(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 
 		mesh_.reset_speed();		// 以降のモーション速度を少し遅くにする
 	}
@@ -469,6 +473,7 @@ void Player::slash3(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 	}
 
 	// モーション終了の前に、回避への移行
@@ -513,6 +518,7 @@ void Player::jump_attack1(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -558,6 +564,7 @@ void Player::jump_attack2(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 
 		mesh_.reset_speed();		// 以降のモーション速度を少し遅くにする
 	}
@@ -658,6 +665,7 @@ void Player::guard_attack(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
+		Sound::play_se(SE_SLASH);	// SEを再生
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行

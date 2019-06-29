@@ -6,6 +6,8 @@
 #include "../../ActorGroup.h"
 #include "../EnemyAttack.h"
 #include "../../Damage.h"
+#include "../../../Sound/Sound.h"
+#include "../../../ID/SourceID.h"
 
 // クラス：グール
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -277,10 +279,11 @@ void Ghoul::attack(float delta_time)
 	{
 		attack_on_ = true;
 
-		float distance = 8.0f;		// 攻撃判定の発生距離（前方からどれぐらい）
-		float height = 12.5f;		// 攻撃判定の高さ
+		float distance = 8.0f;					// 攻撃判定の発生距離（前方からどれぐらい）
+		float height = 12.5f;					// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, Power));
+		Sound::play_se(SE_ENEMY_ATK_LIGHT);		// SEを再生
 		interval_ = state_timer_ + 40.0f;
 	}
 

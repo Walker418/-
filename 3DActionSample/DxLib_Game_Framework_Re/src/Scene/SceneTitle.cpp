@@ -50,8 +50,9 @@ void SceneTitle::update(float delta_time)
 	}
 
 	// ƒQ[ƒ€ŠJn
-	if (PlayerInput::game_start())
+	if (PlayerInput::game_start() && !is_started_)
 	{
+		Sound::play_se(SE_START);	// SE‚ğ–Â‚ç‚·
 		is_started_ = true;
 	}
 

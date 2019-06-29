@@ -50,8 +50,16 @@ void SceneLoading::update(float delta_time)
 		// BGM
 		Sound::load_bgm(BGM_TITLE, "res/assets/BGM/title.wav");										// タイトル画面BGM
 		Sound::load_bgm(BGM_STAGE, "res/assets/BGM/stage.wav");										// ステージBGM
+		Sound::load_bgm(BGM_BOSS, "res/assets/BGM/boss.wav");										// ボス戦BGM
 		// SE
-
+		Sound::load_se(SE_START, "res/assets/SE/start.wav");										// ゲームスタートSE
+		Sound::load_se(SE_SLASH, "res/assets/SE/slash.wav");										// プレイヤー攻撃
+		Sound::load_se(SE_BLOCK, "res/assets/SE/block.wav");										// プレイヤー防御
+		Sound::load_se(SE_PLAYER_ATK_HIT, "res/assets/SE/player_atk_hit.wav");						// プレイヤー攻撃命中
+		Sound::load_se(SE_ENEMY_ATK_LIGHT, "res/assets/SE/enemy_atk_light.wav");					// 敵の攻撃（小）
+		Sound::load_se(SE_ENEMY_ATK_HEAVY, "res/assets/SE/enemy_atk_heavy.wav");					// 敵の攻撃（大）
+		Sound::load_se(SE_BOSS_TACKLE, "res/assets/SE/boss_tackle.wav");							// ボス敵のタックル
+		Sound::load_se(SE_BOSS_ROAR, "res/assets/SE/boss_roar.mp3");								// ボス敵の咆哮
 		// シェーダー
 		ShaderManager::load_ps((int)ShaderID::PS_BrightPass, "res/shader/BrightPass.cso");			// 輝度抽出シェーダー
 		ShaderManager::load_ps((int)ShaderID::PS_GaussianBlurH, "res/shader/GaussianBlurH.cso");	// 水平方向ブラーシェーダー

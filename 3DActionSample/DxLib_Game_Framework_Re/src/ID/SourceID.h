@@ -25,9 +25,17 @@ enum
 	// BGM
 	BGM_TITLE,				// タイトル画面BGM
 	BGM_STAGE,				// ステージBGM
+	BGM_BOSS,				// ボス戦BGM
 
 	// SE
-
+	SE_START,				// ゲームスタートSE
+	SE_SLASH,				// プレイヤー攻撃
+	SE_BLOCK,				// プレイヤー防御
+	SE_PLAYER_ATK_HIT,		// プレイヤー攻撃命中
+	SE_ENEMY_ATK_LIGHT,		// 敵の攻撃（小）
+	SE_ENEMY_ATK_HEAVY,		// 敵の攻撃（大）
+	SE_BOSS_TACKLE,			// ボス敵のタックル
+	SE_BOSS_ROAR,			// ボス敵の咆哮
 
 	// シェーダー
 	SHADER_VERTEX_SHADER,			// 頂点シェーダー

@@ -4,6 +4,8 @@
 #include "../../Damage.h"
 #include "../EnemyAttack.h"
 #include "../../ActorGroup.h"
+#include "../../../Sound/Sound.h"
+#include "../../../ID/SourceID.h"
 
 // クラス：敵（イノシシ）
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -28,6 +30,7 @@ DragonBoar::DragonBoar(IWorld* world, const Vector3& position, float angle, cons
 	state_timer_{ 0.0f },
 	attack_on_{ false },
 	dash_attack_on_{ false },
+	roar_started_{ false },
 	is_moving_{ false },
 	is_anger_{ false },
 	anger_timer_{ 0.0f },
@@ -47,7 +50,7 @@ void DragonBoar::update(float delta_time)
 	// 落下処理
 	velocity_ += Vector3::Down * Gravity;		// 重力加速度を計算
 	position_.y += velocity_.y * delta_time;	// y軸座標を計算
-	
+
 	intersect_ground();		// 地面との接触処理
 	intersect_wall();		// 壁との接触処理
 	clamp_position();		// 座標制限
@@ -111,6 +114,8 @@ void DragonBoar::react(Actor& other)
 		Damage damage = { position_, DashPower };
 		// プレイヤーへダメージメッセージを送る
 		other.handle_message(EventMessage::PlayerDamage, &damage);
+		// SEを再生
+		Sound::play_se(SE_BOSS_TACKLE);
 		// 攻撃判定を無効化
 		dash_attack_on_ = false;
 		return;
@@ -180,6 +185,7 @@ void DragonBoar::change_state(DragonBoarState state, int motion)
 	state_ = state;
 	state_timer_ = 0.0f;
 
+	roar_started_ = false;
 	attack_on_ = false;
 	interval_ = 0.0f;
 
@@ -209,6 +215,13 @@ void DragonBoar::idle(float delta_time)
 // 咆哮中の更新
 void DragonBoar::roar(float delta_time)
 {
+	// 1回だけ、咆哮のSEを再生
+	if (!roar_started_)
+	{
+		Sound::play_se(SE_BOSS_ROAR);
+		roar_started_ = true;
+	}
+
 	// モーション終了後、移動開始
 	if (state_timer_ >= mesh_.motion_end_time() * 2.0f)
 	{
@@ -295,6 +308,7 @@ void DragonBoar::bite(float delta_time)
 		float height = 12.5f;				// 攻撃判定の高さ
 		Vector3 attack_position = position_ + pose().Forward() * distance + Vector3(0.0f, height, 0.0f);
 		world_->add_actor(ActorGroup::EnemyAttack, new_actor<EnemyAttack>(world_, attack_position, BitePower, BiteRadius));
+		Sound::play_se(SE_ENEMY_ATK_HEAVY);	// SEを再生
 		interval_ = state_timer_ + 40.0f;	// 40フレーム後、次の行動へ移行
 	}
 

@@ -108,12 +108,10 @@ void GamePlayManager::game_start()
 	phase_change_timer_.reset();
 	gameover_scene_timer_.reset();
 	gameclear_scene_timer_.reset();
-
 	// 雑魚敵3体を生成する
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 60.0f, 0.0f, -35.0f }, 160.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ -60.0f, 0.0f, -35.0f }, 200.0f));
-
 	// BGM再生開始
 	Sound::play_bgm(BGM_STAGE);
 }
@@ -122,6 +120,7 @@ void GamePlayManager::game_start()
 void GamePlayManager::change_phase()
 {
 	// ボスを生成し、ボス戦に移行する
+	Sound::play_bgm(BGM_BOSS);	// ボス戦BGMを再生
 	world_->add_actor(ActorGroup::Enemy, new_actor<DragonBoar>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	phase_ = GamePlayPhase::Phase2;
 }
@@ -135,6 +134,8 @@ void GamePlayManager::phase1(float delta_time)
 	// 雑魚敵が全部倒れたの3秒後、ボス戦に移行
 	if (phase1_end())
 	{
+		// ステージBGM再生中止
+		Sound::stop_bgm();
 		if (phase_change_timer_.is_time_out())
 		{
 			change_phase();

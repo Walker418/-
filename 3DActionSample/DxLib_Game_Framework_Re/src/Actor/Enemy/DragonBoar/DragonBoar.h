@@ -96,6 +96,8 @@ private:
 	bool				dash_attack_on_{ false };
 	// Ÿ‚Ì–Ú“I’n
 	Vector3				next_destination_;
+	// ™ôšK‚ÌSE‚ğÄ¶‚µ‚½‚©
+	bool				roar_started_{ false };
 	// ˆÚ“®’†‚È‚Ì‚©
 	bool				is_moving_{ false };
 	// “{‚èó‘Ô‚È‚Ì‚©
