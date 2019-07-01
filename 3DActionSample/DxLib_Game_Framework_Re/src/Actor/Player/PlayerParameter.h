@@ -26,8 +26,8 @@ namespace PlayerParameter
 	const int	Wince_GuardAtk{ 1 };		// ガード攻撃の怯み値
 
 	// ヒットストップ
-	const float HitStop_Short{ 10.0f };		// 短い
-	const float HitStop_Long{ 20.0f };		// 長い
+	const float HitStop_Short{ 4.0f };		// 短い
+	const float HitStop_Long{ 8.0f };		// 長い
 
 	const float EvasionTime{ 30.0f };		// 回避状態維持フレーム数
 	const float InvincibleTime{ 12.0f };	// 無敵状態維持フレーム数
