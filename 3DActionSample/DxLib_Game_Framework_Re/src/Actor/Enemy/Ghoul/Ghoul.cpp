@@ -63,8 +63,9 @@ void Ghoul::update(float delta_time)
 	mesh_.transform(pose());
 
 	// HPが0以下になると、死亡状態に移行
-	if (current_hp_ <= 0 && state_ != GhoulState::Death)
+	if (current_hp_ <= 0)
 	{
+		if (state_ == GhoulState::Death) return;
 		change_state(GhoulState::Death, MOTION_DEATH);
 		world_->send_message(EventMessage::EnemyDead);	// 死亡メッセージを送信
 		return;
@@ -340,7 +341,7 @@ void Ghoul::next_action()
 		next_destination();			// 次の目的地を決定
 		// 移動状態は4～8秒間維持
 		const int min = 4, max = 8;		// 次の状態持続時間の最小値と最大値（秒）
-		ready_to_next_state(min, max);	
+		ready_to_next_state(min, max);
 
 		move_timer_ = 0.0f;			// 移動状態タイマーをリセット
 		is_moving_ = true;

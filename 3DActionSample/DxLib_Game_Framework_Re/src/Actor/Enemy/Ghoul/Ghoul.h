@@ -115,7 +115,7 @@ private:
 	const float		Gravity{ 0.03f };
 
 	// ‹¯‚İ‘Ï«
-	const int		ToWince{ 10 };
+	const int		ToWince{ 1 };
 	// õ“G‹——£
 	const float		Range{ 12.0f };
 	// õ“GŠp“x

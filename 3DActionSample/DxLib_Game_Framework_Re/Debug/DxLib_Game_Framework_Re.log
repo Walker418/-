@@ -1,13 +1,1 @@
-﻿  TPCamera.cpp
-  DragonBoar.cpp
-  EnemyAttack.cpp
-  Ghoul.cpp
-  Player.cpp
-  PlayerAttack.cpp
-  PlayerInput.cpp
-  Game.cpp
-  GamePlayManager.cpp
-  SceneGamePlay.cpp
-  SceneTitle.cpp
-  コードを生成中...
-  DxLib_Game_Framework_Re.vcxproj -> D:\ProgramWorks\GameDevelopment\C++\DxLib\3DActionSample\3DActionSample\DxLib_Game_Framework_Re\Debug\DxLib_Game_Framework_Re.exe
+﻿  DxLib_Game_Framework_Re.vcxproj -> D:\ProgramWorks\GameDevelopment\C++\DxLib\3DActionSample\3DActionSample\DxLib_Game_Framework_Re\Debug\DxLib_Game_Framework_Re.exe
