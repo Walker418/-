@@ -9,6 +9,7 @@
 #include "../../ID/SourceID.h"
 #include "../../Math/MathHelper.h"
 #include "../../Sound/Sound.h"
+#include "../../Actor/Player/PlayerInput.h"
 
 // クラス：ゲームプレイシーン管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
@@ -131,19 +132,21 @@ void GamePlayManager::phase1(float delta_time)
 	// ゲーム開始時のフェードイン
 	if (fade_counter_ < 255) fade_counter_ += 4;
 
-	// 雑魚敵が全部倒れたの3秒後、ボス戦に移行
 	if (phase1_end())
 	{
-		// ステージBGM再生中止
-		Sound::stop_bgm();
+		Sound::stop_bgm();		// ステージBGM再生中止
 		if (phase_change_timer_.is_time_out())
 		{
-			change_phase();
+			change_phase();		// ボス戦に移行
 			return;
 		}
 
 		phase_change_timer_.update(delta_time);
 	}
+
+	// Tキーが押されたら、雑魚戦をスキップしてボス戦に移行
+	if (PlayerInput::skip_phase1())
+		skip_phase1();
 }
 
 // 第2段階の処理
@@ -208,4 +211,11 @@ bool GamePlayManager::phase1_end() const
 {
 	// 雑魚敵が全部倒されたら、Trueを返す
 	return enemy_defeated_ >= EnemyPopNo;
+}
+
+// 第1段階のスキップ
+void GamePlayManager::skip_phase1()
+{
+	// フィールド上の全ての雑魚敵を消去
+	world_->send_message(EventMessage::EnemyDestroy);
 }

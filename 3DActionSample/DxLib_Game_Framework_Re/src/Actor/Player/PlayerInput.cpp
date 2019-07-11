@@ -129,6 +129,12 @@ bool PlayerInput::camera_turn_down()
 	return (GamePad::getInstance().GetCurrent_R_Stick().y < 0.0f || Keyboard::getInstance().KeyStateDown(Keycode::Down));
 }
 
+// 雑魚戦スキップ
+bool PlayerInput::skip_phase1()
+{
+	return (Keyboard::getInstance().KeyTriggerDown(Keycode::T));
+}
+
 // ゲーム終了
 bool PlayerInput::game_end()
 {

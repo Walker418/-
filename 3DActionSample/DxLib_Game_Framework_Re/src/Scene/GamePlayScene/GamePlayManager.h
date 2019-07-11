@@ -52,6 +52,8 @@ private:
 
 	// 第1段階は終了しているか
 	bool phase1_end() const;
+	// 第1段階のスキップ
+	void skip_phase1();
 
 private:
 	// プレイ状況

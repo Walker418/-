@@ -15,6 +15,7 @@ enum class EventMessage
 	GameOver,			// ゲームオーバー
 	HitStop,			// ヒットストップ
 	Camera_Vibration,	// カメラ振動
+	EnemyDestroy,		// 全敵キャラを消去
 };
 
 #endif // !EVENT_MESSAGE_H_

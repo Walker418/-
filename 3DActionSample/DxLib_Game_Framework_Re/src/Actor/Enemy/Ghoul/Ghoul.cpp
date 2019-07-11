@@ -117,6 +117,13 @@ void Ghoul::handle_message(EventMessage message, void* param)
 		if (state_ != GhoulState::Wince)
 			current_wince_ += damage->impact;
 	}
+
+	// 即死メッセージを受ける
+	if (message == EventMessage::EnemyDestroy)
+	{
+		if (state_ != GhoulState::Death)
+			current_hp_ = 0;
+	}
 }
 
 // 状態の更新

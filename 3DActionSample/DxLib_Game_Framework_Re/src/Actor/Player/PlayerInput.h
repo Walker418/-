@@ -48,6 +48,8 @@ public:
 	// カメラ下回転
 	static bool camera_turn_down();
 
+	// 雑魚戦スキップ
+	static bool skip_phase1();
 	// ゲーム終了
 	static bool game_end();
 };
