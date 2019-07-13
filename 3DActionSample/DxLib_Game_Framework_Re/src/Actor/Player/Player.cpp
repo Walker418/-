@@ -80,6 +80,7 @@ Player::Player(IWorld* world, const Vector3& position, float angle, const IBodyP
 	invincible_timer_.shut();
 	evasion_timer_.shut();
 	hit_stop_timer_.shut();
+	recovery_timer_.reset();
 }
 
 // 更新
@@ -99,6 +100,9 @@ void Player::update(float delta_time)
 	hit_stop_timer_.update(delta_time);
 	// ヒットストップしていれば、以降の更新はしない
 	if (is_hit_stop()) return;
+
+	// 自動回復処理
+	recovery(delta_time);
 
 	// 落下処理
 	velocity_ += Vector3::Down * PlayerParameter::Gravity;	// 重力加速度を計算
@@ -150,6 +154,8 @@ void Player::handle_message(EventMessage message, void* param)
 	{
 		// カメラを振動させる
 		world_->send_message(EventMessage::Camera_Vibration);
+		// 回復間隔をリセット
+		recovery_timer_.reset();
 
 		// メッセージから敵の攻撃を取得
 		Damage* damage = (Damage*)param;
@@ -915,6 +921,26 @@ void Player::ready_for_evasion()
 void Player::reset_hit_stop(float time)
 {
 	hit_stop_timer_.reset_time(time);
+}
+
+// 自動回復
+void Player::recovery(float delta_time)
+{
+	// 体力満タン時は処理しない
+	if (current_hp_ >= PlayerParameter::HP)	return;
+	// 怯み中は処理しない
+	if (state_ == PlayerState::Damage)	return;
+
+	// 一定時間ごとに体力が回復する
+	if (recovery_timer_.is_time_out())
+	{
+		current_hp_ += PlayerParameter::RecoveryAmount;
+		current_hp_ = (int)MathHelper::clamp((float)current_hp_, 0.0f, (float)PlayerParameter::HP);
+		recovery_timer_.reset();
+	}
+
+	// 回復タイマーを更新
+	recovery_timer_.update(delta_time);
 }
 
 // ガードは成立するか

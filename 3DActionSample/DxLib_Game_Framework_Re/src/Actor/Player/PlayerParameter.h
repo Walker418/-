@@ -32,6 +32,10 @@ namespace PlayerParameter
 	const float EvasionTime{ 30.0f };		// 回避状態維持フレーム数
 	const float InvincibleTime{ 12.0f };	// 無敵状態維持フレーム数
 	const float EvasionSpeed{ 1.2f };		// 回避時の移動速度
+
+	// 自動回復
+	const int RecoveryAmount{ 5 };			// 回復量
+	const int RecoveryInterval{ 8 };		// 回復間隔（秒）
 };
 
 #endif // !PLAYER_PARAMETER_H_

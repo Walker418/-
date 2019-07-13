@@ -131,6 +131,9 @@ private:
 	// ヒットストップタイマーのリセット
 	void reset_hit_stop(float time);
 
+	// 自動回復
+	void recovery(float delta_time);
+
 	// ガードは成立するか
 	bool can_block(Vector3 atk_pos) const;
 	// 無敵時間内であるか
@@ -155,6 +158,8 @@ private:
 	CountdownTimer	evasion_timer_{ PlayerParameter::EvasionTime };
 	// ヒットストップタイマー
 	CountdownTimer	hit_stop_timer_{ 0.0f };
+	// 自動回復タイマー
+	CountdownTimer	recovery_timer_{ PlayerParameter::RecoveryInterval * 60.0f };
 	// 接地しているか
 	bool			is_ground_{ false };
 	// ガードしているか
