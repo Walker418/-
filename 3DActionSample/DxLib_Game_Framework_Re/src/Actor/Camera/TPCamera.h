@@ -48,7 +48,7 @@ private:
 	void normal(float delta_time);
 	// カメラリセット中の更新
 	void reset(float delta_time);
-	// 移動処理
+	// プレイヤーを追従して移動
 	void move();
 	// 回転処理
 	void rotate(float delta_time);
@@ -64,10 +64,6 @@ private:
 
 	// プレイヤーの参照の取得
 	ActorPtr get_player();
-	// 注視点への角度を取得（符号付き）
-	float get_angle_to_target(Vector3 target) const;
-	// 注視点への角度を取得（符号無し）
-	float get_unsigned_angle_to_target(Vector3 target) const;
 
 private:
 	TPCameraState	state_{ TPCameraState::Normal };		// カメラの状態
@@ -80,8 +76,6 @@ private:
 	float			min_pos_y_{ 0.0f };						// 振動時のy軸最小座標
 	float			max_pos_y_{ 0.0f };						// 振動時のy軸最大座標
 	Random			rand_;									// 乱数生成器
-
-	Vector3			reset_target_;							// カメラリセット時の注視点位置
 };
 
 #endif // !T_P_CAMERA_H_
