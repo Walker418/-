@@ -47,6 +47,8 @@ public:
 	static bool camera_turn_up();
 	// カメラ下回転
 	static bool camera_turn_down();
+	// カメラリセット
+	static bool camera_reset();
 
 	// 雑魚戦スキップ
 	static bool skip_phase1();

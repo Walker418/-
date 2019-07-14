@@ -36,18 +36,22 @@ void TPCamera::handle_message(EventMessage message, void * param)
 // 更新
 void TPCamera::update(float delta_time)
 {
-	// プレイヤーを検索し、その位置を取得する
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-	if (!player) return;	// プレイヤーが存在しない場合、何もしない
+	// プレイヤーが存在しない場合、何もしない
+	if (get_player() == nullptr) return;
 
 	// カメラがプレイヤーに追従する
-	target_ = player->position();
+	target_ = get_player()->position();
 	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + target_;
 
 	move();							// 移動
-	rotate(delta_time);				// 回転
 	camera_vibration_V(delta_time);	// 振動
 	intersect_wall();				// 壁との接触処理
+
+	// 状態に応じて更新
+	update_state(delta_time);
+
+	// 正規化
+	rotation_ = Matrix::NormalizeRotationMatrix(rotation_);
 }
 
 // 描画
@@ -58,19 +62,66 @@ void TPCamera::draw() const
 	float width = WindowSetting::WindowWidth;
 	float height = WindowSetting::WindowHeight;
 	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, width / height, 0.3f, 1000.0f));
+
+	DrawFormatString(0, 200, GetColor(255, 255, 255), "プレイヤー向き角度： %f", get_unsigned_angle_to_target(target_));
 }
 
 // 状態の更新
 void TPCamera::update_state(float delta_time)
 {
+	switch (state_)
+	{
+	case TPCameraState::Normal:
+		normal(delta_time);
+		break;
+	case TPCameraState::Reset:
+		reset(delta_time);
+		break;
+	default:
+		break;
+	}
+}
 
+// 通常状態での更新
+void TPCamera::normal(float delta_time)
+{
+	rotate(delta_time);				// 回転
+	/*
+	// カメラリセット
+	if (PlayerInput::camera_reset())
+	{
+		start_reset();
+	}
+	*/
+}
+
+// カメラリセット中の更新
+void TPCamera::reset(float delta_time)
+{
+	Vector3 to_pos = position_ + reset_target_;
+	float angle_to_target = get_angle_to_target(to_pos);
+	const float AngleToRotate = 0.5f;
+
+	if (angle_to_target > AngleToRotate)
+	{
+
+	}
+	else if (angle_to_target < -AngleToRotate)
+	{
+
+	}
+
+	if (get_unsigned_angle_to_target(to_pos) <= AngleToRotate)
+	{
+		state_ = TPCameraState::Normal;
+	}
 }
 
 // 移動処理
 void TPCamera::move()
 {
 	// カメラの基本座標と回転角度を設定
-	auto position = Vector3{ 0.0f, 0.0f, CameraDistance } *(Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));
+	auto position = Vector3{ 0.0f, 0.0f, CameraDistance } * (Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));
 
 	// カメラの座標に高さを加算
 	position_ = position + target_ + Vector3(0.0f, CameraHeight, 0.0f);
@@ -169,4 +220,37 @@ void TPCamera::start_vibration()
 	
 	// 振動タイマーをリセット
 	vibration_timer_.reset();
+}
+
+// カメラリセット開始
+void TPCamera::start_reset()
+{
+	reset_target_ = target_;
+
+	state_ = TPCameraState::Reset;
+}
+
+// プレイヤーの参照の取得
+ActorPtr TPCamera::get_player()
+{
+	return world_->find_actor(ActorGroup::Player, "Player");
+}
+
+// 注視点への角度を取得（符号付き）
+float TPCamera::get_angle_to_target(Vector3 target) const
+{
+	Vector3 forward_cross_target = Vector3::Cross(rotation_.Forward(), target);
+
+	// 外積で目標への角度を計算し、角度の値を返す
+	float angle = (forward_cross_target.y >= 0.0f) ?
+		Vector3::Angle(position_, target) :
+		-Vector3::Angle(position_, target);
+
+	return angle;
+}
+
+// 注視点への角度を取得（符号無し）
+float TPCamera::get_unsigned_angle_to_target(Vector3 target) const
+{
+	return std::abs(get_angle_to_target(target));
 }

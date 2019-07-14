@@ -1,6 +1,7 @@
 #ifndef T_P_CAMERA_H_
 #define T_P_CAMERA_H_
 
+#include "../ActorPtr.h"
 #include "../Actor.h"
 #include "../../Math/CountdownTimer.h"
 #include "../../Math/Random.h"
@@ -19,8 +20,8 @@ class TPCamera : public Actor
 {
 private:
 	// 各種定数
-	const float YawSpeed{ 3.0f };			// カメラのy軸回転速度
-	const float PitchSpeed{ 1.5f };			// カメラのy軸回転速度
+	const float YawSpeed{ 3.0f };			// カメラの左右回転速度
+	const float PitchSpeed{ 1.5f };			// カメラの上下回転速度
 	const float CameraHeight{ 22.0f };		// 注視点の高さ
 	const float CameraDistance{ 60.0f };	// 注視点との距離
 	const float PitchMax{ 15.0f };			// 仰角最大値
@@ -58,17 +59,29 @@ private:
 	// 振動開始
 	void start_vibration();
 
-private:
-	TPCameraState	state_{ TPCameraState::Normal };	// カメラの状態
-	Vector3			target_;							// 注視点（プレイヤー）
-	float			yaw_angle_{ 0.0f };					// y軸角度
-	float			pitch_angle_{ 0.0f };				// x軸角度
+	// カメラリセット開始
+	void start_reset();
 
-	CountdownTimer	vibration_timer_{ VibrationTime };	// カメラ振動タイマー
-	float			current_power_{ VibrationPower };	// 現在の振動力
-	float			min_pos_y_{ 0.0f };					// 振動時のy軸最小座標
-	float			max_pos_y_{ 0.0f };					// 振動時のy軸最大座標
-	Random			rand_;								// 乱数生成器
+	// プレイヤーの参照の取得
+	ActorPtr get_player();
+	// 注視点への角度を取得（符号付き）
+	float get_angle_to_target(Vector3 target) const;
+	// 注視点への角度を取得（符号無し）
+	float get_unsigned_angle_to_target(Vector3 target) const;
+
+private:
+	TPCameraState	state_{ TPCameraState::Normal };		// カメラの状態
+	Vector3			target_;								// 注視点（プレイヤー）
+	float			yaw_angle_{ 0.0f };						// y軸角度
+	float			pitch_angle_{ 0.0f };					// x軸角度
+
+	CountdownTimer	vibration_timer_{ VibrationTime };		// カメラ振動タイマー
+	float			current_power_{ VibrationPower };		// 現在の振動力
+	float			min_pos_y_{ 0.0f };						// 振動時のy軸最小座標
+	float			max_pos_y_{ 0.0f };						// 振動時のy軸最大座標
+	Random			rand_;									// 乱数生成器
+
+	Vector3			reset_target_;							// カメラリセット時の注視点位置
 };
 
 #endif // !T_P_CAMERA_H_

@@ -10,9 +10,23 @@
 #include "../../Math/MathHelper.h"
 #include "../../Sound/Sound.h"
 #include "../../Actor/Player/PlayerInput.h"
+#include "../../Game/WindowSetting.h"
 
 // クラス：ゲームプレイシーン管理
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
+
+// ============================================================
+// 以下は画像スプライトの関連定数
+// ============================================================
+
+const float HPGaugePosX = 20.0f;	// 体力ゲージのx軸座標
+const float HPGaugePosY = 15.0f;	// 体力ゲージのy軸座標
+
+const int	P1MessageWidth = 250;	// 雑魚戦メッセージの幅
+const int	P2MessageWidth = 250;	// ボス戦メッセージの幅
+const float MessagePosY = 430.0f;	// ステージ目的表示のy軸座標
+
+// ============================================================
 
 // コンストラクタ
 GamePlayManager::GamePlayManager(IWorld* world) :
@@ -45,10 +59,10 @@ void GamePlayManager::draw() const
 	SetDrawBright(fade_counter_, fade_counter_, fade_counter_);
 
 	// プレイヤーキャラの体力を表示
-	draw_HP_gauge(Vector2(20.0f, 15.0f));
+	draw_HP_gauge();
 
 	// 現在の目的を表示
-	draw_message(Vector2(750.0f, 430.0f));
+	draw_message();
 }
 
 // メッセージ処理
@@ -168,9 +182,11 @@ void GamePlayManager::phase2(float delta_time)
 }
 
 // プレイヤーの体力ゲージを表示
-void GamePlayManager::draw_HP_gauge(Vector2 position) const
+void GamePlayManager::draw_HP_gauge() const
 {
-	Graphics2D::draw(TEXTURE_HPGAUGE, position);	// 体力ゲージを描画
+	Vector2 pos{ HPGaugePosX, HPGaugePosY };	// 描画する座標
+
+	Graphics2D::draw(TEXTURE_HPGAUGE, pos);		// 体力ゲージを描画
 
 	// プレイヤーの体力を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
@@ -179,7 +195,7 @@ void GamePlayManager::draw_HP_gauge(Vector2 position) const
 	// ゲージの中身を描画
 	if (player_hp > 0)
 	{
-		Vector2 draw_pos = position + Vector2(70.0f, 24.0f);	// 最初の描画位置
+		Vector2 draw_pos = pos + Vector2(70.0f, 24.0f);	// 最初の描画位置
 
 		for (int i = 0; i < player_hp; ++i)
 		{
@@ -190,16 +206,20 @@ void GamePlayManager::draw_HP_gauge(Vector2 position) const
 }
 
 // 現在の目的を表示
-void GamePlayManager::draw_message(Vector2 position) const
+void GamePlayManager::draw_message() const
 {
+	Vector2 pos;
+
 	// 進行状況に応じて、現在の目的を表示
 	switch (phase_)
 	{
 	case (GamePlayPhase::Phase1):
-		Graphics2D::draw(TEXTURE_P1MESSAGE, position);
+		pos = Vector2(WindowSetting::WindowWidth - P1MessageWidth, MessagePosY);
+		Graphics2D::draw(TEXTURE_P1MESSAGE, pos);
 		break;
 	case (GamePlayPhase::Phase2):
-		Graphics2D::draw(TEXTURE_P2MESSAGE, position);
+		pos = Vector2(WindowSetting::WindowWidth - P2MessageWidth, MessagePosY);
+		Graphics2D::draw(TEXTURE_P2MESSAGE, pos);
 		break;
 	default:
 		break;
