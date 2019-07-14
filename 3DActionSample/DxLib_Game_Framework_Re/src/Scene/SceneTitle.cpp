@@ -10,6 +10,21 @@
 #include "../Graphic/Graphics2D.h"
 #include "../Math/MathHelper.h"
 #include "../Sound/Sound.h"
+#include "../Game/WindowSetting.h"
+
+// ============================================================
+// 以下は画像スプライトの関連定数
+// ============================================================
+
+const int LogoWidth = 800;		// タイトルロゴの幅
+const int LogoPosY = 80;		// タイトルロゴのy軸座標
+
+const int StartWidth = 444;		// スタートメッセージの幅
+const int StartPosY = 490;		// スタートメッセージのy軸座標
+
+// ============================================================
+
+// タイトルロゴの
 
 // 開始
 void SceneTitle::start()
@@ -136,7 +151,11 @@ void SceneTitle::handle_message(EventMessage message, void* param)
 // タイトルロゴの描画
 void SceneTitle::draw_logo() const
 {
-	Graphics2D::draw(TEXTURE_TITLELOGO, Vector2(115.0f, 80.0f));
+	// 画面の幅を取得し、タイトルロゴの表示座標を計算して描画する
+	int window_width = WindowSetting::WindowWidth;						// 画面の幅
+	float logo_pos_X = (float)window_width / 2 - (float)LogoWidth / 2;	// タイトルロゴのx軸座標
+
+	Graphics2D::draw(TEXTURE_TITLELOGO, Vector2(logo_pos_X, (float)LogoPosY));
 }
 
 // スタートメッセージの描画
@@ -144,5 +163,9 @@ void SceneTitle::draw_start() const
 {
 	if (!show_start_) return;
 
-	Graphics2D::draw(TEXTURE_START, Vector2(290.0f, 490.0f));
+	// 画面の幅を取得し、スタートメッセージの表示座標を計算して描画する
+	int window_width = WindowSetting::WindowWidth;							// 画面の幅
+	float start_pos_X = (float)window_width / 2 - (float)StartWidth / 2;	// スタートメッセージのx軸座標
+
+	Graphics2D::draw(TEXTURE_START, Vector2(start_pos_X, (float)StartPosY));
 }

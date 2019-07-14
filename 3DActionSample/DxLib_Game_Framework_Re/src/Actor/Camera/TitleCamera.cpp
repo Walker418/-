@@ -1,6 +1,7 @@
 #include "TitleCamera.h"
 #include "../../Math/MathHelper.h"
 #include "../../Graphic/Graphics3D.h"
+#include "../../Game/WindowSetting.h"
 
 // コンストラクタ
 TitleCamera::TitleCamera(IWorld* world, const Vector3& position) :
@@ -23,7 +24,9 @@ void TitleCamera::draw() const
 {
 	// カメラを設定
 	Graphics3D::set_view_matrix(Matrix::CreateLookAt(pose().Translation(), pose().Translation() + rotation_.Forward(), rotation_.Up()));
-	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, 640.0f / 480.0f, 0.3f, 1000.0f));
+	float width = WindowSetting::WindowWidth;
+	float height = WindowSetting::WindowHeight;
+	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, width / height, 0.3f, 1000.0f));
 }
 
 // カメラの移動、回転

@@ -7,6 +7,7 @@
 #include "../Body/Line.h"
 #include "../../Field/Field.h"
 #include "../../ID/EventMessage.h"
+#include "../../Game/WindowSetting.h"
 
 TPCamera::TPCamera(IWorld* world) :
 	Actor(world, "Camera", Vector3::Zero)
@@ -15,6 +16,7 @@ TPCamera::TPCamera(IWorld* world) :
 	yaw_angle_ = 0.0f;
 	pitch_angle_ = 0.0f;
 
+	state_ = TPCameraState::Normal;
 	vibration_timer_.shut();
 	min_pos_y_ = 0.0f;
 	max_pos_y_ = 0.0f;
@@ -38,11 +40,13 @@ void TPCamera::update(float delta_time)
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
 	if (!player) return;	// プレイヤーが存在しない場合、何もしない
 
+	// カメラがプレイヤーに追従する
 	target_ = player->position();
 	position_ = Vector3(0.0f, CameraHeight, CameraDistance) + target_;
 
-	move(delta_time);				// 移動、回転処理
-	camera_vibration_V(delta_time);	// 上下振動処理
+	move();							// 移動
+	rotate(delta_time);				// 回転
+	camera_vibration_V(delta_time);	// 振動
 	intersect_wall();				// 壁との接触処理
 }
 
@@ -51,27 +55,38 @@ void TPCamera::draw() const
 {
 	// カメラを設定
 	Graphics3D::set_view_matrix(Matrix::CreateLookAt(pose().Translation(), pose().Translation() + rotation_.Forward(), rotation_.Up()));
-	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, 640.0f / 480.0f, 0.3f, 1000.0f));
+	float width = WindowSetting::WindowWidth;
+	float height = WindowSetting::WindowHeight;
+	Graphics3D::set_projection_matrix(Matrix::CreatePerspectiveFieldOfView(45.0f, width / height, 0.3f, 1000.0f));
 }
 
-// カメラの移動、回転処理
-void TPCamera::move(float delta_time)
+// 状態の更新
+void TPCamera::update_state(float delta_time)
+{
+
+}
+
+// 移動処理
+void TPCamera::move()
 {
 	// カメラの基本座標と回転角度を設定
 	auto position = Vector3{ 0.0f, 0.0f, CameraDistance } *(Matrix::CreateRotationX(pitch_angle_) * Matrix::CreateRotationY(yaw_angle_));
 
-	auto player = world_->find_actor(ActorGroup::Player, "Player");
-	if (!player) return;	// プレイヤーが存在しない場合、何もしない
-
 	// カメラの座標に高さを加算
 	position_ = position + target_ + Vector3(0.0f, CameraHeight, 0.0f);
+}
+
+// 回転処理
+void TPCamera::rotate(float delta_time)
+{
 	// カメラの注視点（プレイヤーの座標）に高さを加算
 	auto view_point = target_ + Vector3(0.0f, CameraHeight, 0.0f);
 	// カメラの回転を反映
 	rotation_ = Matrix::CreateWorld(Vector3::Zero, view_point - position_, Vector3::Up);
 
 	// ============================================================
-	// 以下は回転操作
+	// 回転操作
+	// ============================================================
 
 	// 左右回転
 	if (PlayerInput::camera_turn_left())		// 左
@@ -124,7 +139,8 @@ void TPCamera::camera_vibration_V(float delta_time)
 	if (vibration_timer_.is_time_out()) return;
 
 	// ============================================================
-	// 以下はカメラの振動処理
+	// カメラの振動処理
+	// ============================================================
 
 	auto original_pos = position_;	// カメラの本来の位置
 
