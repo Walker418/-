@@ -21,42 +21,53 @@
 
 const float FrameInOneSecond = 60.0f;		// 1秒 = 60フレーム
 
-const float Atk1_Active = 25.0f;			// 攻撃1段目の判定発生フレーム数
-const float Atk1_InputValid = 35.0f;		// 攻撃1段目の次の行動入力の開始フレーム数
+const float Atk1_Speed = 2.0f;				// 攻撃1段目のモーション速度
+const float Atk1_Active = 15.0f;			// 攻撃1段目の判定発生フレーム数
+const float Atk1_InputValid = 25.0f;		// 攻撃1段目の次の行動入力の開始フレーム数
 const float Atk1_InputInvalid = 45.0f;		// 攻撃1段目の次の行動入力の終了フレーム数
-const float Atk1_End = 60.0f;				// 攻撃1段目のモーション終了フレーム数
+const float Atk1_End = 45.0f;				// 攻撃1段目のモーション終了フレーム数
 
+const float Atk2_Speed = 1.2f;				// 攻撃2段目のモーション速度
 const float Atk2_Active = 10.0f;			// 攻撃2段目の判定発生フレーム数
 const float Atk2_InputValid = 31.0f;		// 攻撃2段目の次の行動入力の開始フレーム数
 const float Atk2_InputInvalid = 45.0f;		// 攻撃2段目の次の行動入力の終了フレーム数
 const float Atk2_End = 45.0f;				// 攻撃2段目のモーション終了フレーム数
 
-const float Atk3_MoveTime = 69.0f;			// 攻撃3段目の移動持続フレーム数
-const float Atk3_MoveSpeed = 0.22f;			// 攻撃3段目の移動速度
-const float Atk3_Active = 43.0f;			// 攻撃3段目の判定発生フレーム数
+const float Atk3_Speed = 1.65f;				// 攻撃3段目のモーション速度
+const float Atk3_MoveTime = 50.0f;			// 攻撃3段目の移動持続フレーム数
+const float Atk3_MoveSpeed = 0.24f;			// 攻撃3段目の移動速度
+const float Atk3_Active = 25.0f;			// 攻撃3段目の判定発生フレーム数
 const float Atk3_InputValid = 50.0f;		// 攻撃3段目の次の行動入力の開始フレーム数
-const float Atk3_InputInvalid = 72.0f;		// 攻撃3段目の次の行動入力の終了フレーム数
-const float Atk3_End = 72.0f;				// 攻撃3段目のモーション終了フレーム数
+const float Atk3_InputInvalid = 60.0f;		// 攻撃3段目の次の行動入力の終了フレーム数
+const float Atk3_End = 60.0f;				// 攻撃3段目のモーション終了フレーム数
 
-const float JumpAtk1_MoveTime = 45.0f;		// ジャンプ攻撃1段目の移動持続フレーム数
-const float JumpAtk1_MoveSpeed = 0.7f;		// ジャンプ攻撃1段目の移動速度
-const float JumpAtk1_Active = 45.0f;		// ジャンプ攻撃1段目の判定発生フレーム数
+const float JumpAtk1_Speed = 1.7f;			// ジャンプ攻撃1段目のモーション速度
+const float JumpAtk1_MoveTime = 40.0f;		// ジャンプ攻撃1段目の移動持続フレーム数
+const float JumpAtk1_MoveSpeed = 0.6f;		// ジャンプ攻撃1段目の移動速度
+const float JumpAtk1_Active = 38.0f;		// ジャンプ攻撃1段目の判定発生フレーム数
 const float JumpAtk1_InputValid = 50.0f;	// ジャンプ攻撃1段目の次の行動入力の開始フレーム数
 const float JumpAtk1_InputInvalid = 65.0f;	// ジャンプ攻撃1段目の次の行動入力の終了フレーム数
-const float JumpAtk1_End = 70.0f;			// ジャンプ攻撃1段目のモーション終了フレーム数
+const float JumpAtk1_End = 65.0f;			// ジャンプ攻撃1段目のモーション終了フレーム数
 
-const float JumpAtk2_Active = 10.0f;		// ジャンプ攻撃2段目の判定発生フレーム数
-const float JumpAtk2_InputValid = 25.0f;	// ジャンプ攻撃2段目の次の行動入力の開始フレーム数
+const float JumpAtk2_Speed = 1.3f;			// ジャンプ攻撃2段目のモーション速度
+const float JumpAtk2_Active = 9.0f;			// ジャンプ攻撃2段目の判定発生フレーム数
+const float JumpAtk2_InputValid = 28.0f;	// ジャンプ攻撃2段目の次の行動入力の開始フレーム数
 const float JumpAtk2_InputInvalid = 43.0f;	// ジャンプ攻撃2段目の次の行動入力の終了フレーム数
-const float JumpAtk2_End = 45.0f;			// ジャンプ攻撃2段目のモーション終了フレーム数
+const float JumpAtk2_End = 43.0f;			// ジャンプ攻撃2段目のモーション終了フレーム数
 
 const float Damage_End = 31.0f;				// 被弾モーションの終了フレーム数
 const float Block_End = 34.0f;				// ガードによるノックバックモーションの終了フレーム数
 
-const float GuardAtk_Active = 35.0f;		// ガード攻撃の判定発生フレーム数
-const float GuardAtk_InputValid = 45.0f;	// ガード攻撃の次の行動入力の開始フレーム数
-const float GuardAtk_InputInvalid = 60.0f;	// ガード攻撃の次の行動入力の終了フレーム数
-const float GuardAtk_End = 60.0f;			// ガード攻撃のモーション終了フレーム数
+const float GuardBegin_Speed = 1.6f;		// ガード開始モーションの速度
+const float GuardEnd_Speed = 1.6f;			// ガード終了モーションの速度
+
+const float GuardAtk_Speed = 2.0f;			// ガード攻撃のモーション速度
+const float GuardAtk_Active = 23.0f;		// ガード攻撃の判定発生フレーム数
+const float GuardAtk_InputValid = 30.0f;	// ガード攻撃の次の行動入力の開始フレーム数
+const float GuardAtk_InputInvalid = 43.0f;	// ガード攻撃の次の行動入力の終了フレーム数
+const float GuardAtk_End = 43.0f;			// ガード攻撃のモーション終了フレーム数
+
+const float EvasionSpeed = 1.5f;			// 回避モーションの速度
 
 // ============================================================
 
@@ -206,49 +217,63 @@ void Player::update_state(float delta_time)
 	switch (state_)
 	{
 	case PlayerState::Normal:
-		mesh_.reset_speed();
+		mesh_.reset_speed();	// モーションの速度を調節
 		normal(delta_time);
 		break;
 	case PlayerState::Slash1:
+		mesh_.change_speed(Atk1_Speed);
 		slash1(delta_time);
 		break;
 	case PlayerState::Slash2:
+		mesh_.change_speed(Atk2_Speed);
 		slash2(delta_time);
 		break;
 	case PlayerState::Slash3:
+		mesh_.change_speed(Atk3_Speed);
 		slash3(delta_time);
 		break;
 	case PlayerState::JumpAttack1:
+		mesh_.change_speed(JumpAtk1_Speed);
 		jump_attack1(delta_time);
 		break;
 	case PlayerState::JumpAttack2:
+		mesh_.change_speed(JumpAtk2_Speed);
 		jump_attack2(delta_time);
 		break;
 	case PlayerState::Damage:
+		mesh_.reset_speed();
 		damage(delta_time);
 		break;
 	case PlayerState::Guard:
+		mesh_.change_speed(GuardBegin_Speed);
 		guard(delta_time);
 		break;
 	case PlayerState::Blocking:
+		mesh_.reset_speed();
 		blocking(delta_time);
 		break;
 	case PlayerState::GuardAttack:
+		mesh_.change_speed(GuardAtk_Speed);
 		guard_attack(delta_time);
 		break;
 	case PlayerState::GuardEnd:
+		mesh_.change_speed(GuardEnd_Speed);
 		guard_end(delta_time);
 		break;
 	case PlayerState::Death:
+		mesh_.reset_speed();
 		death(delta_time);
 		break;
 	case PlayerState::ForwardEvasion:
+		mesh_.change_speed(EvasionSpeed);
 		forward_evasion(delta_time);
 		break;
 	case PlayerState::LeftEvasion:
+		mesh_.change_speed(EvasionSpeed);
 		left_evasion(delta_time);
 		break;
 	case PlayerState::RightEvasion:
+		mesh_.change_speed(EvasionSpeed);
 		right_evasion(delta_time);
 		break;
 	default:
@@ -278,7 +303,6 @@ void Player::normal(float delta_time)
 		// ジャンプ攻撃状態への移行
 		if (PlayerInput::jump_attack())
 		{
-			mesh_.change_speed(1.5f);	// 次のモーション速度を設定
 			change_state(PlayerState::JumpAttack1, MOTION_JUMP_ATTACK);
 			return;
 		}
@@ -286,7 +310,6 @@ void Player::normal(float delta_time)
 		// 攻撃状態への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.6f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 			return;
 		}
@@ -294,7 +317,6 @@ void Player::normal(float delta_time)
 		// ガード状態への移行
 		if (PlayerInput::guard())
 		{
-			mesh_.change_speed(1.5f);	// 次のモーション速度を設定
 			change_state(PlayerState::Guard, MOTION_GUARD_BEGIN);
 			return;
 		}
@@ -362,6 +384,7 @@ void Player::normal(float delta_time)
 void Player::slash1(float delta_time)
 {
 	// 攻撃判定を発生
+	
 	if (state_timer_.get_time() >= Atk1_Active && !attack_on_)
 	{
 		attack_on_ = true;	// 攻撃判定は1回しか発生しない
@@ -376,18 +399,15 @@ void Player::slash1(float delta_time)
 		AttackParameter atk_para{ atk_pos, power, wince, hit_stop };
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
-		Sound::play_se(SE_SLASH);	// SEを再生
-
-		mesh_.change_speed(1.4f);	// 以降のモーション速度を少し遅くにする
+		Sound::play_se(SE_SLASH);		// SEを再生
 	}
-
+	
 	// モーション終了の前に、次の攻撃や回避への移行
 	if (state_timer_.get_time() > Atk1_InputValid && state_timer_.get_time() <= Atk1_InputInvalid && is_ground_)
 	{
 		// 攻撃の2段階目への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.2f);
 			change_state(PlayerState::Slash2, MOTION_SLASH_2);
 			return;
 		}
@@ -398,7 +418,7 @@ void Player::slash1(float delta_time)
 			attack_to_evasion();
 		}
 	}
-
+	
 	// モーション終了後、通常状態に戻る
 	if (state_timer_.get_time() >= Atk1_End)
 	{
@@ -425,8 +445,6 @@ void Player::slash2(float delta_time)
 		// 攻撃判定を生成
 		world_->add_actor(ActorGroup::PlayerAttack, new_actor<PlayerAttack>(world_, atk_para));
 		Sound::play_se(SE_SLASH);	// SEを再生
-
-		mesh_.reset_speed();		// 以降のモーション速度を少し遅くにする
 	}
 
 	// モーション終了の前に、次の攻撃や回避への移行
@@ -435,7 +453,6 @@ void Player::slash2(float delta_time)
 		// 攻撃の3段階目への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.2f);
 			change_state(PlayerState::Slash3, MOTION_SLASH_3);
 			return;
 		}
@@ -539,7 +556,6 @@ void Player::jump_attack1(float delta_time)
 		// ジャンプ攻撃の2段階への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.2f);
 			change_state(PlayerState::JumpAttack2, MOTION_SLASH_2);
 			return;
 		}
@@ -587,7 +603,6 @@ void Player::jump_attack2(float delta_time)
 		// 通常攻撃の1段階目への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.6f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 			return;
 		}
@@ -625,7 +640,6 @@ void Player::guard(float delta_time)
 	// ガード攻撃への移行
 	if (PlayerInput::attack())
 	{
-		mesh_.change_speed(1.5f);
 		change_state(PlayerState::GuardAttack, MOTION_GUARD_SLASH);
 		return;
 	}
@@ -686,7 +700,6 @@ void Player::guard_attack(float delta_time)
 		// 通常攻撃の1段階目への移行
 		if (PlayerInput::attack())
 		{
-			mesh_.change_speed(1.6f);	// 次のモーション速度を設定
 			change_state(PlayerState::Slash1, MOTION_SLASH_1);
 			return;
 		}
@@ -916,8 +929,6 @@ void Player::clamp_position()
 // 回避準備
 void Player::ready_for_evasion()
 {
-	// モーションの再生速度を引き上げる
-	mesh_.change_speed(1.5f);
 	// 回避時間と無敵時間をリセット
 	evasion_timer_.reset();
 	invincible_timer_.reset();
