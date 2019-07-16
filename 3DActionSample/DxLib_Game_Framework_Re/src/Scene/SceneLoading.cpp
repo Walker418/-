@@ -43,10 +43,13 @@ void SceneLoading::update(float delta_time)
 		// 2D画像
 		Graphics2D::load(TEXTURE_TITLELOGO, "res/assets/texture/TitleLogo.png");					// タイトルロゴ
 		Graphics2D::load(TEXTURE_START, "res/assets/texture/Start.png");							// スタート表示
-		Graphics2D::load(TEXTURE_HPGAUGE, "res/assets/texture/HPgauge.png");						// 体力ゲージ
-		Graphics2D::load(TEXTURE_HP, "res/assets/texture/HP.png");									// 体力表示
+		Graphics2D::load(TEXTURE_PLAYER_HPGAUGE, "res/assets/texture/PlayerHPgauge.png");			// プレイヤーの体力ゲージ
+		Graphics2D::load(TEXTURE_PLAYER_HP, "res/assets/texture/PlayerHP.png");						// プレイヤーの体力表示
 		Graphics2D::load(TEXTURE_P1MESSAGE, "res/assets/texture/P1message.png");					// フェーズ1目標メッセージ
 		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
+		Graphics2D::load(TEXTURE_BOSS_HPGAUGE, "res/assets/texture/BossHPGauge.png");				// ボスの体力ゲージ
+		Graphics2D::load(TEXTURE_BOSS_HP, "res/assets/texture/BossHP.png");							// ボスの体力表示
+
 		// BGM
 		Sound::load_bgm(BGM_TITLE, "res/assets/BGM/title.wav");										// タイトル画面BGM
 		Sound::load_bgm(BGM_STAGE, "res/assets/BGM/stage.wav");										// ステージBGM

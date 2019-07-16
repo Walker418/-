@@ -94,10 +94,12 @@ void TPCamera::normal(float delta_time)
 	rotate(delta_time);		// 回転
 
 	// カメラリセット
+	/*
 	if (PlayerInput::camera_reset())
 	{
 		start_reset();
 	}
+	*/
 }
 
 // カメラリセット中の更新

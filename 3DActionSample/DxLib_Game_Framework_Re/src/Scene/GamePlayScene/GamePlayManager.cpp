@@ -19,12 +19,18 @@
 // 以下は画像スプライトの関連定数
 // ============================================================
 
-const float HPGaugePosX = 20.0f;	// 体力ゲージのx軸座標
-const float HPGaugePosY = 15.0f;	// 体力ゲージのy軸座標
+const float PlayerHPGaugePosX = 20.0f;	// プレイヤー体力ゲージのx軸座標
+const float PlayerHPGaugePosY = 15.0f;	// プレイヤー体力ゲージのy軸座標
+const int	PlayerHPDot = 4;			// プレイヤーHPの幅
 
-const int	P1MessageWidth = 250;	// 雑魚戦メッセージの幅
-const int	P2MessageWidth = 250;	// ボス戦メッセージの幅
-const float MessagePosY = 430.0f;	// ステージ目的表示のy軸座標
+const int	P1MessageWidth = 250;		// 雑魚戦メッセージの幅
+const int	P2MessageWidth = 250;		// ボス戦メッセージの幅
+const float MessagePosY = 430.0f;		// ステージ目的表示のy軸座標
+
+const int	BossHPGaugeWidth = 590;		// ボス体力ゲージの幅
+const int	BossHPGaugeHeight = 144;	// ボス体力ゲージの高さ
+const float	BossHPGaugePosY = 790.0f;	// ボス体力ゲージ表示のy軸座標
+const int	BossHPDot = 5;				// ボスHPの幅
 
 // ============================================================
 
@@ -59,10 +65,14 @@ void GamePlayManager::draw() const
 	SetDrawBright(fade_counter_, fade_counter_, fade_counter_);
 
 	// プレイヤーキャラの体力を表示
-	draw_HP_gauge();
+	draw_playerHP();
 
 	// 現在の目的を表示
 	draw_message();
+
+	// ボスの体力を表示
+	if (world_->find_actor(ActorGroup::Enemy, "DragonBoar") != nullptr)
+		draw_bossHP();
 }
 
 // メッセージ処理
@@ -182,11 +192,11 @@ void GamePlayManager::phase2(float delta_time)
 }
 
 // プレイヤーの体力ゲージを表示
-void GamePlayManager::draw_HP_gauge() const
+void GamePlayManager::draw_playerHP() const
 {
-	Vector2 pos{ HPGaugePosX, HPGaugePosY };	// 描画する座標
+	Vector2 pos{ PlayerHPGaugePosX, PlayerHPGaugePosY };	// 描画する座標
 
-	Graphics2D::draw(TEXTURE_HPGAUGE, pos);		// 体力ゲージを描画
+	Graphics2D::draw(TEXTURE_PLAYER_HPGAUGE, pos);			// 体力ゲージを描画
 
 	// プレイヤーの体力を取得
 	auto player = world_->find_actor(ActorGroup::Player, "Player");
@@ -199,8 +209,7 @@ void GamePlayManager::draw_HP_gauge() const
 
 		for (int i = 0; i < player_hp; ++i)
 		{
-
-			Graphics2D::draw(TEXTURE_HP, Vector2(draw_pos.x + 4 * i, draw_pos.y));
+			Graphics2D::draw(TEXTURE_PLAYER_HP, Vector2(draw_pos.x + PlayerHPDot * i, draw_pos.y));
 		}
 	}
 }
@@ -223,6 +232,32 @@ void GamePlayManager::draw_message() const
 		break;
 	default:
 		break;
+	}
+}
+
+// ボスの体力ゲージを表示
+void GamePlayManager::draw_bossHP() const
+{
+	int win_center = WindowSetting::WindowWidth / 2;	// ウィンドウの中心点
+	int gauge_half = BossHPGaugeWidth / 2;				// ボス体力ゲージの幅の半分
+	int gauge_bottom = WindowSetting::WindowHeight - BossHPGaugeHeight;
+
+	Vector2 pos((float)(win_center - gauge_half), (float)gauge_bottom);
+	Graphics2D::draw(TEXTURE_BOSS_HPGAUGE, pos);		// 体力ゲージを描画
+
+	// ボスの体力を取得
+	auto boss = world_->find_actor(ActorGroup::Enemy, "DragonBoar");
+	int boss_hp = (boss != nullptr) ? boss->get_HP() : 0;
+
+	// ゲージの中身を描画
+	if (boss_hp > 0)
+	{
+		Vector2 draw_pos = pos + Vector2(86.0f, 56.0f);	// 最初の描画位置
+
+		for (int i = 0; i < boss_hp; ++i)
+		{
+			Graphics2D::draw(TEXTURE_BOSS_HP, Vector2(draw_pos.x + BossHPDot * i, draw_pos.y));
+		}
 	}
 }
 
