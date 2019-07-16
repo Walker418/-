@@ -102,3 +102,9 @@ int Actor::get_HP()
 {
 	return 0;
 }
+
+Vector3 Actor::get_velocity()
+{
+	// ˆÚ“®—Ê‚ÌŽæ“¾
+	return Vector3();
+}

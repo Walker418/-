@@ -193,6 +193,12 @@ int Player::get_HP()
 	return current_hp_;
 }
 
+// ˆÚ“®—Ê‚Ìæ“¾
+Vector3 Player::get_velocity()
+{
+	return velocity_;
+}
+
 // ó‘Ô‚ÌXV
 void Player::update_state(float delta_time)
 {

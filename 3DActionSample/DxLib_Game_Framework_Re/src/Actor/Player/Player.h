@@ -80,6 +80,8 @@ public:
 	virtual void handle_message(EventMessage message, void* param = nullptr) override;
 	// ‘Ì—Í‚Ìæ“¾
 	virtual int get_HP() override;
+	// ˆÚ“®—Ê‚Ìæ“¾
+	virtual Vector3 get_velocity() override;
 
 private:
 	// ó‘Ô‚ÌXV

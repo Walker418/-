@@ -57,6 +57,8 @@ public:
 
 	// ‘Ì—Í‚Ìæ“¾
 	virtual int get_HP();
+	// ˆÚ“®—Ê‚Ìæ“¾
+	virtual Vector3 get_velocity();
 
 	// ƒRƒs[‹Ö~
 	Actor(const Actor& other) = delete;

@@ -64,6 +64,11 @@ private:
 
 	// プレイヤーの参照の取得
 	ActorPtr get_player();
+	// プレイヤー向きの角度の取得（符号付き）
+	float get_angle_to_target(Vector3 target) const;
+	// プレイヤー向きの角度の取得（符号無し）
+	float get_unsigned_angle_to_target(Vector3 target) const;
+
 
 private:
 	TPCameraState	state_{ TPCameraState::Normal };		// カメラの状態
@@ -76,6 +81,8 @@ private:
 	float			min_pos_y_{ 0.0f };						// 振動時のy軸最小座標
 	float			max_pos_y_{ 0.0f };						// 振動時のy軸最大座標
 	Random			rand_;									// 乱数生成器
+
+	Vector3			target_backward_;						// プレイヤーの背後座標
 };
 
 #endif // !T_P_CAMERA_H_

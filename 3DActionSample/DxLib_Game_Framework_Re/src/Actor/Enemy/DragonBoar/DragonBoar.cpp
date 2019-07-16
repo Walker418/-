@@ -142,6 +142,12 @@ void DragonBoar::handle_message(EventMessage message, void* param)
 	}
 }
 
+// ‘Ì—Í‚Ìæ“¾
+int DragonBoar::get_HP()
+{
+	return current_hp_;
+}
+
 // ó‘Ô‚ÌXV
 void DragonBoar::update_state(float delta_time)
 {
