@@ -14,7 +14,8 @@
 
 //--------------------------------------------------
 
-const int Power = 8;					// 攻撃力
+const float	AtkReady = 30.0f;			// 攻撃前の予備時間（フレーム）
+const int	Power = 8;					// 攻撃力
 const float AttackInterval = 120.0f;	// 攻撃間隔
 
 //--------------------------------------------------
@@ -228,8 +229,8 @@ void Ghoul::move(float delta_time)
 		// 目的地に着くと、移動完了
 		if (can_attack_player() || Vector3::Distance(position_, next_destination_) <= 12.0f)
 		{
-			interval_ = state_timer_ + 12.0f;	// 次の行動は0.2秒後に実行
-			is_moving_ = false;					// 移動完了
+			interval_ = state_timer_ + AtkReady;	// 次の行動は0.2秒後に実行
+			is_moving_ = false;						// 移動完了
 		}
 
 		// 行動の維持時間を超えたら、次の行動を抽選

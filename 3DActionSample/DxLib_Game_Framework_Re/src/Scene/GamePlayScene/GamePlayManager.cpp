@@ -134,10 +134,10 @@ void GamePlayManager::game_start()
 	gameover_scene_timer_.reset();
 	gameclear_scene_timer_.reset();
 	// éGãõìG3ëÃÇê∂ê¨Ç∑ÇÈ
-	/*world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
+	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 0.0f, 0.0f, -50.0f }, 180.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ 60.0f, 0.0f, -35.0f }, 160.0f));
 	world_->add_actor(ActorGroup::Enemy, new_actor<Ghoul>(world_, Vector3{ -60.0f, 0.0f, -35.0f }, 200.0f));
-	*/
+	
 	// BGMçƒê∂äJén
 	Sound::play_bgm(BGM_STAGE);
 }
