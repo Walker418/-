@@ -23,6 +23,8 @@ enum
 	TEXTURE_P2MESSAGE,		// フェーズ2目標メッセージ
 	TEXTURE_BOSS_HPGAUGE,	// ボスの体力ゲージ
 	TEXTURE_BOSS_HP,		// ボスの体力表示
+	TEXTURE_PAUSE_BG,		// ポーズ画面背景
+	TEXTURE_PAUSE_TEXT,		// ポーズ画面文字
 
 	// BGM
 	BGM_TITLE,				// タイトル画面BGM

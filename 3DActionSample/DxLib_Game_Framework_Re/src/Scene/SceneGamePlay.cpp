@@ -14,14 +14,30 @@
 #include "../Field/Skybox.h"
 #include "../Graphic/Billboard.h"
 
+#include "../Actor/Player/PlayerInput.h"
+#include "../Game/WindowSetting.h"
+#include "../Graphic/Graphics2D.h"
+#include "../ID/SourceID.h"
+
 // クラス：ゲームプレイシーン
 // 製作者：何 兆祺（"Jacky" Ho Siu Ki）
+
+// ============================================================
+// 以下は画像スプライトの関連定数
+// ============================================================
+
+const int PauseTextWidth = 400;		// PAUSE文字画像の幅
+const int PauseTextHeight = 160;	// PAUSE文字画像の高さ
+
+// ============================================================
 
 // 開始
 void SceneGamePlay::start()
 {
-	// 終了フラグをFalseにする
+	// 終了フラグをfalseにする
 	is_end_ = false;
+	// ポーズ状態をfalseにする
+	is_pause_ = false;
 	// ワールドを初期化
 	world_.initialize();
 
@@ -43,13 +59,32 @@ void SceneGamePlay::start()
 // 更新
 void SceneGamePlay::update(float delta_time)
 {
-	world_.update(delta_time);
+	// ポーズしていなければ、ゲーム進行を更新
+	if (!is_pause_)
+		world_.update(delta_time);
+
+	// ポーズ
+	if (PlayerInput::pause())
+		is_pause_ = (is_pause_) ? false : true;
 }
 
 // 描画
 void SceneGamePlay::draw() const
 {
 	world_.draw();
+
+	// ポーズ中にPAUSE画像を描画
+	if (is_pause_)
+	{
+		Graphics2D::draw(TEXTURE_PAUSE_BG, Vector2::Zero);
+
+		int win_width = WindowSetting::WindowWidth;
+		int win_height = WindowSetting::WindowHeight;
+		int text_posX = win_width / 2 - PauseTextWidth / 2;
+		int text_posY = win_height / 2 - PauseTextHeight / 2;
+		Vector2 pos{ (float)text_posX, (float)text_posY };
+		Graphics2D::draw(TEXTURE_PAUSE_TEXT, pos);
+	}
 }
 
 // 終了しているか

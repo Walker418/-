@@ -144,6 +144,17 @@ bool PlayerInput::skip_phase1()
 	return (Keyboard::getInstance().KeyTriggerDown(Keycode::T));
 }
 
+// ポーズ
+bool PlayerInput::pause()
+{
+	// ゲームパッドのスタートボタンが押されると、Trueを返す
+	if (GamePad::getInstance().ButtonTriggerDown(PadButton::Start)) return true;
+	// キーボードのYが押されると、Trueを返す
+	if (Keyboard::getInstance().KeyTriggerDown(Keycode::Y)) return true;
+
+	return false;
+}
+
 // ゲーム終了
 bool PlayerInput::game_end()
 {

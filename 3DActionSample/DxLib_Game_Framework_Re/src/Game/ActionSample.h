@@ -24,7 +24,9 @@ private:
 
 private:
 	// シーンマネージャー
-	SceneManager scene_manager_;
+	SceneManager	scene_manager_;
+	// ポーズ中なのか
+	bool			pause_{ false };
 };
 
 #endif // !ACTION_SAMPLE_H_

@@ -1,7 +1,20 @@
-﻿  Player.cpp
+﻿  main.cpp
+  TPCamera.cpp
+  DragonBoar.cpp
+  Ghoul.cpp
+  Player.cpp
+  PlayerAttack.cpp
+  PlayerInput.cpp
+  Skybox.cpp
+  ActionSample.cpp
+  Game.cpp
+  GamePlayManager.cpp
+  SceneGamePlay.cpp
+  SceneLoading.cpp
+  SceneTitle.cpp
   コード生成しています。
-  1 of 2622 functions (<0.1%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
+  87 of 2623 functions ( 3.3%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
+    30 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   DxLib_Game_Framework_Re.vcxproj -> D:\ProgramWorks\GameDevelopment\C++\DxLib\3DActionSample\3DActionSample\DxLib_Game_Framework_Re\Release\DxLib_Game_Framework_Re.exe

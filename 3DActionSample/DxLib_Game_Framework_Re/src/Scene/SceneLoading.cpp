@@ -49,6 +49,8 @@ void SceneLoading::update(float delta_time)
 		Graphics2D::load(TEXTURE_P2MESSAGE, "res/assets/texture/P2message.png");					// フェーズ2目標メッセージ
 		Graphics2D::load(TEXTURE_BOSS_HPGAUGE, "res/assets/texture/BossHPGauge.png");				// ボスの体力ゲージ
 		Graphics2D::load(TEXTURE_BOSS_HP, "res/assets/texture/BossHP.png");							// ボスの体力表示
+		Graphics2D::load(TEXTURE_PAUSE_BG, "res/assets/texture/pause_bg.png");						// ポーズ画面背景
+		Graphics2D::load(TEXTURE_PAUSE_TEXT, "res/assets/texture/pause_text.png");					// ポーズ画面文字
 
 		// BGM
 		Sound::load_bgm(BGM_TITLE, "res/assets/BGM/title.wav");										// タイトル画面BGM

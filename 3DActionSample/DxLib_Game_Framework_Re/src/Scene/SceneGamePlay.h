@@ -34,6 +34,9 @@ private:
 	bool	is_end_{ false };
 	// 次のシーン（デフォルトはタイトルシーン）
 	Scene	next_scene_{ Scene::Title };
+
+	// ポーズ中なのか
+	bool	is_pause_{ false };
 };
 
 #endif // !SCENE_GAME_PLAY_H_

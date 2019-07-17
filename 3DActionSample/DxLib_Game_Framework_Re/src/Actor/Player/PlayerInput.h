@@ -52,6 +52,8 @@ public:
 
 	// 雑魚戦スキップ
 	static bool skip_phase1();
+	// ポーズ
+	static bool pause();
 	// ゲーム終了
 	static bool game_end();
 };
