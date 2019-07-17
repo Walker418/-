@@ -67,7 +67,7 @@ const float GuardAtk_InputValid = 30.0f;	// ガード攻撃の次の行動入力の開始フレー
 const float GuardAtk_InputInvalid = 43.0f;	// ガード攻撃の次の行動入力の終了フレーム数
 const float GuardAtk_End = 43.0f;			// ガード攻撃のモーション終了フレーム数
 
-const float EvasionSpeed = 1.5f;			// 回避モーションの速度
+const float EvasionSpeed = 0.0f;			// 回避モーションの速度
 
 // ============================================================
 
